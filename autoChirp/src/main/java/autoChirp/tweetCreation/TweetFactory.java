@@ -1,6 +1,9 @@
 package autoChirp.tweetCreation;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.time.DateTimeException;
 import java.time.LocalDate;
@@ -36,69 +39,75 @@ public class TweetFactory {
 
 	// is needed for tweetDate creation
 	private int currentYear;
+	private String regex1 = "[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}";
+	private String regex2 = "[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}";
+	private String regex3 = "[0-9]{4}-[0-9]{2}-[0-9]{2}";
+	//2015-05
+	private String regex4 = "[0-9]{4}-[0-9]{2}";
+
 
 	public TweetFactory() {
 		currentYear = LocalDateTime.now().getYear();
 	}
-
-	public TweetGroup getTweetsFromTable(File csvFile, String groupTitle) {
-		return getTweetsFromTable(csvFile, groupTitle, "read from csvFile: " + csvFile.getName());
-	}
-
-	public TweetGroup getTweetsFromTable(File csvFile, String groupTitle, String description) {
-		TweetGroup group = new TweetGroup(groupTitle, description);
-		Workbook w;
+	
+	public TweetGroup getTweetsFromCSV(File csvFile, String title, String description){
+		TweetGroup group = new TweetGroup(title, description);
 		try {
-			try {
-				w = Workbook.getWorkbook(csvFile);
-				Sheet sheet = w.getSheet(0);
-				String content;
-				String date;
-				String time;
-				LocalDateTime ldt;
-				Tweet tweet;
-				System.out.println("rows: "+ sheet.getRows());
-				for (int i = 1; i < sheet.getRows(); i++) {
-					content = sheet.getCell(2, i).getContents().trim();
-					if(content.equals("")) continue;
-					System.out.println("content: " + content);
-					if (content.length() > 140) {
-						content = trimToTweet(content);
+			BufferedReader in = new BufferedReader(new FileReader(csvFile));
+			String line = in.readLine();
+			String content;
+			String date;
+			String time;
+			LocalDateTime ldt;
+			Tweet tweet;
+			while(line!= null){
+				String[] split = line.split("\t");
+				date = split[0].trim();
+				time = split[1].trim();
+				if (time.equals("")) {
+					LocalDate ld = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd.MM.yy"));
+					ldt = LocalDateTime.of(ld, LocalTime.of(12, 0));
+				} else {
+					if (time.split(":").length == 3) {
+						ldt = LocalDateTime.parse(date.concat(" " + time),
+								DateTimeFormatter.ofPattern("dd.MM.yy HH:mm:ss"));
 					}
-					date = sheet.getCell(0, i).getContents().trim();
-					if(date.equals("")) continue;
-					System.out.println("date: " + date);
-					time = sheet.getCell(1, i).getContents();
-					if (time == "") {
-						LocalDate ld = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd/MM/yy"));
-						ldt = LocalDateTime.of(ld, LocalTime.of(12, 0));
-					} else {
-						if (time.split(":").length == 3) {
-							ldt = LocalDateTime.parse(date.concat(" " + time),
-									DateTimeFormatter.ofPattern("dd/MM/yy HH:mm:ss"));
-						}
-						else{
-							ldt = LocalDateTime.parse(date.concat(" " + time),
-									DateTimeFormatter.ofPattern("dd/MM/yy HH:mm"));
-						}
-						System.out.println("datetime: " + date);
-
-					}
-					System.out.println("ldt: " + ldt);
-					if (ldt != null && ldt.isAfter(LocalDateTime.now())) {
-						tweet = new Tweet(date, content);
-						group.addTweet(tweet);
+					else{
+						ldt = LocalDateTime.parse(date.concat(" " + time),
+								DateTimeFormatter.ofPattern("dd.MM.yy HH:mm"));
 					}
 				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+				String formattedDate = ldt.format(formatter);
+				boolean midnight = false;
+				if (time.contains(" 00:00")) {
+					midnight = true;
+				}
+				if (!midnight) {
+					formattedDate = formattedDate.replace(" 00:00", " 12:00");
+				}
+				if(split.length > 3){
+					content = line.substring(line.indexOf("\""), line.lastIndexOf("\""));
+				}
+				else{
+					content = split[2];
+				}
+				if (ldt != null && ldt.isAfter(LocalDateTime.now())) {
+					tweet = new Tweet(formattedDate, content);
+					group.addTweet(tweet);
+				}
+				line = in.readLine();
 			}
-		} catch (BiffException e) {
+			in.close();
+		} catch (IOException e) {
 			e.printStackTrace();
+			return null;
 		}
 		return group;
 	}
+
+	
+	
 
 	/**
 	 * creates a TweetGroup-Object from the given url. Uses the url as
@@ -159,6 +168,7 @@ public class TweetFactory {
 	 * @return a list of date-tagged sentences
 	 */
 	private String[] tagDatesWithHeideltime(Document document) {
+		System.out.println("  Doc: "+ document);
 		HeidelTimeWrapper ht = new HeidelTimeWrapper(document.getLanguage(), DocumentType.NARRATIVES, OutputType.TIMEML,
 				"/heideltime/config.props", POSTagger.TREETAGGER, false);
 		String toProcess = concatSentences(document.getSentences());

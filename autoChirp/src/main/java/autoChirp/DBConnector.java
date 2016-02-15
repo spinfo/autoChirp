@@ -93,91 +93,108 @@ public class DBConnector {
 	}
 
 	/**
-	 * 
-	 * (only for testing)
-	 * inserts an url with user_id into wikipedia-table
-	 * 
-	 * @param url
-	 * @param user_id
-	 * @return returns true if insertion was successful
-	 * 
+	 * checks if the user with the given global twitterID is already registered.
+	 * @param twitter_id
+	 * 			- the global TwitterID
+	 * @return returns the local userID if user already exists, or -1 if not.
 	 */
-	public static boolean isertUrl(String url, int user_id) {
+	public static int checkForUser(long twitter_id){
+		try {
+			connection.setAutoCommit(false);
+			String sql = "SELECT twitter_id, user_id FROM users WHERE (twitter_id = '"+twitter_id+"')";
+			Statement stmt = connection.createStatement();
+			ResultSet result = stmt.executeQuery(sql);
+			if(!result.next()){
+				stmt.close();
+				return -1;
+			}
+			else {
+				int user_id = result.getInt(2);
+				stmt.close();
+				return user_id;
+			}
+			
+		} catch (SQLException e) {
+			System.out.print("DBConnector: checkForUser: ");
+			e.printStackTrace();
+			return -2;
+		}
+	}
+
+	/**
+	 * creates a new user in the users-table
+	 * 
+	 * @param twitterID
+	 * 			- the global twitterID
+	 * @param oauthToken
+	 * @param oauthTokenSecret
+	 * @return the local userID of the new user or -1 if insertion was not successful
+	 */
+	public static int insertNewUser(long twitterID, String oauthToken, String oauthTokenSecret) {
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
-			String sql = "INSERT INTO wikipedia (url, user_id) VALUES ('" + url + "', " + "'" + user_id + "'" + ")";
+			String sql = "INSERT INTO users (twitter_id, oauth_token, oauth_token_secret) VALUES ('"
+					+ twitterID + "', " + "'" + oauthToken + "', " + "'" + oauthTokenSecret + "' )";
 			stmt.executeUpdate(sql);
 			stmt.close();
 			connection.commit();
+			stmt = connection.createStatement();
+			sql = "SELECT last_insert_rowid();";
+			ResultSet result = stmt.executeQuery(sql);
+			int toReturn = result.getInt(1);
+			stmt.close();
+			connection.commit();
+			return toReturn;
 		} catch (SQLException e) {
-			if (e.getMessage().equals("columns user_id, url are not unique")) {
-				System.out.println("Already in DB: " + url + " with user UserID " + user_id);
-				return true;
-			} else {
-				System.out.println("DBConnector.insertUrl:  couldnt insert urls");
-				e.printStackTrace();
-				return false;
-			}
+			System.out.println("DBConnector.insertNewUser: couldnt insert the new user " + twitterID);
+			e.printStackTrace();
+			return -1;
 		}
-		return true;
-	}
+
+	}	
 
 	/**
-	 * (only for testing)
-	 * searches for new urls to parse in wikipedia-table
+	 * reads the user-config of a specific user
 	 * 
-	 * @return map of urls (key) and associated user_ids (value) from
-	 *         wikipedia-table
+	 * @param userID
+	 * @return String-Array with twitterID (0), oauthToken (1) and
+	 *         oauthTokenSecret (2)
 	 */
-	public static Map<String, List<Integer>> getUrls() {
-		Map<String, List<Integer>> toReturn = new HashMap<String, List<Integer>>();
-		ResultSet result = null;
-		Statement stmt = null;
+	public static String[] getUserConfig(int userID) {
 		try {
 			connection.setAutoCommit(false);
-			stmt = connection.createStatement();
-			String sql = "SELECT url, user_id FROM wikipedia";
-			result = stmt.executeQuery(sql);
-		} catch (SQLException e) {
-			System.out.print("DBconnector.getUrls: Couldnt read from wikipedia-table");
+			String sql = "SELECT twitter_id, oauth_token, oauth_token_secret FROM users WHERE user_id = '" + userID
+					+ "';";
+			Statement stmt = connection.createStatement();
+			ResultSet result = stmt.executeQuery(sql);
+			String[] toReturn = new String[3];
+			toReturn[0] = Integer.toString(result.getInt(1));
+			toReturn[1] = result.getString(2);
+			toReturn[2] = result.getString(3);
+			stmt.close();
+			connection.commit();
+			return toReturn;
+		} catch (Exception e) {
+			System.out.println("DBConnector: couldnt read config for user_id " + userID);
 			e.printStackTrace();
+			return null;
 		}
-		try {
-			while (result.next()) {
-				String url = result.getString(1);
-				List<Integer> ids = toReturn.get(url);
-				if (ids == null)
-					ids = new ArrayList<Integer>();
-				ids.add(result.getInt(2));
-				toReturn.put(url, ids);
-				stmt.close();
-				connection.commit();
-			}
-		} catch (SQLException e) {
-			System.out.print("DBConnector.getUrls: ");
-			e.printStackTrace();
-		}
-		return toReturn;
-		//TODO  delete parsed urls
 	}
-
+	
 	/**
-	 * Writes a TweetGroup (e.g. created from a wikipedia document )  into the database.
+	 * Writes a TweetGroup  into the database.
 	 * Updates the tables groups and tweets.
 	 * 
-	 * 
-	 * @param description
-	 *            - the description for this group
 	 * @param tweetGroup
 	 *            - a TweetGroup-Object consisting of title, description and a list of tweets
 	 * @param userID
 	 *            - the users local userID
-	 * @return returns true if insertion was successful
+	 * @return returns the groupId of the inserted tweetGroup, or -1 if insertion failed
 	 * 
 	 * 
 	 */
-	public static boolean insertTweetGroup(TweetGroup tweetGroup, int userID) {
+	public static int insertTweetGroup(TweetGroup tweetGroup, int userID) {
 		try {
 			connection.setAutoCommit(false);
 			PreparedStatement prepUsers = connection
@@ -205,12 +222,65 @@ public class DBConnector {
 			prepUsers.close();
 			prepTweets.close();
 			connection.commit();
+			return group_id;
 		} catch (Exception e) {
 			System.out.print("DBConnector.insertTweets: Couldnt insert tweets ");
+			e.printStackTrace();
+			return -1;
+		}
+		
+	}
+
+	/**
+	 * updates the field 'enabled' in groups-table
+	 * 
+	 * @param group_id
+	 * @param enabled
+	 * @return returns true if update was successful
+	 */
+	public static boolean updateGroupStatus(int group_id, boolean enabled) {
+		try {
+			connection.setAutoCommit(false);
+			Statement stmt = connection.createStatement();
+			String sql = "UPDATE groups SET enabled = '" + enabled + "' WHERE (group_id = '" + group_id + "')";
+			stmt.executeUpdate(sql);
+			stmt.close();
+			connection.commit();
+			// TODO schedule tweets
+		} catch (SQLException e) {
+			System.out.println("DBConnector.updateGroupStatus: couldnt update group-status");
 			e.printStackTrace();
 			return false;
 		}
 		return true;
+	}
+	
+	public static void flagAsScheduled(Tweet tweet, int userID){
+		try {
+			connection.setAutoCommit(false);
+			Statement stmt = connection.createStatement();
+			String sql = "UPDATE tweets SET scheduled = 'true' WHERE (tweet_id = '"+tweet.tweetID+"')";
+			stmt.executeUpdate(sql);
+			stmt.close();
+			connection.commit();
+		} catch (SQLException e) {
+			System.out.print("DBConnector.flagAsScheduled: failed");
+			e.printStackTrace();
+		}	
+	}
+	
+	public static void flagAsTweeted(Tweet tweet, int userID){
+		try {
+			connection.setAutoCommit(false);
+			Statement stmt = connection.createStatement();
+			String sql = "UPDATE tweets SET tweeted = 'true' WHERE (tweet_id = '"+tweet.tweetID+"')";
+			stmt.executeUpdate(sql);
+			stmt.close();
+			connection.commit();
+		} catch (SQLException e) {
+			System.out.print("DBConnector.flagAsTweeted: failed");
+			e.printStackTrace();
+		}	
 	}
 
 	
@@ -245,29 +315,7 @@ public class DBConnector {
 			e.printStackTrace();
 		}
 	}
-	/**
-	 * updates the field 'enabled' in groups-table
-	 * 
-	 * @param group_id
-	 * @param enabled
-	 * @return returns true if update was successful
-	 */
-	public static boolean updateGroupStatus(int group_id, boolean enabled) {
-		try {
-			connection.setAutoCommit(false);
-			Statement stmt = connection.createStatement();
-			String sql = "UPDATE groups SET enabled = '" + enabled + "' WHERE (group_id = '" + group_id + "')";
-			stmt.executeUpdate(sql);
-			stmt.close();
-			connection.commit();
-			// TODO schedule tweets
-		} catch (SQLException e) {
-			System.out.println("DBConnector.updateGroupStatus: couldnt update group-status");
-			e.printStackTrace();
-			return false;
-		}
-		return true;
-	}
+
 
 	/**
 	 * 
@@ -324,96 +372,10 @@ public class DBConnector {
 		}
 	}
 	
-	/**
-	 * checks if the user with the given global twitterID is already registered.
-	 * @param twitter_id
-	 * 			- the global TwitterID
-	 * @return returns the local userID if user already exists, or -1 if not.
-	 */
-	public static int checkForUser(long twitter_id){
-		try {
-			connection.setAutoCommit(false);
-			String sql = "SELECT twitter_id, user_id FROM users WHERE (twitter_id = '"+twitter_id+"')";
-			Statement stmt = connection.createStatement();
-			ResultSet result = stmt.executeQuery(sql);
-			if(!result.next()){
-				stmt.close();
-				return -1;
-			}
-			else {
-				int user_id = result.getInt(2);
-				stmt.close();
-				return user_id;
-			}
-			
-		} catch (SQLException e) {
-			System.out.print("DBConnector: checkForUser: ");
-			e.printStackTrace();
-			return -2;
-		}
-	}
 
-	/**
-	 * creates a new user in the users-table
-	 * 
-	 * @param twitterID
-	 * 			- the global twitterID
-	 * @param oauthToken
-	 * @param oauthTokenSecret
-	 * @return the local userID of the new user or -1 if insertion was not successful
-	 */
-	public static int insertNewUser(long twitterID, String oauthToken, String oauthTokenSecret) {
-		try {
-			connection.setAutoCommit(false);
-			Statement stmt = connection.createStatement();
-			String sql = "INSERT INTO users (twitter_id, oauth_token, oauth_token_secret) VALUES ('"
-					+ twitterID + "', " + "'" + oauthToken + "', " + "'" + oauthTokenSecret + "' )";
-			stmt.executeUpdate(sql);
-			stmt.close();
-			connection.commit();
-			stmt = connection.createStatement();
-			sql = "SELECT user_id FROM users WHERE (twitter_id = '" + twitterID + "' AND oauth_token = '"
-					+ oauthToken + "' AND oauth_token_secret ='" + oauthTokenSecret + "')";
-			ResultSet result = stmt.executeQuery(sql);
-			int toReturn = result.getInt(1);
-			stmt.close();
-			connection.commit();
-			return toReturn;
-		} catch (SQLException e) {
-			System.out.println("DBConnector.insertNewUser: couldnt insert the new user " + twitterID);
-			e.printStackTrace();
-			return -1;
-		}
 
-	}
 
-	/**
-	 * reads the user-config of a specific user
-	 * 
-	 * @param userID
-	 * @return String-Array with twitterID (0), oauthToken (1) and
-	 *         oauthTokenSecret (2)
-	 */
-	public static String[] getUserConfig(int userID) {
-		try {
-			connection.setAutoCommit(false);
-			String sql = "SELECT twitter_id, oauth_token, oauth_token_secret FROM users WHERE user_id = '" + userID
-					+ "';";
-			Statement stmt = connection.createStatement();
-			ResultSet result = stmt.executeQuery(sql);
-			String[] toReturn = new String[3];
-			toReturn[0] = Integer.toString(result.getInt(1));
-			toReturn[1] = result.getString(2);
-			toReturn[2] = result.getString(3);
-			stmt.close();
-			connection.commit();
-			return toReturn;
-		} catch (Exception e) {
-			System.out.println("DBConnector: couldnt read config for user_id " + userID);
-			e.printStackTrace();
-			return null;
-		}
-	}
+
 
 	
 	public static List<Tweet> getTweetsForUser(int userID, boolean scheduled, boolean tweeted, int groupID, int offset, int limit){
@@ -472,33 +434,7 @@ public class DBConnector {
 	}
 	
 	
-	public static void flagAsTweeted(Tweet tweet, int userID){
-		try {
-			connection.setAutoCommit(false);
-			Statement stmt = connection.createStatement();
-			String sql = "UPDATE tweets SET tweeted = 'true' WHERE (tweet_id = '"+tweet.tweetID+"')";
-			stmt.executeUpdate(sql);
-			stmt.close();
-			connection.commit();
-		} catch (SQLException e) {
-			System.out.print("DBConnector.flagAsTweeted: failed");
-			e.printStackTrace();
-		}	
-	}
 	
-	public static void flagAsScheduled(Tweet tweet, int userID){
-		try {
-			connection.setAutoCommit(false);
-			Statement stmt = connection.createStatement();
-			String sql = "UPDATE tweets SET scheduled = 'true' WHERE (tweet_id = '"+tweet.tweetID+"')";
-			stmt.executeUpdate(sql);
-			stmt.close();
-			connection.commit();
-		} catch (SQLException e) {
-			System.out.print("DBConnector.flagAsScheduled: failed");
-			e.printStackTrace();
-		}	
-	}
 	
 	public static TweetGroup getTweetGroupForUser(int userID, int groupID){
 		try {
@@ -569,129 +505,5 @@ public class DBConnector {
 		}
 		return toReturn;
 	}
-//	
-//	/**
-//	 * selects all new (= not yet scheduled) tweets for a specific user and
-//	 * group
-//	 * 
-//	 * @param user_id
-//	 * @param group_id
-//	 * @return A map of dates (key) and the associated list of tweets (value)
-//	 */
-//	public static List<Tweet> getTweetsForUser(int user_id, int group_id) {
-//		List<Tweet> toReturn = new ArrayList<Tweet>();
-//		try {
-//			connection.setAutoCommit(false);
-//			Statement stmt = connection.createStatement();
-//			String sql = "SELECT * FROM tweets WHERE (group_id = '" + group_id + "' AND user_id='" + user_id + "')";
-//			ResultSet tweets = stmt.executeQuery(sql);
-//			try {
-//				while (tweets.next()) {
-//					String date = tweets.getString(4);
-//					String tweet = tweets.getString(5);
-//					int tweetID = tweets.getInt(1);
-//					toReturn.add(new Tweet(date,tweet, tweetID));
-//				}
-//			} catch (SQLException e) {
-//				System.out.println("DBConnector.getAllNewTweets: no new tweets to schedule");
-//			}
-//			
-//			stmt.close();
-//			connection.commit();
-//		} catch (SQLException e) {
-//			System.out.println("DBConnector.getAllNewTweets: ");
-//			e.printStackTrace();
-//		}
-//		return toReturn;
-//	}
-//
-//	/**
-//	 * selects all new (not yet scheduled) tweets. This method should be
-//	 * executed once after application-start
-//	 * 
-//	 * @return A Map of user_ids (key) and a map of tweets sorted by their
-//	 *         tweetdate (value)
-//	 */
-//
-//	public static Map<Integer, List<Tweet>> getAllTweets() {
-//		Map<Integer, List<Tweet>> toReturn = new HashMap<Integer, List<Tweet>>();
-//		ResultSet group_ids = null;
-//		try {
-//			connection.setAutoCommit(true);
-//			String sql = "SELECT group_id, user_id FROM groups WHERE (enabled = 'true')";
-//			Statement stmt = connection.createStatement();
-//			group_ids = stmt.executeQuery(sql);
-//		} catch (SQLException e) {
-//			System.out.println("DBConntor.getAllNewTweets: couldnt read from table groups");
-//			e.printStackTrace();
-//			return toReturn;
-//		}
-//		// Select all enabled group_ids with user
-//		try {
-//			while (group_ids.next()) {
-//				int group_id = group_ids.getInt(1);
-//				int user_id = group_ids.getInt(2);
-//				ResultSet tweets = null;
-//				try {
-//					Statement stmt2 = connection.createStatement();
-//					// Select all tweets for the current group_id
-//					String sql2 = "SELECT * FROM tweets WHERE (group_id = '" + group_id + "' AND user_id='" + user_id + "')";
-//					tweets = stmt2.executeQuery(sql2);
-//				} catch (Exception e) {
-//					System.out.println("DBConntor.getAllNewTweets: couldnt read from table tweets");
-//					e.printStackTrace();
-//					return toReturn;
-//				}
-//				while (tweets.next()) {
-//					String date = tweets.getString(4);
-//					String content = tweets.getString(5);
-//					int tweetID = tweets.getInt(1);
-//					List<Tweet> tweetsForUser = toReturn.get(user_id);
-//					if (tweetsForUser == null) {
-//						tweetsForUser = new ArrayList<Tweet>();
-//					}
-//					tweetsForUser.add(new Tweet(date,content, tweetID));
-//					toReturn.put(user_id, tweetsForUser);
-//				}
-//			}
-//		} catch (SQLException e) {
-//			System.out.println("DBConnector.readAllNewTweets: no new Tweets to schedule");
-//			e.printStackTrace();
-//			return toReturn;
-//		}
-//		return toReturn;
-//	}
-//	
-//	public static List<TweetGroup> getActiveGroupsForUser(int user_id){
-//		List<TweetGroup> toReturn = new ArrayList<TweetGroup>();
-//		try {
-//			connection.setAutoCommit(false);
-//			Statement stmt = connection.createStatement();
-//			String sql = "SELECT group_id, group_name, description FROM groups WHERE (user_id = '"+user_id+"' AND enabled ='true')";
-//			ResultSet result = stmt.executeQuery(sql);
-//			while(result.next()){
-//				TweetGroup group = new TweetGroup(result.getString(2), result.getString(3));
-//				int group_id = result.getInt(1);
-//				Statement stmt2 = connection.createStatement();
-//				String sql2 = "SELECT tweet_id, tweet, scheduled_date FROM tweets WHERE(group_id = '"+group_id+"' AND user_id ='"+user_id+"')";
-//				ResultSet result2 = stmt2.executeQuery(sql2);
-//				Tweet tweet;
-//				while(result2.next()){
-//					String content = result.getString(2);
-//					String tweetDate = result.getString(3);
-//					int tweetID = result.getInt(1);
-//					tweet = new Tweet(tweetDate, content, tweetID);
-//					group.addTweet(tweet);
-//				}
-//				
-//				toReturn.add(group);
-//				stmt2.close();
-//			}
-//			stmt.close();
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}	
-//		return toReturn;
-//	}
+
 }
