@@ -10,8 +10,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -195,7 +193,6 @@ public class DBConnector {
 				String sql = "SELECT last_insert_rowid();";
 				ResultSet result = stmt.executeQuery(sql);
 				int group_id = result.getInt(1);
-				System.out.println("GID: "+ group_id);
 				for (Tweet tweet : tweetGroup.tweets) {
 					prepTweets.setInt(1, userID);
 					prepTweets.setInt(2, group_id);
@@ -509,6 +506,7 @@ public class DBConnector {
 			Statement stmt = connection.createStatement();
 			String sql = "SELECT group_name, description, enabled, group_id FROM groups WHERE (user_id = '"+userID+"' AND group_id = '"+groupID+"')";
 			ResultSet result = stmt.executeQuery(sql);
+			if(!result.next()) return null;
 			TweetGroup group = new TweetGroup(result.getInt(4), result.getString(1), result.getString(2), result.getBoolean(3));
 			stmt.close();
 			connection.commit();
