@@ -58,7 +58,6 @@ public ModelAndView viewGroup(HttpSession session, @PathVariable int groupID) {
 @RequestMapping(value = "/add")
 public ModelAndView addGroup(HttpSession session) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
-        int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
         ModelAndView mv = new ModelAndView("group");
         return mv;
@@ -80,10 +79,34 @@ public String addGroupPost(HttpSession session, @RequestParam("title") String ti
 @RequestMapping(value = "/import")
 public ModelAndView importGroup(HttpSession session) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
-        int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
+
+        Hashtable<String, String> importers = new Hashtable<String, String>();
+        importers.put("xls", "Import tweets from a Microsoft Excel document");
+        importers.put("google", "Import tweets from a Google Spreadsheets document");
+        importers.put("csv", "Import tweets from a comma-seperated values file");
+        importers.put("wiki", "Import tweets and extract juxtaposed dates from a Wikipedia article");
 
         ModelAndView mv = new ModelAndView("import");
+        mv.addObject("importers", importers);
+
         return mv;
+}
+
+@RequestMapping(value = "/import", method = RequestMethod.POST)
+public String importGroupPost(HttpSession session, @RequestParam("importer") String importer, @RequestParam("source") String source, @RequestParam("title") String title, @RequestParam("description") String description) {
+        if (session.getAttribute("account") == null) return "redirect:/account";
+        int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
+
+        TweetGroup tweetGroup = new TweetGroup(title, description);
+
+        switch (importer) {
+        case "wiki":
+                break;
+        default:
+                return "redirect:/error";
+        }
+
+        return null;
 }
 
 @RequestMapping(value = "/edit/{groupID}")
@@ -111,8 +134,8 @@ public String addGroupPost(HttpSession session, @PathVariable int groupID, @Requ
         int newGroupID = DBConnector.insertTweetGroup(newGroup, userID);
 
         if (newGroupID > 0) {
-          DBConnector.deleteGroup(groupID);
-          return "redirect:/groups/view/" + newGroupID;
+                DBConnector.deleteGroup(groupID);
+                return "redirect:/groups/view/" + newGroupID;
         } else return "redirect:/error";
 }
 
