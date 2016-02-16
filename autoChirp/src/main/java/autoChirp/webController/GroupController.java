@@ -130,13 +130,13 @@ public String importWikipediaPost(HttpSession session, @RequestParam("source") M
         TweetFactory tweeter = new TweetFactory();
 
         try {
-          file = File.createTempFile("upload-", ".csv");
-          source.transferTo(file);
+                file = File.createTempFile("upload-", ".csv");
+                source.transferTo(file);
         } catch (Exception e) {
-          return "redirect:/error";
+                return "redirect:/error";
         }
 
-        TweetGroup tweetGroup = tweeter.getTweetsFromCSV(file, title, description, delay);
+        TweetGroup tweetGroup = tweeter.getTweetsFromCSV(file, title, description, (delay <= 0) ? 0 : delay);
 
         int groupID = DBConnector.insertTweetGroup(tweetGroup, userID);
 
@@ -199,17 +199,14 @@ public String toggleGroup(HttpSession session, @PathVariable int groupID) {
         if (session.getAttribute("account") == null) return "redirect:/account";
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
-        boolean enabled = !DBConnector.getTweetGroupForUser(userID, groupID).enabled;
+        TweetGroup tweetGroup = DBConnector.getTweetGroupForUser(userID, groupID);
+        boolean enabled = !tweetGroup.enabled;
         DBConnector.updateGroupStatus(groupID, enabled);
 
+        if (enabled)
+                TweetScheduler.scheduleGroup(tweetGroup.tweets, userID);
 
-        if(enabled){
-        	 TweetGroup group = DBConnector.getTweetGroupForUser(userID, groupID);
-             TweetScheduler.scheduleGroup(group.tweets, userID);
-        }
         return "redirect:/groups/view/" + groupID;
-
-        //Disable...
 }
 
 @RequestMapping(value = "/delete/{groupID}")
@@ -217,8 +214,11 @@ public String deleteGroup(HttpSession session, HttpServletRequest request, @Path
         if (session.getAttribute("account") == null) return "redirect:/account";
 
         DBConnector.deleteGroup(groupID);
+        String ref = request.getHeader("Referer");
 
-        return "redirect:" + request.getHeader("Referer");
+        return (ref.endsWith("/groups/view/" + groupID))
+               ? "redirect:/groups/view"
+               : "redirect:" + request.getHeader("Referer");
 }
 
 }

@@ -197,8 +197,11 @@ public String deleteTweet(HttpSession session, HttpServletRequest request, @Path
         if (session.getAttribute("account") == null) return "redirect:/account";
 
         DBConnector.deleteTweet(tweetID);
+        String ref = request.getHeader("Referer");
 
-        return "redirect:" + request.getHeader("Referer");
+        return (ref.endsWith("/tweets/view/" + tweetID))
+               ? "redirect:/tweets/view"
+               : "redirect:" + request.getHeader("Referer");
 }
 
 }

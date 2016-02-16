@@ -28,8 +28,19 @@ public AccountController(ConnectionRepository connectionRepository, Twitter twit
 }
 
 @RequestMapping("/account")
-public String account() {
-        return "account";
+public ModelAndView account() {
+        ModelAndView mv = new ModelAndView("account");
+
+        if (session.getAttribute("account") != null) {
+                int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
+                int groups = DBConnector.getGroupIDsForUser(userID).size();
+                int tweets = DBConnector.getTweetsForUser(userID).size();
+
+                mv.addObject("groups", groups);
+                mv.addObject("tweets", tweets);
+        }
+
+        return mv;
 }
 
 @RequestMapping("/account/login")
@@ -74,6 +85,10 @@ public String logout(SessionStatus sessionStatus) {
 
 @RequestMapping(value = "/account/delete")
 public String delete() {
+        if (session.getAttribute("account") == null) return "redirect:/account";
+        int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
+
+        DBConnector.deleteUser(userID);
         return "redirect:/account";
 }
 
