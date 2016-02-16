@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class AccountController {
@@ -28,7 +29,7 @@ public AccountController(ConnectionRepository connectionRepository, Twitter twit
 }
 
 @RequestMapping("/account")
-public ModelAndView account() {
+public ModelAndView account(HttpSession session) {
         ModelAndView mv = new ModelAndView("account");
 
         if (session.getAttribute("account") != null) {
@@ -84,12 +85,15 @@ public String logout(SessionStatus sessionStatus) {
 }
 
 @RequestMapping(value = "/account/delete")
-public String delete() {
+public String delete(HttpSession session, SessionStatus sessionStatus) {
         if (session.getAttribute("account") == null) return "redirect:/account";
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
+        connectionRepository.removeConnections("twitter");
+        sessionStatus.setComplete();
         DBConnector.deleteUser(userID);
-        return "redirect:/account";
+
+        return "redirect:/home";
 }
 
 }
