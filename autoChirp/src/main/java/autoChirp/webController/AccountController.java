@@ -11,8 +11,9 @@ import org.springframework.social.twitter.api.Twitter;
 import org.springframework.social.twitter.api.TwitterProfile;
 import org.springframework.social.twitter.api.UserOperations;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.SessionAttributes;
+// import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -77,20 +78,22 @@ public String login(HttpSession session) {
 }
 
 @RequestMapping("/account/logout")
-public String logout(SessionStatus sessionStatus) {
+public String logout(HttpSession session, Model model) {
         connectionRepository.removeConnections("twitter");
-        sessionStatus.setComplete();
+        session.invalidate();
+        model.asMap().clear();
 
-        return "redirect:/account";
+        return "redirect:/home";
 }
 
 @RequestMapping(value = "/account/delete")
-public String delete(HttpSession session, SessionStatus sessionStatus) {
+public String delete(HttpSession session, Model model) {
         if (session.getAttribute("account") == null) return "redirect:/account";
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
         connectionRepository.removeConnections("twitter");
-        sessionStatus.setComplete();
+        session.invalidate();
+        model.asMap().clear();
         DBConnector.deleteUser(userID);
 
         return "redirect:/home";
