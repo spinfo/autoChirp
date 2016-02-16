@@ -11,6 +11,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
+import autoChirp.tweeting.TweetScheduler;
+
 @SpringBootApplication
 public class Application {
 
@@ -34,6 +36,8 @@ private void connectDatabase(){
         } else {
                 DBConnector.connect(dbFilePath);
         }
+       //Schedule tweets again
+        
 }
 
 }

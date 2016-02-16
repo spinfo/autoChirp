@@ -109,10 +109,11 @@ public class TweetFactory {
 					formattedDate = formattedDate.replace(" 00:00", " 12:00");
 				}
 				content = split[2];
-				if (ldt != null && ldt.isAfter(LocalDateTime.now())) {
-					tweet = new Tweet(formattedDate, content);
-					group.addTweet(tweet);
+				while(ldt.isBefore(LocalDateTime.now())) {
+					ldt = ldt.plusYears(1);
 				}
+				tweet = new Tweet(formattedDate, content);
+				group.addTweet(tweet);
 				line = in.readLine();
 			}
 			in.close();
@@ -270,8 +271,7 @@ public class TweetFactory {
 				ldtOriginal.getHour(), ldtOriginal.getMinute());
 		LocalDateTime today = LocalDateTime.now();
 		if (ldt.isBefore(today)) {
-			ldt = LocalDateTime.of(currentYear + 1, ldt.getMonth(), ldt.getDayOfMonth(), ldt.getHour(),
-					ldt.getMinute());
+			ldt = ldt.plusYears(1);
 		}
 		String formattedDate = ldt.format(formatter);
 		if (!midnight) {
