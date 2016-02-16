@@ -2,7 +2,8 @@ package autoChirp;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -11,6 +12,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
+import autoChirp.tweetCreation.TweetGroup;
 import autoChirp.tweeting.TweetScheduler;
 
 @SpringBootApplication
@@ -36,8 +38,13 @@ private void connectDatabase(){
         } else {
                 DBConnector.connect(dbFilePath);
         }
-       //Schedule tweets again
-        
+
+        Map<Integer,List<TweetGroup>> toSchedule = DBConnector.getAllEnabledGroups();
+        for (int userID : toSchedule.keySet()) {
+			for (TweetGroup group : toSchedule.get(userID)) {
+				TweetScheduler.scheduleGroup(group.tweets, userID);
+			}
+		}
 }
 
 }

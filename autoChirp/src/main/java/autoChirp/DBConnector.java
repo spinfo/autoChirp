@@ -575,4 +575,54 @@ public class DBConnector {
 			return false;
 		}
 	}
+
+	public static Map<Integer,List<TweetGroup>> getAllEnabledGroups(){
+		Map<Integer,List<TweetGroup>> toReturn = new HashMap<Integer,List<TweetGroup>>();
+		try {
+			connection.setAutoCommit(false);
+			Statement stmt = connection.createStatement();
+			String sql = "SELECT user_id, group_id FROM groups WHERE (enabled = 'true')";
+			ResultSet result = stmt.executeQuery(sql);
+			TweetGroup group;
+			while(result.next()){
+				int userID = result.getInt(1);
+				int groupID = result.getInt(2);
+				group = DBConnector.getTweetGroupForUser(userID, groupID);
+				List<TweetGroup> groupList = toReturn.get(userID);
+				if(groupList == null){
+					groupList = new ArrayList<TweetGroup>();
+				}
+				groupList.add(group);
+				toReturn.put(userID, groupList);
+			}
+			stmt.close();
+			connection.commit();
+		} catch (SQLException e) {
+			System.out.print("DBConnector.getAllEnabledGroupsByUser: ");
+			e.printStackTrace();	
+		}
+		return toReturn;
+	}
+	
+	public static void deleteUser(int userID){
+		try {
+			connection.setAutoCommit(false);
+			Statement stmt = connection.createStatement();
+			String sql = "DELETE FROM users WHERE user_id = '"+userID+"'";
+			stmt.executeQuery(sql);
+			stmt.close();
+			stmt = connection.createStatement();
+			sql = "DELETE FROM groups WHERE user_id = '"+userID+"'";
+			stmt.executeQuery(sql);
+			stmt.close(); 
+			stmt = connection.createStatement();
+			sql = "DELETE FROM tweets WHERE user_id = '"+userID+"'";
+			stmt.executeQuery(sql);
+			stmt.close();
+			connection.commit();
+		} catch (SQLException e) {
+			System.out.print("DBConnector.deleteUser: ");
+			e.printStackTrace();	
+		}
+	}
 }

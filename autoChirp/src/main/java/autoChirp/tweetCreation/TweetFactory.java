@@ -109,11 +109,15 @@ public class TweetFactory {
 					formattedDate = formattedDate.replace(" 00:00", " 12:00");
 				}
 				content = split[2];
-				while(ldt.isBefore(LocalDateTime.now())) {
-					ldt = ldt.plusYears(1);
+				if(delay == 0){
+					while(ldt.isBefore(LocalDateTime.now())) {
+						ldt = ldt.plusYears(1);
+					}
 				}
-				tweet = new Tweet(formattedDate, content);
-				group.addTweet(tweet);
+				if(ldt.isAfter(LocalDateTime.now())){
+					tweet = new Tweet(formattedDate, content);
+					group.addTweet(tweet);
+				}		
 				line = in.readLine();
 			}
 			in.close();
