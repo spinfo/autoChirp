@@ -1,6 +1,7 @@
 package autoChirp.tweetCreation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class TweetGroup {
@@ -25,10 +26,12 @@ public class TweetGroup {
 
 	public void setTweets(List<Tweet> tweets){
 		this.tweets.addAll(tweets);
+		Collections.sort(this.tweets);
 	}
 
 	public void addTweet(Tweet tweet){
 		tweets.add(tweet);
+		Collections.sort(tweets);
 	}
 
 }

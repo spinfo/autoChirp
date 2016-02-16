@@ -56,7 +56,7 @@ public class TweetCreationWorkflow {
 	@Test
 	public void buildTweetsFromUrlTest() throws SQLException, IOException {
 		int userID = DBConnector.insertNewUser(123, "token", "secret");
-		TweetGroup group = tweetFactory.getTweetsFromUrl("https://de.wikipedia.org/wiki/Karneval,_Fastnacht_und_Fasching", wikiParser);
+		TweetGroup group = tweetFactory.getTweetsFromUrl("https://de.wikipedia.org/wiki/Star_Wars", wikiParser);
 		int sizeBefore = group.tweets.size();
 		Assert.assertTrue(sizeBefore > 0);
 		int groupID = DBConnector.insertTweetGroup(group, userID);

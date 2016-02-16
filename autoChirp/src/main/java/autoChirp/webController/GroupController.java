@@ -5,7 +5,12 @@ import autoChirp.preProcessing.parser.WikipediaParser;
 import autoChirp.tweetCreation.Tweet;
 import autoChirp.tweetCreation.TweetFactory;
 import autoChirp.tweetCreation.TweetGroup;
+<<<<<<< HEAD
+import autoChirp.tweeting.TweetScheduler;
+
+=======
 import java.io.File;
+>>>>>>> branch 'master' of https://github.com/geduldia/autoChirp.git
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -200,8 +205,12 @@ public String toggleGroup(HttpSession session, @PathVariable int groupID) {
 
         boolean enabled = DBConnector.getTweetGroupForUser(userID, groupID).enabled;
         DBConnector.updateGroupStatus(groupID, !enabled);
-
+        TweetGroup group = DBConnector.getTweetGroupForUser(userID, groupID);
+        TweetScheduler.scheduleGroup(group.tweets, userID);
+        //Tweets als flagAsschdedukes
         return "redirect:/groups/view/" + groupID;
+        
+        //Disable...
 }
 
 @RequestMapping(value = "/delete/{groupID}")

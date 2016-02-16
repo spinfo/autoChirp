@@ -45,8 +45,8 @@ public class TweetScheduler {
 			d = Duration.between(now, ldt);
 			delay = d.getSeconds();
 			ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(5);
-			scheduler.schedule(new TwitterTask(user_id, tweet), delay, TimeUnit.SECONDS);
-			DBConnector.flagAsScheduled(tweet, user_id);
+			scheduler.schedule(new TwitterTask(user_id, tweet.tweetID), delay, TimeUnit.SECONDS);
+			DBConnector.flagAsScheduled(tweet.tweetID, user_id);
 		}
 	}
 

@@ -256,11 +256,11 @@ public class DBConnector {
 		return true;
 	}
 
-	public static void flagAsScheduled(Tweet tweet, int userID){
+	public static void flagAsScheduled(int tweetID, int userID){
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
-			String sql = "UPDATE tweets SET scheduled = 'true' WHERE (tweet_id = '"+tweet.tweetID+"')";
+			String sql = "UPDATE tweets SET scheduled = 'true' WHERE (tweet_id = '"+tweetID+"')";
 			stmt.executeUpdate(sql);
 			stmt.close();
 			connection.commit();
@@ -270,11 +270,11 @@ public class DBConnector {
 		}
 	}
 
-	public static void flagAsTweeted(Tweet tweet, int userID){
+	public static void flagAsTweeted(int tweetID, int userID){
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
-			String sql = "UPDATE tweets SET tweeted = 'true' WHERE (tweet_id = '"+tweet.tweetID+"')";
+			String sql = "UPDATE tweets SET tweeted = 'true' WHERE (tweet_id = '"+tweetID+"')";
 			stmt.executeUpdate(sql);
 			stmt.close();
 			connection.commit();
@@ -506,5 +506,73 @@ public class DBConnector {
 		}
 		return toReturn;
 	}
+	
+	public static void editGroup(int groupID,String title, String description){
+		try {
+			connection.setAutoCommit(false);
+			Statement stmt = connection.createStatement();
+			String sql = "UPDATE groups SET group_name = '"+title+"', description = '"+description+"'  WHERE (group_id = '"+groupID+"')";
+			stmt.executeUpdate(sql);
+			stmt.close();
+			connection.commit();
+		} catch (SQLException e) {
+			System.out.print("DBConnector.editGroup: ");
+			e.printStackTrace();
+		}
+	}
+	
+	public static void editTweet(int tweetID, String content){
+		try {
+			connection.setAutoCommit(false);
+			Statement stmt = connection.createStatement();
+			String sql = "UPDATE tweets SET tweet = '"+content+"'  WHERE (tweet_id = '"+tweetID+"')";
+			stmt.executeUpdate(sql);
+			stmt.close();
+			connection.commit();
+		} catch (SQLException e) {
+			System.out.print("DBConnector.editTweet: ");
+			e.printStackTrace();
+		}
+	}
+	
+	public static int addTweetToGroup(int userID, Tweet tweet, int groupID){
+		try {
+			connection.setAutoCommit(false);
+			Statement stmt = connection.createStatement();
+			String sql = "INSERT INTO tweets (user_id, group_id, scheduled_date, tweet, scheduled, tweeted) VALUES("+userID+", "+groupID+", "+tweet.tweetDate+", "+tweet.content+", false, false)";
+			stmt.executeUpdate(sql);
+			stmt.close();
+			connection.commit();
+			stmt = connection.createStatement();
+			sql = "SELECT last_insert_rowid();";
+			ResultSet result = stmt.executeQuery(sql);
+			int toReturn = result.getInt(1);
+			stmt.close();
+			connection.commit();
+			DBConnector.updateGroupStatus(groupID, false);
+			return toReturn;
+			
+		} catch (SQLException e) {
+			System.out.print("DBConnector.editTweet: ");
+			e.printStackTrace();
+			return -1;
+		}
+	}
 
+	public static boolean isEnabledGroup(int groupID){
+		try {
+			connection.setAutoCommit(false);
+			Statement stmt = connection.createStatement();
+			String sql = "SELECT enabled FROM groups WHERE (group_id = '"+groupID+"')";
+			ResultSet result = stmt.executeQuery(sql);
+			boolean enabled = result.getBoolean(1);
+			stmt.close();
+			connection.commit();
+			return enabled;
+		} catch (SQLException e) {
+			System.out.print("DBConnector.editTweet: ");
+			e.printStackTrace();
+			return false;
+		}
+	}
 }

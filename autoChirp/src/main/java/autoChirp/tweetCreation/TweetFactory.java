@@ -2,7 +2,6 @@ package autoChirp.tweetCreation;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.DateTimeException;
@@ -10,9 +9,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,9 +24,7 @@ import de.unihd.dbs.heideltime.standalone.DocumentType;
 import de.unihd.dbs.heideltime.standalone.OutputType;
 import de.unihd.dbs.heideltime.standalone.POSTagger;
 import de.unihd.dbs.heideltime.standalone.exceptions.DocumentCreationTimeMissingException;
-import jxl.Sheet;
-import jxl.Workbook;
-import jxl.read.biff.BiffException;
+import jxl.write.DateTime;
 
 /**
  * @author Alena Geduldig
@@ -39,17 +37,44 @@ public class TweetFactory {
 
 	// is needed for tweetDate creation
 	private int currentYear;
-	private String regex1 = "[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}";
-	private String regex2 = "[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}";
-	private String regex3 = "[0-9]{4}-[0-9]{2}-[0-9]{2}";
-	//2015-05
-	private String regex4 = "[0-9]{4}-[0-9]{2}";
+	List<String> dateTimeRegexes;
+	List<String> dateRegexes;
+	List<String> dateFormats;
+	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 
 	public TweetFactory() {
 		currentYear = LocalDateTime.now().getYear();
+		dateTimeRegexes = new ArrayList<String>();
+		dateRegexes = new ArrayList<String>();
+		dateFormats = new ArrayList<String>();
+		//2016-12-08 12:00:00
+		addDateTimeForm("[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}","yyyy-MM-dd HH:mm:ss");
+		//2016-12-08 12:00
+		addDateTimeForm("[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}","yyyy-MM-dd HH:mm");
+		addDateTimeForm("[0-9]{2}\\.[0-9]{2}\\.[0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2}", "dd.MM.yyyy HH:mm:ss");
+		addDateTimeForm("[0-9]{2}\\.[0-9]{2}\\.[0-9]{4} [0-9]{2}:[0-9]{2}", "dd.MM.yyyy HH:mm");
+		//2016-12-08
+		addDateForm("[0-9]{4}-[0-9]{2}-[0-9]{2}","yyyy-MM-dd");
+		//2016-12
+		addDateForm("[0-9]{4}-[0-9]{2}","yyyy-MM");
+		//30.10.2015
+		addDateForm("[0-9]{2}\\.[0-9]{2}\\.[0-9]{4}", "dd.MM.yyyy");
+		//30.10.15
+		addDateForm("[0-9]{2}\\.[0-9]{2}\\.[0-9]{2}", "dd.MM.yy");
+		//2016/10/31
+		addDateForm("[0-9]{4}\\/[0-9]{2}\\/[0-9]{2}", "dd/MM/yyyy");
 	}
 	
+	private void addDateTimeForm(String regex, String format) {
+		dateTimeRegexes.add(regex);
+		dateFormats.add(format);
+	}
+	private void addDateForm(String regex, String format) {
+		dateRegexes.add(regex);
+		dateFormats.add(format);
+	}
+
 	public TweetGroup getTweetsFromCSV(File csvFile, String title, String description){
 		TweetGroup group = new TweetGroup(title, description);
 		try {
@@ -64,20 +89,12 @@ public class TweetFactory {
 				String[] split = line.split("\t");
 				date = split[0].trim();
 				time = split[1].trim();
-				if (time.equals("")) {
-					LocalDate ld = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd.MM.yy"));
-					ldt = LocalDateTime.of(ld, LocalTime.of(12, 0));
-				} else {
-					if (time.split(":").length == 3) {
-						ldt = LocalDateTime.parse(date.concat(" " + time),
-								DateTimeFormatter.ofPattern("dd.MM.yy HH:mm:ss"));
-					}
-					else{
-						ldt = LocalDateTime.parse(date.concat(" " + time),
-								DateTimeFormatter.ofPattern("dd.MM.yy HH:mm"));
-					}
+				if(time.equals("")){
+					ldt = parseDateString(date);
 				}
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+				else{
+					ldt = parseDateString(date+" "+time);
+				}
 				String formattedDate = ldt.format(formatter);
 				boolean midnight = false;
 				if (time.contains(" 00:00")) {
@@ -86,12 +103,7 @@ public class TweetFactory {
 				if (!midnight) {
 					formattedDate = formattedDate.replace(" 00:00", " 12:00");
 				}
-				if(split.length > 3){
-					content = line.substring(line.indexOf("\""), line.lastIndexOf("\""));
-				}
-				else{
-					content = split[2];
-				}
+				content = split[2];
 				if (ldt != null && ldt.isAfter(LocalDateTime.now())) {
 					tweet = new Tweet(formattedDate, content);
 					group.addTweet(tweet);
@@ -156,7 +168,7 @@ public class TweetFactory {
 				tweet = new Tweet(tweetDate, trimToTweet(doc.getSentences().get(i - 1)));
 				tweets.add(tweet);
 			}
-		}
+		}	
 		currentYear = LocalDateTime.now().getYear();
 		TweetGroup group = new TweetGroup(doc.getTitle(), description);
 		group.setTweets(tweets);
@@ -240,7 +252,10 @@ public class TweetFactory {
 			midnight = true;
 		}
 		if (origDate.startsWith("XXXX")) {
-			origDate = origDate.replace("XXXX", "9999");
+			origDate = origDate.replace("XXXX", currentYear+"");
+		}
+		if(origDate.length()==7){
+			origDate = origDate.concat("-01");
 		}
 		LocalDateTime ldtOriginal = parseDateString(origDate);
 		if (ldtOriginal == null)
@@ -253,46 +268,41 @@ public class TweetFactory {
 			ldt = LocalDateTime.of(currentYear + 1, ldt.getMonth(), ldt.getDayOfMonth(), ldt.getHour(),
 					ldt.getMinute());
 		}
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 		String formattedDate = ldt.format(formatter);
 		if (!midnight) {
-			formattedDate = formattedDate.replace(" 00:00", " 12:00");
+			formattedDate = formattedDate.replace(" 00:00:00", " 12:00:00");
 		}
 		return formattedDate;
 	}
 
-	private LocalDateTime parseDateString(String date, String format) {
-		LocalDateTime ldt;
-		try {
-			DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("format");
-			ldt = LocalDateTime.parse(date, dtFormatter);
-			return ldt;
-		} catch (DateTimeException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
 
-	private LocalDateTime parseDateString(String origDate) {
+	private LocalDateTime parseDateString(String date) {
 		LocalDateTime ldt;
-		try {
-			DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-			ldt = LocalDateTime.parse(origDate, dtFormatter);
-
-		} catch (DateTimeParseException e) {
-			try {
-				LocalDate ldOriginal = LocalDate.parse(origDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-				ldt = LocalDateTime.of(ldOriginal, LocalTime.of(12, 0));
-			} catch (DateTimeParseException e2) {
-				try {
-					LocalDate ldOriginal = LocalDate.parse(origDate.concat("-01"),
-							DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-					ldt = LocalDateTime.of(ldOriginal, LocalTime.of(12, 0));
-				} catch (DateTimeException e3) {
-					ldt = null;
-				}
+		LocalDate ld;
+		Pattern pattern;
+		Matcher matcher;
+		for (int i = 0; i < dateTimeRegexes.size(); i++) {
+			String regex = dateTimeRegexes.get(i);
+			pattern = Pattern.compile(regex);
+			matcher = pattern.matcher(date);
+			if(matcher.find()){
+				DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern(dateFormats.get(i));
+				ldt = LocalDateTime.parse(date, dtFormatter);
+				return ldt;
 			}
 		}
-		return ldt;
+		int dateTimes = dateTimeRegexes.size();
+		for (int j = 0; j < dateRegexes.size(); j++) {
+			String regex = dateRegexes.get(j);
+			pattern = Pattern.compile(regex);
+			matcher = pattern.matcher(date);
+			if(matcher.find()){
+				DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern(dateFormats.get(j+dateTimes));
+				ld = LocalDate.parse(date, dtFormatter);
+				ldt = LocalDateTime.of(ld, LocalTime.of(12, 0));
+				return ldt;
+			}
+		}
+		return null;
 	}
 }
