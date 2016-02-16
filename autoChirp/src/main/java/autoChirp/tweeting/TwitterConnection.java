@@ -21,6 +21,7 @@ public class TwitterConnection {
 		
 		Tweet toTweet = DBConnector.getTweetByID(tweetID);
 		if(toTweet == null) return;
+		if(toTweet.tweeted)return;
 		//check if tweetGroup is still enabled
 		if(!DBConnector.isEnabledGroup(toTweet.groupID)){
 			return;

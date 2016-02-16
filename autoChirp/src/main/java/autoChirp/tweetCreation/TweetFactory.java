@@ -75,7 +75,7 @@ public class TweetFactory {
 		dateFormats.add(format);
 	}
 
-	public TweetGroup getTweetsFromCSV(File csvFile, String title, String description){
+	public TweetGroup getTweetsFromCSV(File csvFile, String title, String description, int delay){
 		TweetGroup group = new TweetGroup(title, description);
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(csvFile));
@@ -95,6 +95,11 @@ public class TweetFactory {
 				else{
 					ldt = parseDateString(date+" "+time);
 				}
+				if(ldt == null){
+					line = in.readLine();
+					continue;
+				}
+				ldt = ldt.plusYears(delay);
 				String formattedDate = ldt.format(formatter);
 				boolean midnight = false;
 				if (time.contains(" 00:00")) {

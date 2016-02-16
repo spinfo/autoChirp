@@ -200,11 +200,14 @@ public String toggleGroup(HttpSession session, @PathVariable int groupID) {
         if (session.getAttribute("account") == null) return "redirect:/account";
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
-        boolean enabled = DBConnector.getTweetGroupForUser(userID, groupID).enabled;
-        DBConnector.updateGroupStatus(groupID, !enabled);
-        TweetGroup group = DBConnector.getTweetGroupForUser(userID, groupID);
-        TweetScheduler.scheduleGroup(group.tweets, userID);
-        //Tweets als flagAsschdedukes
+        boolean enabled = !DBConnector.getTweetGroupForUser(userID, groupID).enabled;
+        DBConnector.updateGroupStatus(groupID, enabled);
+        
+        
+        if(enabled){
+        	 TweetGroup group = DBConnector.getTweetGroupForUser(userID, groupID);
+             TweetScheduler.scheduleGroup(group.tweets, userID);
+        }
         return "redirect:/groups/view/" + groupID;
         
         //Disable...
