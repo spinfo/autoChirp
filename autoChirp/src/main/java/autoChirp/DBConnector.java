@@ -609,15 +609,15 @@ public class DBConnector {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
 			String sql = "DELETE FROM users WHERE user_id = '"+userID+"'";
-			stmt.executeQuery(sql);
+			stmt.executeUpdate(sql);
 			stmt.close();
 			stmt = connection.createStatement();
 			sql = "DELETE FROM groups WHERE user_id = '"+userID+"'";
-			stmt.executeQuery(sql);
+			stmt.executeUpdate(sql);
 			stmt.close(); 
 			stmt = connection.createStatement();
 			sql = "DELETE FROM tweets WHERE user_id = '"+userID+"'";
-			stmt.executeQuery(sql);
+			stmt.executeUpdate(sql);
 			stmt.close();
 			connection.commit();
 		} catch (SQLException e) {
