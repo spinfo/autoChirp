@@ -40,7 +40,7 @@ public class TweetFactory {
 	List<String> dateTimeRegexes;
 	List<String> dateRegexes;
 	List<String> dateFormats;
-	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
 
 	public TweetFactory() {

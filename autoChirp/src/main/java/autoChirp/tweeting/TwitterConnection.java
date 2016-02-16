@@ -1,6 +1,10 @@
 package autoChirp.tweeting;
 
 
+
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.social.twitter.api.Twitter;
 import org.springframework.social.twitter.api.impl.TwitterTemplate;
@@ -11,17 +15,19 @@ import autoChirp.tweetCreation.TweetGroup;
 
 public class TwitterConnection {
 	
-	@Value("${spring.social.twitter.appSecret}")
-	String appSecret;
-	
-	@Value("${spring.social.twitter.appId}")
-	String appId;
+	String appId = null;
+	String appSecret = null;
 
 	public void run(int user_id, int tweetID) {
-		
+		System.out.println("appSectret: " + appSecret);
+		System.out.println("appID;: " + appId);
 		Tweet toTweet = DBConnector.getTweetByID(tweetID);
-		if(toTweet == null) return;
-		if(toTweet.tweeted)return;
+		if(toTweet == null){
+			return;
+		}
+		if(toTweet.tweeted){
+			return;
+		}
 		//check if tweetGroup is still enabled
 		if(!DBConnector.isEnabledGroup(toTweet.groupID)){
 			return;
