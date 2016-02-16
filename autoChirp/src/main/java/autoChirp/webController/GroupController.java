@@ -1,7 +1,9 @@
 package autoChirp.webController;
 
 import autoChirp.DBConnector;
+import autoChirp.preProcessing.parser.WikipediaParser;
 import autoChirp.tweetCreation.Tweet;
+import autoChirp.tweetCreation.TweetFactory;
 import autoChirp.tweetCreation.TweetGroup;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -81,7 +83,6 @@ public ModelAndView importGroup(HttpSession session) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
 
         Hashtable<String, String> importers = new Hashtable<String, String>();
-        importers.put("xls", "Import tweets from a Microsoft Excel document");
         importers.put("google", "Import tweets from a Google Spreadsheets document");
         importers.put("csv", "Import tweets from a comma-seperated values file");
         importers.put("wiki", "Import tweets and extract juxtaposed dates from a Wikipedia article");
@@ -97,16 +98,26 @@ public String importGroupPost(HttpSession session, @RequestParam("importer") Str
         if (session.getAttribute("account") == null) return "redirect:/account";
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
-        TweetGroup tweetGroup = new TweetGroup(title, description);
+        TweetGroup tweetGroup;
 
         switch (importer) {
         case "wiki":
+                if (!source.matches("https?:\\/\\/(de|en|es|fr)\\.wikipedia\\.org\\/wiki\\/.*"))
+                        return "redirect:/error";
+
+                TweetFactory tweeter = new TweetFactory();
+                tweetGroup = tweeter.getTweetsFromUrl(source, new WikipediaParser(), description);
+                tweetGroup.title = title;
                 break;
         default:
                 return "redirect:/error";
         }
 
-        return null;
+        int groupID = DBConnector.insertTweetGroup(tweetGroup, userID);
+
+        return (groupID > 0)
+               ? "redirect:/groups/view/" + groupID
+               : "redirect:/error";
 }
 
 @RequestMapping(value = "/edit/{groupID}")
