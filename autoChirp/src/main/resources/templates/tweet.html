@@ -43,7 +43,7 @@
             <div class="form-group">
               <label for="tweetDate" class="col-sm-2 control-label">Scheduling</label>
               <div class="col-sm-10">
-                <input type="datetime" class="form-control" id="tweetDate" name="tweetDate" required="required" placeholder="YYYY-MM-DD HH:MM:SS" th:value="${#httpServletRequest.requestURI.startsWith('/tweets/add')} ? '' : ${tweetEntry.tweetDate}" th:disabled="${#httpServletRequest.requestURI.startsWith('/tweets/view/')}">
+                <input type="datetime" class="form-control" id="tweetDate" name="tweetDate" required="required" placeholder="YYYY-MM-DD HH:MM:SS" th:value="${#httpServletRequest.requestURI.startsWith('/tweets/add')} ? '' : ${tweetEntry.tweetDate}" th:disabled="!${#httpServletRequest.requestURI.startsWith('/tweets/add')}">
                 </input>
               </div>
             </div>

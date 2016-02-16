@@ -5,6 +5,7 @@ import autoChirp.preProcessing.parser.WikipediaParser;
 import autoChirp.tweetCreation.Tweet;
 import autoChirp.tweetCreation.TweetFactory;
 import autoChirp.tweetCreation.TweetGroup;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
@@ -78,40 +80,81 @@ public String addGroupPost(HttpSession session, @RequestParam("title") String ti
                : "redirect:/error";
 }
 
-@RequestMapping(value = "/import")
-public ModelAndView importGroup(HttpSession session) {
+@RequestMapping(value = "/import/{importer}")
+public ModelAndView importGroup(HttpSession session, @PathVariable String importer) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
 
-        Hashtable<String, String> importers = new Hashtable<String, String>();
-        importers.put("google", "Import tweets from a Google Spreadsheets document");
-        importers.put("csv", "Import tweets from a comma-seperated values file");
-        importers.put("wiki", "Import tweets and extract juxtaposed dates from a Wikipedia article");
+        if (!Arrays.asList("csv-file", "wikipedia").contains(importer))
+                return new ModelAndView("redirect:/error");
 
         ModelAndView mv = new ModelAndView("import");
-        mv.addObject("importers", importers);
+        mv.addObject("importer", importer);
 
         return mv;
 }
 
-@RequestMapping(value = "/import", method = RequestMethod.POST)
-public String importGroupPost(HttpSession session, @RequestParam("importer") String importer, @RequestParam("source") String source, @RequestParam("title") String title, @RequestParam("description") String description) {
+// @RequestMapping(value = "/import", method = RequestMethod.POST)
+// public String importGroupPost(HttpSession session, @RequestParam("importer") String importer, @RequestParam("source") String source, @RequestParam("title") String title, @RequestParam("description") String description) {
+//         if (session.getAttribute("account") == null) return "redirect:/account";
+//         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
+//
+//         TweetGroup tweetGroup;
+//
+//         switch (importer) {
+//         case "wiki":
+//                 if (!source.matches("https?:\\/\\/(de|en|es|fr)\\.wikipedia\\.org\\/wiki\\/.*"))
+//                         return "redirect:/error";
+//
+//                 TweetFactory tweeter = new TweetFactory();
+//                 tweetGroup = tweeter.getTweetsFromUrl(source, new WikipediaParser(), description);
+//                 tweetGroup.title = title;
+//                 break;
+//         default:
+//                 return "redirect:/error";
+//         }
+//
+//         int groupID = DBConnector.insertTweetGroup(tweetGroup, userID);
+//
+//         return (groupID > 0)
+//                ? "redirect:/groups/view/" + groupID
+//                : "redirect:/error";
+// }
+
+@RequestMapping(value = "/import/csv-file", method = RequestMethod.POST)
+public String importWikipediaPost(HttpSession session, @RequestParam("source") MultipartFile source, @RequestParam("title") String title, @RequestParam("description") String description) {
         if (session.getAttribute("account") == null) return "redirect:/account";
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
-        TweetGroup tweetGroup;
+        File file;
+        TweetFactory tweeter = new TweetFactory();
 
-        switch (importer) {
-        case "wiki":
-                if (!source.matches("https?:\\/\\/(de|en|es|fr)\\.wikipedia\\.org\\/wiki\\/.*"))
-                        return "redirect:/error";
-
-                TweetFactory tweeter = new TweetFactory();
-                tweetGroup = tweeter.getTweetsFromUrl(source, new WikipediaParser(), description);
-                tweetGroup.title = title;
-                break;
-        default:
-                return "redirect:/error";
+        try {
+          file = File.createTempFile("upload-", ".csv");
+          source.transferTo(file);
+        } catch (Exception e) {
+          return "redirect:/error";
         }
+
+        TweetGroup tweetGroup = tweeter.getTweetsFromCSV(file, title, description);
+
+        int groupID = DBConnector.insertTweetGroup(tweetGroup, userID);
+
+        return (groupID > 0)
+               ? "redirect:/groups/view/" + groupID
+               : "redirect:/error";
+}
+
+@RequestMapping(value = "/import/wikipedia", method = RequestMethod.POST)
+public String importWikipediaPost(HttpSession session, @RequestParam("source") String source, @RequestParam("title") String title, @RequestParam("description") String description) {
+        if (session.getAttribute("account") == null) return "redirect:/account";
+        int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
+
+        if (!source.matches("https?:\\/\\/(de|en|es|fr)\\.wikipedia\\.org\\/wiki\\/.*"))
+                return "redirect:/error";
+
+        TweetFactory tweeter = new TweetFactory();
+        TweetGroup tweetGroup = tweeter.getTweetsFromUrl(source, new WikipediaParser(), description);
+        tweetGroup.title = title;
 
         int groupID = DBConnector.insertTweetGroup(tweetGroup, userID);
 

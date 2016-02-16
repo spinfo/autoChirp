@@ -11,25 +11,19 @@
       <div class="row">
         <div class="col-md-12">
           <h2>Group import
-            <small>Import Your custom tweet groups</small></h2>
+            <small>Import Your custom <strong th:text="${#strings.capitalize(importer)}"></strong> tweet groups</small></h2>
           <hr></hr>
         </div>
       </div>
       <div class="row">
         <div class="col-md-12">
-          <form class="form-horizontal" th:action="${#httpServletRequest.requestURI}" method="post">
-            <div class="form-group">
-              <label for="importer" class="col-sm-2 control-label">Import type</label>
-              <div class="col-sm-10">
-                <select id="importer" name="importer" required="required" class="form-control" th:size="${#maps.size(importers)}">
-                  <option th:each="importer : ${importers}" th:value="${importer.key}" th:text="${importer.value}"></option>
-                </select>
-              </div>
-            </div>
+          <form class="form-horizontal" th:action="${#httpServletRequest.requestURI}" method="post" th:attr="enctype=${importer.equals('csv-file') ? 'multipart/form-data' : ''}">
             <div class="form-group">
               <label for="source" class="col-sm-2 control-label">Import source</label>
               <div class="col-sm-10">
-                <input type="url" class="form-control" id="source" name="source" required="required" placeholder="https://www.example.org">
+                <input th:if="${importer.equals('csv-file')}" type="file" class="form-control" id="source" name="source" required="required" placeholder="my_custom_csv_file.txt">
+                </input>
+                <input th:if="${importer.equals('wikipedia')}" type="url" class="form-control" id="source" name="source" required="required" placeholder="https://www.example.org">
                 </input>
               </div>
             </div>
