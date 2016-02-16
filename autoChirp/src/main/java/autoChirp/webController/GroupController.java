@@ -5,12 +5,9 @@ import autoChirp.preProcessing.parser.WikipediaParser;
 import autoChirp.tweetCreation.Tweet;
 import autoChirp.tweetCreation.TweetFactory;
 import autoChirp.tweetCreation.TweetGroup;
-<<<<<<< HEAD
 import autoChirp.tweeting.TweetScheduler;
 
-=======
 import java.io.File;
->>>>>>> branch 'master' of https://github.com/geduldia/autoChirp.git
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
