@@ -93,9 +93,7 @@ html {
 .well-condensed *:last-child {
   margin-bottom: 0; }
 
-tr .actionlist {
+tr .fixlist {
   width: 10em; }
-tr .datelist {
-  width: 11em; }
 
 /*# sourceMappingURL=style.css.map */

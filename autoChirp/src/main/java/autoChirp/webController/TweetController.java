@@ -82,37 +82,28 @@ public String addGroupPost(HttpSession session, @RequestParam("tweetGroup") Stri
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
         Tweet tweetEntry = new Tweet(tweetDate, content);
-        TweetGroup newGroup;
+        int groupID;
+        int tweetID;
 
         try {
-                int groupID = Integer.parseInt(tweetGroup);
-                TweetGroup oldGroup = DBConnector.getTweetGroupForUser(userID, groupID);
-
-                if (oldGroup == null)
+                groupID = Integer.parseInt(tweetGroup);
+                if (!DBConnector.getGroupIDsForUser(userID).contains(groupID))
                         throw new Exception();
 
-                newGroup = new TweetGroup(oldGroup.title, oldGroup.description);
-                newGroup.setTweets(oldGroup.tweets);
-                DBConnector.deleteGroup(groupID);
+                tweetID = DBConnector.addTweetToGroup(userID, tweetEntry, groupID);
         } catch (Exception e) {
                 Date now = new Date();
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                 String date = format.format(now);
 
-                newGroup = new TweetGroup(tweetGroup, "Shorthand-added: " + date);
+                TweetGroup newGroup = new TweetGroup(tweetGroup, "Shorthand-added: " + date);
+                groupID = DBConnector.insertTweetGroup(newGroup, userID);
+                tweetID = DBConnector.addTweetToGroup(userID, tweetEntry, groupID);
         }
 
-        newGroup.addTweet(tweetEntry);
-
-        int newGroupID = DBConnector.insertTweetGroup(newGroup, userID);
-
-        if (newGroupID <= 0)
-                return "redirect:/error";
-
-        TweetGroup updatedGroup = DBConnector.getTweetGroupForUser(userID, newGroupID);
-        Tweet updatedTweet = updatedGroup.tweets.get(updatedGroup.tweets.size() - 1);
-
-        return "redirect:/tweets/view/" + updatedTweet.tweetID;
+        return (groupID <= 0 || tweetID <= 0)
+               ? "redirect:/error"
+               : "redirect:/tweets/view/" + tweetID;
 }
 
 
@@ -135,17 +126,10 @@ public String addGroupPost(HttpSession session, @PathVariable int groupID, @Requ
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
         Tweet tweetEntry = new Tweet(tweetDate, content);
-        TweetGroup oldGroup = DBConnector.getTweetGroupForUser(userID, groupID);
-        TweetGroup newGroup = new TweetGroup(oldGroup.title, oldGroup.description);
+        int tweetID = DBConnector.addTweetToGroup(userID, tweetEntry, groupID);
 
-        newGroup.setTweets(oldGroup.tweets);
-        newGroup.addTweet(tweetEntry);
-
-        DBConnector.deleteGroup(groupID);
-        int newGroupID = DBConnector.insertTweetGroup(newGroup, userID);
-
-        return (newGroupID > 0)
-               ? "redirect:/groups/view/" + newGroupID
+        return (tweetID > 0)
+               ? "redirect:/tweets/view/" + groupID
                : "redirect:/error";
 }
 
@@ -165,31 +149,13 @@ public ModelAndView editTweet(HttpSession session, @PathVariable int tweetID) {
 }
 
 @RequestMapping(value = "/edit/{tweetID}", method = RequestMethod.POST)
-public String editTweetPost(HttpSession session, @PathVariable int tweetID, @RequestParam("content") String content, @RequestParam("tweetDate") String tweetDate) {
+public String editTweetPost(HttpSession session, @PathVariable int tweetID, @RequestParam("content") String content) {
         if (session.getAttribute("account") == null) return "redirect:/account";
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
-        Tweet oldTweet = DBConnector.getTweetByID(tweetID);
-        Tweet newTweet = new Tweet(tweetDate, content);
-        TweetGroup oldGroup = DBConnector.getTweetGroupForUser(userID, oldTweet.groupID);
-        TweetGroup newGroup = new TweetGroup(oldGroup.title, oldGroup.description);
+        DBConnector.editTweet(tweetID, content);
 
-        for (Tweet tweetEntry : oldGroup.tweets)
-                if (tweetEntry.tweetID != tweetID)
-                        newGroup.addTweet(tweetEntry);
-
-        newGroup.addTweet(newTweet);
-
-        DBConnector.deleteGroup(oldTweet.groupID);
-        int newGroupID = DBConnector.insertTweetGroup(newGroup, userID);
-
-        if (newGroupID <= 0)
-                return "redirect:/error";
-
-        TweetGroup updatedGroup = DBConnector.getTweetGroupForUser(userID, newGroupID);
-        Tweet updatedTweet = updatedGroup.tweets.get(updatedGroup.tweets.size() - 1);
-
-        return "redirect:/tweets/view/" + updatedTweet.tweetID;
+        return "redirect:/tweets/view/" + tweetID;
 }
 
 @RequestMapping(value = "/delete/{tweetID}")

@@ -94,33 +94,6 @@ public ModelAndView importGroup(HttpSession session, @PathVariable String import
         return mv;
 }
 
-// @RequestMapping(value = "/import", method = RequestMethod.POST)
-// public String importGroupPost(HttpSession session, @RequestParam("importer") String importer, @RequestParam("source") String source, @RequestParam("title") String title, @RequestParam("description") String description) {
-//         if (session.getAttribute("account") == null) return "redirect:/account";
-//         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
-//
-//         TweetGroup tweetGroup;
-//
-//         switch (importer) {
-//         case "wiki":
-//                 if (!source.matches("https?:\\/\\/(de|en|es|fr)\\.wikipedia\\.org\\/wiki\\/.*"))
-//                         return "redirect:/error";
-//
-//                 TweetFactory tweeter = new TweetFactory();
-//                 tweetGroup = tweeter.getTweetsFromUrl(source, new WikipediaParser(), description);
-//                 tweetGroup.title = title;
-//                 break;
-//         default:
-//                 return "redirect:/error";
-//         }
-//
-//         int groupID = DBConnector.insertTweetGroup(tweetGroup, userID);
-//
-//         return (groupID > 0)
-//                ? "redirect:/groups/view/" + groupID
-//                : "redirect:/error";
-// }
-
 @RequestMapping(value = "/import/csv-file", method = RequestMethod.POST)
 public String importWikipediaPost(HttpSession session, @RequestParam("source") MultipartFile source, @RequestParam("title") String title, @RequestParam("description") String description, @RequestParam("delay") int delay) {
         if (session.getAttribute("account") == null) return "redirect:/account";
@@ -178,20 +151,13 @@ public ModelAndView editGroup(HttpSession session, @PathVariable int groupID) {
 }
 
 @RequestMapping(value = "/edit/{groupID}", method = RequestMethod.POST)
-public String addGroupPost(HttpSession session, @PathVariable int groupID, @RequestParam("title") String title, @RequestParam("description") String description) {
+public String editGroupPost(HttpSession session, @PathVariable int groupID, @RequestParam("title") String title, @RequestParam("description") String description) {
         if (session.getAttribute("account") == null) return "redirect:/account";
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
-        TweetGroup oldGroup = DBConnector.getTweetGroupForUser(userID, groupID);
-        TweetGroup newGroup = new TweetGroup(title, description);
+        DBConnector.editGroup(groupID, title, description);
 
-        newGroup.tweets = oldGroup.tweets;
-        int newGroupID = DBConnector.insertTweetGroup(newGroup, userID);
-
-        if (newGroupID > 0) {
-                DBConnector.deleteGroup(groupID);
-                return "redirect:/groups/view/" + newGroupID;
-        } else return "redirect:/error";
+        return "redirect:/groups/view/" + groupID;
 }
 
 @RequestMapping(value = "/toggle/{groupID}")
