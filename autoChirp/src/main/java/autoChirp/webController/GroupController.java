@@ -123,7 +123,7 @@ public ModelAndView importGroup(HttpSession session, @PathVariable String import
 // }
 
 @RequestMapping(value = "/import/csv-file", method = RequestMethod.POST)
-public String importWikipediaPost(HttpSession session, @RequestParam("source") MultipartFile source, @RequestParam("title") String title, @RequestParam("description") String description) {
+public String importWikipediaPost(HttpSession session, @RequestParam("source") MultipartFile source, @RequestParam("title") String title, @RequestParam("description") String description, @RequestParam("delay") int delay) {
         if (session.getAttribute("account") == null) return "redirect:/account";
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
@@ -137,7 +137,7 @@ public String importWikipediaPost(HttpSession session, @RequestParam("source") M
           return "redirect:/error";
         }
 
-        TweetGroup tweetGroup = tweeter.getTweetsFromCSV(file, title, description);
+        TweetGroup tweetGroup = tweeter.getTweetsFromCSV(file, title, description, delay);
 
         int groupID = DBConnector.insertTweetGroup(tweetGroup, userID);
 
