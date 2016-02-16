@@ -48,7 +48,7 @@ html {
       > a {
         color: #9d9d9d;
         border-left: 2px solid transparent;
-//        font-size: 13px;
+        //        font-size: 13px;
         font-weight: 400;
         padding: 4px 20px;
       }
@@ -63,7 +63,7 @@ html {
     }
     .nav {
       > li > a {
-//        font-size: 12px;
+        //        font-size: 12px;
         padding-bottom: 1px;
         padding-left: 30px;
         padding-top: 1px;
@@ -132,6 +132,11 @@ html {
   }
   *:last-child {
     margin-bottom: 0;
+  }
+}
+tr {
+  .fixlist {
+    width: 10em;
   }
 }
 // CUSTOM

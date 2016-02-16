@@ -17,34 +17,33 @@
       </div>
       <div class="row">
         <div class="col-md-12">
-          <form class="form-horizontal">
+          <form class="form-horizontal" th:action="${#httpServletRequest.requestURI}" method="post">
             <div class="form-group">
               <label for="tweetGroup" class="col-sm-2 control-label">Group Mapping</label>
               <div class="col-sm-10">
-                <input type="text" list="tweetGroups" class="form-control" id="tweetGroup" name="tweetGroup" placeholder="Enter new group name or select from dropdown"
-                  th:value="${#httpServletRequest.requestURI.startsWith('/tweets/add')} ? '' : ${tweetEntry.groupName}"
-                  th:disabled="!${#httpServletRequest.requestURI.startsWith('/tweets/add')}">
+                <input th:if="${#httpServletRequest.requestURI.equals('/tweets/add')}" type="text" list="tweetGroups"
+                  class="form-control" id="tweetGroup" name="tweetGroup" placeholder="Enter new group name or select from dropdown"
+                  th:value="${#httpServletRequest.requestURI.equals('/tweets/add')} ? '' : ${tweetGroup.title}"
+                  th:disabled="!${#httpServletRequest.requestURI.equals('/tweets/add')}">
                 </input>
-                <datalist th:unless="${#httpServletRequest.requestURI.startsWith('/tweets/view/')}" id="tweetGroups">
-                  <option th:each="tweetGroup : ${tweetGroups}" th:label="${tweetGroup.title}" th:value="tweetGroup.groupID"></option>
+                <span th:unless="${#httpServletRequest.requestURI.equals('/tweets/add')}" class="form-control" disabled="disabled">
+                  <a th:href="@{/groups/view/} + ${tweetGroup.groupID}" th:text="${tweetGroup.title}"></a></span>
+                <datalist th:if="${#httpServletRequest.requestURI.equals('/tweets/add')}" id="tweetGroups">
+                  <option th:each="tweetGroup : ${tweetGroups}" th:label="${tweetGroup.title} + ' (' + ${tweetGroup.description} + ')'" th:value="${tweetGroup.groupID}"></option>
                 </datalist>
               </div>
             </div>
             <div class="form-group">
               <label for="content" class="col-sm-2 control-label">Tweet Content</label>
               <div class="col-sm-10">
-                <textarea class="form-control" id="content" name="content" rows="3" placeholder="Maximum 140 characters"
-                  th:text="${#httpServletRequest.requestURI.startsWith('/tweets/add')} ? '' : ${tweetEntry.content}"
-                  th:disabled="${#httpServletRequest.requestURI.startsWith('/tweets/view/')}">
+                <textarea class="form-control" id="content" name="content" rows="3" maxlength="140" placeholder="Maximum 140 characters" th:text="${#httpServletRequest.requestURI.startsWith('/tweets/add')} ? '' : ${tweetEntry.content}" th:disabled="${#httpServletRequest.requestURI.startsWith('/tweets/view/')}">
                 </textarea>
               </div>
             </div>
             <div class="form-group">
               <label for="tweetDate" class="col-sm-2 control-label">Scheduling</label>
               <div class="col-sm-10">
-                <input type="datetime" class="form-control" id="tweetDate" name="tweetDate" placeholder="YYYY-MM-DD HH:MM:SS"
-                  th:value="${#httpServletRequest.requestURI.startsWith('/tweets/add')} ? '' : ${tweetEntry.tweetDate}"
-                  th:disabled="${#httpServletRequest.requestURI.startsWith('/tweets/view/')}">
+                <input type="datetime" class="form-control" id="tweetDate" name="tweetDate" placeholder="YYYY-MM-DD HH:MM:SS" th:value="${#httpServletRequest.requestURI.startsWith('/tweets/add')} ? '' : ${tweetEntry.tweetDate}" th:disabled="${#httpServletRequest.requestURI.startsWith('/tweets/view/')}">
                 </input>
               </div>
             </div>

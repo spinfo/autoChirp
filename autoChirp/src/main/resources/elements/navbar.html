@@ -21,7 +21,13 @@
       </form>
       <ul th:if="${session.account != null}" class="nav navbar-nav navbar-right">
         <li th:classappend="${#httpServletRequest.requestURI.equals('/dashboard')} ? 'active'"><a th:href="@{/dashboard}">Dashboard</a></li>
-        <li th:classappend="${#httpServletRequest.requestURI.startsWith('/tweets')} ? 'active'"><a th:href="@{/tweets/view}">Tweets</a></li>
+        <li th:classappend="${#httpServletRequest.requestURI.startsWith('/tweets')} ? 'active'" class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tweets <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a th:href="@{/tweets/view}">View tweets</a></li>
+            <li><a th:href="@{/tweets/add}">Add new tweet</a></li>
+          </ul>
+        </li>
         <li th:classappend="${#httpServletRequest.requestURI.startsWith('/groups')} ? 'active'" class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Groups <span class="caret"></span></a>
           <ul class="dropdown-menu">
@@ -31,7 +37,6 @@
             <li><a th:href="@{/groups/import}">Import group</a></li>
           </ul>
         </li>
-        <li th:classappend="${#httpServletRequest.requestURI.equals('/tests')} ? 'active'"><a th:href="@{/tests}">Tests</a></li>
         <li th:classappend="${#httpServletRequest.requestURI.equals('/account')} ? 'active'">
           <a th:href="@{/account}" class="image"><img th:src="${session.account.image}"></img>
           </a>

@@ -28,8 +28,8 @@
                 <tr>
                   <th>Group</th>
                   <th>Content</th>
-                  <th class="text-center">When</th>
-                  <th class="text-right">Actions</th>
+                  <th class="text-center fixlist">When</th>
+                  <th class="text-center fixlist">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -37,9 +37,10 @@
                   <td><a th:href="@{/groups/view/} + ${tweetEntry.groupID}" th:text="${tweetEntry.groupName}"></a></td>
                   <td th:text="${tweetEntry.content}"></td>
                   <td th:text="${tweetEntry.tweetDate}" class="text-center"></td>
-                  <td class="text-right">
+                  <td class="text-center">
                     <a th:href="@{/tweets/view/} + ${tweetEntry.tweetID}">View</a> |
-                    <a th:href="@{/tweets/edit/} + ${tweetEntry.tweetID}">Edit</a>
+                    <a th:href="@{/tweets/edit/} + ${tweetEntry.tweetID}">Edit</a> |
+                    <a th:href="@{/tweets/delete/} + ${tweetEntry.tweetID}">Delete</a>
                   </td>
                 </tr>
               </tbody>

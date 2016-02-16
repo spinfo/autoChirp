@@ -29,20 +29,20 @@
                   <th>Title</th>
                   <th>Description</th>
                   <th class="text-center">Status</th>
-                  <th class="text-right">Actions</th>
+                  <th class="text-center fixlist">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                <tr th:each="tweetGroup : ${tweetGroups}" th:classappend="${tweetGroup.enabled} ? '' : danger">
+                <tr th:each="tweetGroup : ${tweetGroups}">
                   <td th:text="${tweetGroup.title}"></td>
                   <td th:text="${tweetGroup.description}"></td>
                   <td class="text-center">
-                    <a th:href="@{/groups/edit/} + tweetGroup.groupID" class="btn btn-xs" th:classappend="${tweetGroup.enabled} ? btn-success : btn-danger" th:text="${tweetGroup.enabled} ? Enabled : Disabled">
-                    </a>
+                    <span class="label" th:classappend="${tweetGroup.enabled} ? label-success : label-danger" th:text="${tweetGroup.enabled} ? Enabled : Disabled"></span>
                   </td>
-                  <td class="text-right">
-                    <a th:href="@{/groups/view/} + tweetGroup.groupID">View</a> |
-                    <a th:href="@{/groups/edit/} + tweetGroup.groupID">Edit</a>
+                  <td class="text-center">
+                    <a th:href="@{/groups/view/} + ${tweetGroup.groupID}">View</a> |
+                    <a th:href="@{/groups/edit/} + ${tweetGroup.groupID}">Edit</a> |
+                    <a th:href="@{/groups/delete/} + ${tweetGroup.groupID}">Delete</a>
                   </td>
                 </tr>
               </tbody>
