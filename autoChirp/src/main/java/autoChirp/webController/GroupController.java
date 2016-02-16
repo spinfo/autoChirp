@@ -6,7 +6,6 @@ import autoChirp.tweetCreation.Tweet;
 import autoChirp.tweetCreation.TweetFactory;
 import autoChirp.tweetCreation.TweetGroup;
 import autoChirp.tweeting.TweetScheduler;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -202,14 +201,14 @@ public String toggleGroup(HttpSession session, @PathVariable int groupID) {
 
         boolean enabled = !DBConnector.getTweetGroupForUser(userID, groupID).enabled;
         DBConnector.updateGroupStatus(groupID, enabled);
-        
-        
+
+
         if(enabled){
         	 TweetGroup group = DBConnector.getTweetGroupForUser(userID, groupID);
              TweetScheduler.scheduleGroup(group.tweets, userID);
         }
         return "redirect:/groups/view/" + groupID;
-        
+
         //Disable...
 }
 
