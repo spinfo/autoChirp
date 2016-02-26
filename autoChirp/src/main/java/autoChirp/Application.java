@@ -24,6 +24,13 @@ private String dbFilePath;
 @Value("${createDatabaseFile}")
 private String createDatabaseFile;
 
+
+@Value("${spring.social.twitter.appId}")
+private String appID;
+
+
+
+
 public static void main(String[] args) throws IOException {
         ApplicationContext ctx = SpringApplication.run(Application.class, args);
 }
@@ -39,12 +46,12 @@ private void connectDatabase(){
                 DBConnector.connect(dbFilePath);
         }
 
-        Map<Integer,List<TweetGroup>> toSchedule = DBConnector.getAllEnabledGroups();
+        Map<Integer,List<TweetGroup> > toSchedule = DBConnector.getAllEnabledGroups();
         for (int userID : toSchedule.keySet()) {
-			for (TweetGroup group : toSchedule.get(userID)) {
-				TweetScheduler.scheduleGroup(group.tweets, userID);
-			}
-		}
+                for (TweetGroup group : toSchedule.get(userID)) {
+                        TweetScheduler.scheduleGroup(group.tweets, userID);
+                }
+        }
 }
 
 }

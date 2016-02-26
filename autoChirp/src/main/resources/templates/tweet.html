@@ -24,7 +24,7 @@
                 <input th:if="${#httpServletRequest.requestURI.equals('/tweets/add')}" type="text" list="tweetGroups"
                   class="form-control" id="tweetGroup" name="tweetGroup" placeholder="Enter new group name or select from dropdown"
                   th:value="${#httpServletRequest.requestURI.equals('/tweets/add')} ? '' : ${tweetGroup.title}" required="required"
-                  th:disabled="!${#httpServletRequest.requestURI.equals('/tweets/add')}">
+                  th:disabled="!${#httpServletRequest.requestURI.equals('/tweets/add')}" autocomplete="off">
                 </input>
                 <span th:unless="${#httpServletRequest.requestURI.equals('/tweets/add')}" class="form-control" disabled="disabled">
                   <a th:href="@{/groups/view/} + ${tweetGroup.groupID}" th:text="${tweetGroup.title}"></a></span>
