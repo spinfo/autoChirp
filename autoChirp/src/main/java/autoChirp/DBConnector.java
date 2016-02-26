@@ -238,16 +238,15 @@ public class DBConnector {
 	 * @param enabled
 	 * @return returns true if update was successful
 	 */
-	public static boolean updateGroupStatus(int group_id, boolean enabled) {
+	public static boolean updateGroupStatus(int group_id, boolean enabled, int userID) {
 		try {
       int boolint = (enabled) ? 1 : 0;
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
-			String sql = "UPDATE groups SET enabled = '" + boolint + "' WHERE (group_id = '" + group_id + "')";
+			String sql = "UPDATE groups SET enabled = '" + boolint + "' WHERE (group_id = '" + group_id + "' AND user_id = '"+userID+"')";
 			stmt.executeUpdate(sql);
 			stmt.close();
 			connection.commit();
-			// TODO schedule tweets
 		} catch (SQLException e) {
 			System.out.println("DBConnector.updateGroupStatus: couldnt update group-status");
 			e.printStackTrace();
@@ -260,7 +259,7 @@ public class DBConnector {
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
-			String sql = "UPDATE tweets SET scheduled = 'true' WHERE (tweet_id = '"+tweetID+"')";
+			String sql = "UPDATE tweets SET scheduled = 'true' WHERE (tweet_id = '"+tweetID+"' AND user_id = '"+userID+"')";
 			stmt.executeUpdate(sql);
 			stmt.close();
 			connection.commit();
@@ -274,7 +273,7 @@ public class DBConnector {
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
-			String sql = "UPDATE tweets SET tweeted = 'true' WHERE (tweet_id = '"+tweetID+"')";
+			String sql = "UPDATE tweets SET tweeted = 'true' WHERE (tweet_id = '"+tweetID+"' AND user_id = '"+userID+"')";
 			stmt.executeUpdate(sql);
 			stmt.close();
 			connection.commit();
@@ -285,11 +284,11 @@ public class DBConnector {
 	}
 
 
-	public static void deleteGroup(int groupID){
+	public static void deleteGroup(int groupID, int userID){
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
-			String sql = "DELETE FROM groups WHERE group_id = '"+groupID+"'";
+			String sql = "DELETE FROM groups WHERE group_id = '"+groupID+"' AND user_id = '"+userID+"'";
 			stmt.executeUpdate(sql);
 			stmt.close();
 			connection.commit();
@@ -303,11 +302,11 @@ public class DBConnector {
 		}
 	}
 
-	public static void deleteTweet(int tweetID){
+	public static void deleteTweet(int tweetID, int userID){
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
-			String sql = "DELETE FROM tweets WHERE tweet_id = '"+tweetID+"'";
+			String sql = "DELETE FROM tweets WHERE tweet_id = '"+tweetID+"' AND user_id = '"+userID+"'";
 			stmt.executeUpdate(sql);
 			stmt.close();
 			connection.commit();
@@ -477,13 +476,13 @@ public class DBConnector {
 	}
 
 
-	public static Tweet getTweetByID(int tweetID){
+	public static Tweet getTweetByID(int tweetID, int userID){
 		System.out.println("getTweetNxID: TweetID: "+ tweetID);
 		Tweet toReturn = null;
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
-			String sql = "SELECT * FROM tweets WHERE (tweet_id = '"+tweetID+"')";
+			String sql = "SELECT * FROM tweets WHERE (tweet_id = '"+tweetID+"' AND user_id = '"+userID+"')";
 			ResultSet result = stmt.executeQuery(sql);
 			toReturn = new Tweet(result.getString(4), result.getString(5), result.getInt(1), result.getInt(3), result.getBoolean(6), result.getBoolean(7));
 		} catch (SQLException e) {
@@ -493,12 +492,12 @@ public class DBConnector {
 		return toReturn;
 	}
 
-	public static String getGroupTitle(int groupID){
+	public static String getGroupTitle(int groupID, int userID){
 		String toReturn = null;
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
-			String sql = "SELECT group_name FROM groups WHERE (group_id = '"+groupID+"')";
+			String sql = "SELECT group_name FROM groups WHERE (group_id = '"+groupID+"' AND user_id = '"+userID+"')";
 			ResultSet result = stmt.executeQuery(sql);
 			toReturn = result.getString(1);
 		} catch (SQLException e) {
@@ -508,11 +507,11 @@ public class DBConnector {
 		return toReturn;
 	}
 	
-	public static void editGroup(int groupID,String title, String description){
+	public static void editGroup(int groupID,String title, String description, int userID){
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
-			String sql = "UPDATE groups SET group_name = '"+title+"', description = '"+description+"'  WHERE (group_id = '"+groupID+"')";
+			String sql = "UPDATE groups SET group_name = '"+title+"', description = '"+description+"'  WHERE (group_id = '"+groupID+"' AND user_id = '"+userID+"')";
 			stmt.executeUpdate(sql);
 			stmt.close();
 			connection.commit();
@@ -522,11 +521,11 @@ public class DBConnector {
 		}
 	}
 	
-	public static void editTweet(int tweetID, String content){
+	public static void editTweet(int tweetID, String content, int userID){
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
-			String sql = "UPDATE tweets SET tweet = '"+content+"'  WHERE (tweet_id = '"+tweetID+"')";
+			String sql = "UPDATE tweets SET tweet = '"+content+"'  WHERE (tweet_id = '"+tweetID+"' AND user_id = '"+userID+"')";
 			stmt.executeUpdate(sql);
 			stmt.close();
 			connection.commit();
@@ -551,7 +550,7 @@ public class DBConnector {
 			int toReturn = result.getInt(1);
 			stmt.close();
 			connection.commit();
-			DBConnector.updateGroupStatus(groupID, false);
+			DBConnector.updateGroupStatus(groupID, false, userID);
 			System.out.println("TweetID: " + toReturn);
 			return toReturn;
 			
@@ -562,11 +561,11 @@ public class DBConnector {
 		}
 	}
 
-	public static boolean isEnabledGroup(int groupID){
+	public static boolean isEnabledGroup(int groupID, int userID){
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
-			String sql = "SELECT enabled FROM groups WHERE (group_id = '"+groupID+"')";
+			String sql = "SELECT enabled FROM groups WHERE (group_id = '"+groupID+"' AND user_id = '"+userID+"')";
 			ResultSet result = stmt.executeQuery(sql);
 			boolean enabled = result.getBoolean(1);
 			stmt.close();
