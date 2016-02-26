@@ -68,18 +68,4 @@ public class TweetCreationWorkflow {
 			System.out.println();
 		}
 	}
-	
-	
-	@Test
-	public void buildTweetsFromTableTest(){
-		int userID = DBConnector.insertNewUser(111, "token", "secret");
-		File csvFile = new File("src/test/resources/testFiles/testCSV.csv");
-		TweetGroup group = tweetFactory.getTweetsFromCSV(csvFile, "csv-test", "description");
-		int groupID = DBConnector.insertTweetGroup(group, userID);
-		group = DBConnector.getTweetGroupForUser(userID, groupID);
-		for (Tweet tweet : group.tweets) {
-			System.out.println("date: " + tweet.tweetDate);
-			System.out.println(tweet.content);
-		}
-	}
 }

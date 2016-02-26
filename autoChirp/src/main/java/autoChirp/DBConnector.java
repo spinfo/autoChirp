@@ -539,7 +539,8 @@ public class DBConnector {
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
-			String sql = "INSERT INTO tweets (user_id, group_id, scheduled_date, tweet, scheduled, tweeted) VALUES("+userID+", "+groupID+", "+tweet.tweetDate+", "+tweet.content+", false, false)";
+			String sql = "INSERT INTO tweets (user_id, group_id, scheduled_date, tweet, scheduled, tweeted) VALUES ('"
+					+ userID + "', " + "'" + groupID + "', " + "'" + tweet.tweetDate + "', " + "'" + tweet.content+"', "+"'false', 'false')";
 			stmt.executeUpdate(sql);
 			stmt.close();
 			connection.commit();
