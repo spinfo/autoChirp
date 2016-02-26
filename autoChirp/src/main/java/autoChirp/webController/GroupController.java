@@ -158,7 +158,7 @@ public String editGroupPost(HttpSession session, @PathVariable int groupID, @Req
         if (session.getAttribute("account") == null) return "redirect:/account";
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
-        DBConnector.editGroup(groupID, title, description);
+        DBConnector.editGroup(groupID, title, description, userID);
 
         return "redirect:/groups/view/" + groupID;
 }
@@ -170,7 +170,7 @@ public String toggleGroup(HttpSession session, @PathVariable int groupID) {
 
         TweetGroup tweetGroup = DBConnector.getTweetGroupForUser(userID, groupID);
         boolean enabled = !tweetGroup.enabled;
-        DBConnector.updateGroupStatus(groupID, enabled);
+        DBConnector.updateGroupStatus(groupID, enabled, userID);
 
         if (enabled)
                 TweetScheduler.scheduleGroup(tweetGroup.tweets, userID);
@@ -182,7 +182,7 @@ public String toggleGroup(HttpSession session, @PathVariable int groupID) {
 public String deleteGroup(HttpSession session, HttpServletRequest request, @PathVariable int groupID) {
         if (session.getAttribute("account") == null) return "redirect:/account";
 
-        DBConnector.deleteGroup(groupID);
+        DBConnector.deleteGroup(groupID, userID);
         String ref = request.getHeader("Referer");
 
         return (ref.endsWith("/groups/view/" + groupID))
