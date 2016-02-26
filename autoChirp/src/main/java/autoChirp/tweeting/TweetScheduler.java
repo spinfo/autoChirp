@@ -25,6 +25,9 @@ public class TweetScheduler {
 			now = LocalDateTime.now();
 			d = Duration.between(now, ldt);
 			delay = d.getSeconds();
+			if(delay < 0){
+				continue;
+			}
 			ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(5);
 			System.out.println("schedule: in seconds" + delay);
 			scheduler.schedule(new TwitterTask(user_id, tweet.tweetID), delay, TimeUnit.SECONDS);

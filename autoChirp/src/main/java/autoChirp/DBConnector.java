@@ -478,6 +478,7 @@ public class DBConnector {
 
 
 	public static Tweet getTweetByID(int tweetID){
+		System.out.println("getTweetNxID: TweetID: "+ tweetID);
 		Tweet toReturn = null;
 		try {
 			connection.setAutoCommit(false);
