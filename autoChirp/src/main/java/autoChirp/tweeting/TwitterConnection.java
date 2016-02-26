@@ -6,6 +6,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.social.twitter.api.Twitter;
 import org.springframework.social.twitter.api.impl.TwitterTemplate;
 
@@ -15,8 +16,12 @@ import autoChirp.tweetCreation.TweetGroup;
 
 public class TwitterConnection {
 	
-	String appId = null;
-	String appSecret = null;
+	@Autowired
+	private Environment env;
+	
+	
+	String appId = "eX5ADra0ejYndEarZWfwGDf3L";
+	String appSecret = "iVnE0TBMaPFjXik4AGdxuZ5kkrW0QfXFvA7Nrp3R8oDtEGUsmA";
 
 	public void run(int user_id, int tweetID) {
 		System.out.println("appSectret: " + appSecret);
@@ -40,7 +45,7 @@ public class TwitterConnection {
 		String token = userConfig[1];
 		String tokenSecret = userConfig[2];
 		//tweeting with spring-social
-		Twitter twitter = new TwitterTemplate(appId, appSecret, token, tokenSecret);
+		Twitter twitter = new TwitterTemplate(env.getProperty("spring.social.twitter.appId"), env.getProperty("spring.social.twitter.appSecret"), token, tokenSecret);
 		twitter.timelineOperations().updateStatus(toTweet.content);
 		DBConnector.flagAsTweeted(tweetID, user_id);
 

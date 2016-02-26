@@ -551,6 +551,7 @@ public class DBConnector {
 			stmt.close();
 			connection.commit();
 			DBConnector.updateGroupStatus(groupID, false);
+			System.out.println("TweetID: " + toReturn);
 			return toReturn;
 			
 		} catch (SQLException e) {

@@ -109,6 +109,7 @@ public class TweetFactory {
 					formattedDate = formattedDate.replace(" 00:00", " 12:00");
 				}
 				content = split[2];
+				content = trimToTweet(content, null);
 				if(delay == 0){
 					while(ldt.isBefore(LocalDateTime.now())) {
 						ldt = ldt.plusYears(1);
@@ -131,22 +132,6 @@ public class TweetFactory {
 	
 	
 
-	/**
-	 * creates a TweetGroup-Object from the given url. Uses the url as
-	 * group-title 1. Creates a Document-object with the given Parser 2. Splits
-	 * text into sentences using the SentenceSplitter 3. Tags dates using
-	 * HeidelTime 4. Calculates the tweetDate for each tagged date and
-	 * initialize Tweet-object 5. Initializes TweetGroup
-	 * 
-	 * @param url
-	 * @param parser
-	 *            - the appropriate parser for the given url (e.g.
-	 *            WikipediaParser for Wikipedia-urls)
-	 * @return a new TweetGroup-object
-	 */
-	public TweetGroup getTweetsFromUrl(String url, Parser parser) {
-		return getTweetsFromUrl(url, parser, url);
-	}
 
 	/**
 	 * creates a TweetGroup-Object from the given url. 1. Creates a
@@ -163,7 +148,7 @@ public class TweetFactory {
 	 *            - description-attribute for the created TweetGroup
 	 * @return a new TweetGroup-object
 	 */
-	public TweetGroup getTweetsFromUrl(String url, Parser parser, String description) {
+	public TweetGroup getTweetsFromUrl(String url, Parser parser, String description, String prefix) {
 		Document doc = createDocument(url, parser);
 		String[] processedSentences = tagDatesWithHeideltime(doc);
 		List<Tweet> tweets = new ArrayList<Tweet>();
@@ -171,11 +156,18 @@ public class TweetFactory {
 			String sentence = processedSentences[i];
 			List<String> origDates = extractDates(sentence);
 			Tweet tweet;
+			String content;
 			for (String date : origDates) {
 				String tweetDate = getTweetDate(date);
 				if (tweetDate == null)
 					continue;
-				tweet = new Tweet(tweetDate, trimToTweet(doc.getSentences().get(i - 1)));
+				if(prefix != null){
+					content = trimToTweet(prefix+": "+doc.getSentences().get(i - 1), url);
+				}
+				else {
+					content = trimToTweet(doc.getSentences().get(i - 1), url);
+				}
+				tweet = new Tweet(tweetDate, content);
 				tweets.add(tweet);
 			}
 		}	
@@ -224,12 +216,15 @@ public class TweetFactory {
 		return sb.toString();
 	}
 
-	private String trimToTweet(String sentence) {
-		if (sentence.length() > 140) {
-			sentence = sentence.substring(0, 138);
-			sentence = sentence.substring(0, sentence.lastIndexOf(" ")) + "...";
+	private String trimToTweet(String content, String url) {
+		if (content.length() > 140) {
+			content = content.substring(0, 115);
+			content = content.substring(0, content.lastIndexOf(" "));
+			if(url != null){
+				content = content+" "+url;
+			}
 		}
-		return sentence;
+		return content;
 	}
 
 	private List<String> extractDates(String processed) {
