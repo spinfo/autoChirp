@@ -119,15 +119,18 @@ public String importWikipediaPost(HttpSession session, @RequestParam("source") M
 }
 
 @RequestMapping(value = "/import/wikipedia", method = RequestMethod.POST)
-public String importWikipediaPost(HttpSession session, @RequestParam("source") String source, @RequestParam("title") String title, @RequestParam("description") String description) {
+public String importWikipediaPost(HttpSession session, @RequestParam("source") String source, @RequestParam("title") String title, @RequestParam("prefix") String prefix, @RequestParam("description") String description) {
         if (session.getAttribute("account") == null) return "redirect:/account";
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
         if (!source.matches("https?:\\/\\/(de|en|es|fr)\\.wikipedia\\.org\\/wiki\\/.*"))
                 return "redirect:/error";
 
+        if (prefix == "")
+                prefix = null;
+
         TweetFactory tweeter = new TweetFactory();
-        TweetGroup tweetGroup = tweeter.getTweetsFromUrl(source, new WikipediaParser(), description);
+        TweetGroup tweetGroup = tweeter.getTweetsFromUrl(source, new WikipediaParser(), description, prefix);
         tweetGroup.title = title;
 
         int groupID = DBConnector.insertTweetGroup(tweetGroup, userID);

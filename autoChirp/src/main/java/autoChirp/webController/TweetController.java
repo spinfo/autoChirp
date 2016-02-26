@@ -129,7 +129,7 @@ public String addGroupPost(HttpSession session, @PathVariable int groupID, @Requ
         int tweetID = DBConnector.addTweetToGroup(userID, tweetEntry, groupID);
 
         return (tweetID > 0)
-               ? "redirect:/tweets/view/" + groupID
+               ? "redirect:/tweets/view/" + tweetID
                : "redirect:/error";
 }
 

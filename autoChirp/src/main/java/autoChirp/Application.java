@@ -1,19 +1,16 @@
 package autoChirp;
 
+import autoChirp.tweetCreation.TweetGroup;
+import autoChirp.tweeting.TweetScheduler;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
-
-import autoChirp.tweetCreation.TweetGroup;
-import autoChirp.tweeting.TweetScheduler;
 
 @SpringBootApplication
 public class Application {
@@ -23,13 +20,6 @@ private String dbFilePath;
 
 @Value("${createDatabaseFile}")
 private String createDatabaseFile;
-
-
-@Value("${spring.social.twitter.appId}")
-private String appID;
-
-
-
 
 public static void main(String[] args) throws IOException {
         ApplicationContext ctx = SpringApplication.run(Application.class, args);
