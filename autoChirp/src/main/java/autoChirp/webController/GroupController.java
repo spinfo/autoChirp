@@ -181,7 +181,7 @@ public String toggleGroup(HttpSession session, @PathVariable int groupID) {
 @RequestMapping(value = "/delete/{groupID}")
 public String deleteGroup(HttpSession session, HttpServletRequest request, @PathVariable int groupID) {
         if (session.getAttribute("account") == null) return "redirect:/account";
-
+        int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
         DBConnector.deleteGroup(groupID, userID);
         String ref = request.getHeader("Referer");
 
