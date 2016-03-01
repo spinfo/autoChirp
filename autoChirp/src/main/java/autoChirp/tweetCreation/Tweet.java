@@ -26,14 +26,14 @@ public class Tweet implements Comparable<Tweet> {
 	 * @param scheduled
 	 * @param tweeted
 	 */
-	public Tweet(String tweetDate, String content, int tweetID, int groupID, boolean scheduled, boolean tweeted){
+	public Tweet(String tweetDate, String content, int tweetID, int groupID, boolean scheduled, boolean tweeted, int userID){
 		this.tweetDate = tweetDate;
 		this.content = content;
 		this.tweetID = tweetID;
 		this.scheduled = scheduled;
 		this.tweeted = tweeted;
 		this.groupID = groupID;
-		this.groupName = DBConnector.getGroupTitle(groupID);
+		this.groupName = DBConnector.getGroupTitle(groupID, userID);
 	}
 	
 	/**

@@ -49,7 +49,7 @@ public ModelAndView viewTweet(HttpSession session, @PathVariable int tweetID) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
-        Tweet tweetEntry = DBConnector.getTweetByID(tweetID);
+        Tweet tweetEntry = DBConnector.getTweetByID(tweetID, userID);
         TweetGroup tweetGroup = DBConnector.getTweetGroupForUser(userID, tweetEntry.groupID);
 
         ModelAndView mv = new ModelAndView("tweet");
@@ -138,7 +138,7 @@ public ModelAndView editTweet(HttpSession session, @PathVariable int tweetID) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
-        Tweet tweetEntry = DBConnector.getTweetByID(tweetID);
+        Tweet tweetEntry = DBConnector.getTweetByID(tweetID, userID);
         TweetGroup tweetGroup = DBConnector.getTweetGroupForUser(userID, tweetEntry.groupID);
 
         ModelAndView mv = new ModelAndView("tweet");
@@ -153,7 +153,7 @@ public String editTweetPost(HttpSession session, @PathVariable int tweetID, @Req
         if (session.getAttribute("account") == null) return "redirect:/account";
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
-        DBConnector.editTweet(tweetID, content);
+        DBConnector.editTweet(tweetID, content, userID);
 
         return "redirect:/tweets/view/" + tweetID;
 }
@@ -161,8 +161,9 @@ public String editTweetPost(HttpSession session, @PathVariable int tweetID, @Req
 @RequestMapping(value = "/delete/{tweetID}")
 public String deleteTweet(HttpSession session, HttpServletRequest request, @PathVariable int tweetID) {
         if (session.getAttribute("account") == null) return "redirect:/account";
-
-        DBConnector.deleteTweet(tweetID);
+        int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
+        
+        DBConnector.deleteTweet(tweetID, userID);
         String ref = request.getHeader("Referer");
 
         return (ref.endsWith("/tweets/view/" + tweetID))

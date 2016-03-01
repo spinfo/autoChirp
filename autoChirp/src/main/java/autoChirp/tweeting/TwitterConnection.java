@@ -2,6 +2,8 @@ package autoChirp.tweeting;
 
 
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.social.twitter.api.Twitter;
 import org.springframework.social.twitter.api.impl.TwitterTemplate;
 
@@ -17,7 +19,7 @@ public class TwitterConnection {
 	
 	public void run(int user_id, int tweetID) {
 		
-		Tweet toTweet = DBConnector.getTweetByID(tweetID);
+		Tweet toTweet = DBConnector.getTweetByID(tweetID, user_id);
 		if(toTweet == null){
 			return;
 		}
@@ -25,7 +27,7 @@ public class TwitterConnection {
 			return;
 		}
 		//check if tweetGroup is still enabled
-		if(!DBConnector.isEnabledGroup(toTweet.groupID)){
+		if(!DBConnector.isEnabledGroup(toTweet.groupID, user_id)){
 			return;
 		}
 		

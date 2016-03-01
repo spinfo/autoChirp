@@ -380,48 +380,48 @@ public class DBConnector {
 
 	public static List<Tweet> getTweetsForUser(int userID, boolean scheduled, boolean tweeted, int groupID, int offset, int limit){
 		String query = "SELECT * FROM tweets WHERE(user_id = '"+userID+"' AND group_id = '"+groupID+"' AND scheduled = '"+scheduled+"' AND tweeted = '"+tweeted+"') LIMIT "+limit+" OFFSET "+offset;
-		return getTweets(query);
+		return getTweets(query, userID);
 	}
 
 	public static List<Tweet> getTweetsForUser(int userID, boolean scheduled, boolean tweeted, int groupID){
 		String query = "SELECT * FROM tweets WHERE(user_id = '"+userID+"' AND group_id = '"+groupID+"' AND scheduled = '"+scheduled+"' AND tweeted = '"+tweeted+"')";
-		return getTweets(query);
+		return getTweets(query, userID);
 	}
 
 	private static List<Tweet> getTweetsForUser(int userID, int groupID) {
 		String query = "SELECT * FROM tweets WHERE(user_id = '"+userID+"' AND group_id = '"+groupID+"')";
-		return getTweets(query);
+		return getTweets(query, userID);
 	}
 
 
 	public static List<Tweet> getTweetsForUser(int userID, boolean scheduled, boolean tweeted, int offset, int limit){
 		String query = "SELECT * FROM tweets WHERE(user_id = '"+userID+"' AND scheduled = '"+scheduled+"' AND tweeted = '"+tweeted+"') LIMIT "+limit+" OFFSET "+offset;
-		return getTweets(query);
+		return getTweets(query, userID);
 	}
 
 	public static List<Tweet> getTweetsForUser(int userID, boolean scheduled, boolean tweeted){
 		String query = "SELECT * FROM tweets WHERE(user_id = '"+userID+"' AND scheduled = '"+scheduled+"' AND tweeted = '"+tweeted+"')";
-		return getTweets(query);
+		return getTweets(query, userID);
 	}
 
 	public static List<Tweet> getTweetsForUser(int userID, int offset, int limit){
 		String query = "SELECT * FROM tweets WHERE(user_id = '"+userID+"') LIMIT "+limit+" OFFSET "+offset;
-		return getTweets(query);
+		return getTweets(query, userID);
 	}
 
 	public static List<Tweet> getTweetsForUser(int userID){
 		String query = "SELECT * FROM tweets WHERE(user_id = '"+userID+"')";
-		return getTweets(query);
+		return getTweets(query, userID);
 	}
 
-	private static List<Tweet> getTweets(String query){
+	private static List<Tweet> getTweets(String query, int userID){
 		List<Tweet> tweets = new ArrayList<Tweet>();
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
 			ResultSet result = stmt.executeQuery(query);
 			while(result.next()){
-				Tweet tweet = new Tweet(result.getString(4), result.getString(5),result.getInt(1), result.getInt(3),result.getBoolean(6), result.getBoolean(7));
+				Tweet tweet = new Tweet(result.getString(4), result.getString(5),result.getInt(1), result.getInt(3),result.getBoolean(6), result.getBoolean(7), userID);
 				tweets.add(tweet);
 			}
 			stmt.close();
@@ -484,7 +484,7 @@ public class DBConnector {
 			Statement stmt = connection.createStatement();
 			String sql = "SELECT * FROM tweets WHERE (tweet_id = '"+tweetID+"' AND user_id = '"+userID+"')";
 			ResultSet result = stmt.executeQuery(sql);
-			toReturn = new Tweet(result.getString(4), result.getString(5), result.getInt(1), result.getInt(3), result.getBoolean(6), result.getBoolean(7));
+			toReturn = new Tweet(result.getString(4), result.getString(5), result.getInt(1), result.getInt(3), result.getBoolean(6), result.getBoolean(7), userID);
 		} catch (SQLException e) {
 			System.out.print("DBConnector.getGroupIDsForUser: ");
 			e.printStackTrace();
