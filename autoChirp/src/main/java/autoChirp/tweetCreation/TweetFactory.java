@@ -34,6 +34,8 @@ import jxl.write.DateTime;
  */
 
 public class TweetFactory {
+	
+
 
 	// is needed for tweetDate creation
 	private int currentYear;
@@ -44,6 +46,7 @@ public class TweetFactory {
 
 
 	public TweetFactory() {
+		
 		currentYear = LocalDateTime.now().getYear();
 		dateTimeRegexes = new ArrayList<String>();
 		dateRegexes = new ArrayList<String>();
