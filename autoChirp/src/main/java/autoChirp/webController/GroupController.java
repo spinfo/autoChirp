@@ -28,34 +28,66 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping(value = "/groups")
 public class GroupController {
 
+private int groupsPerPage = 2;
+private int tweetsPerPage = 15;
+
 @RequestMapping(value = "/view")
-public ModelAndView viewGroups(HttpSession session) {
+public ModelAndView viewGroups(HttpSession session, @RequestParam(name = "page", defaultValue = "1") int page) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
         List<Integer> tweetGroupIDs = DBConnector.getGroupIDsForUser(userID);
         List<TweetGroup> tweetGroups = new ArrayList<TweetGroup>();
+        ModelAndView mv = new ModelAndView("groups");
 
         for (int groupID : tweetGroupIDs)
                 tweetGroups.add(DBConnector.getTweetGroupForUser(userID, groupID));
 
-        ModelAndView mv = new ModelAndView("groups");
-        mv.addObject("tweetGroups", tweetGroups);
+        if (tweetGroups.size() < groupsPerPage) {
+                mv.addObject("tweetGroups", tweetGroups);
+                return mv;
+        }
 
+        List<TweetGroup> pageGroupList;
+        int pages = tweetGroups.size() / groupsPerPage;
+        int offset = (page - 1) * groupsPerPage;
+
+        pageGroupList = (offset + groupsPerPage < tweetGroups.size())
+                         ? tweetGroups.subList(offset, offset + groupsPerPage)
+                         : tweetGroups.subList(offset, tweetGroups.size() - 1);
+
+        mv.addObject("tweetGroups", pageGroupList);
+        mv.addObject("page", page);
+        mv.addObject("pages", pages);
         return mv;
 }
 
 @RequestMapping(value = "/view/{groupID}")
-public ModelAndView viewGroup(HttpSession session, @PathVariable int groupID) {
+public ModelAndView viewGroup(HttpSession session, @PathVariable int groupID, @RequestParam(name = "page", defaultValue = "1") int page) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
         TweetGroup tweetGroup = DBConnector.getTweetGroupForUser(userID, groupID);
         List<Tweet> tweetsList = tweetGroup.tweets;
-
         ModelAndView mv = new ModelAndView("group");
         mv.addObject("tweetGroup", tweetGroup);
-        mv.addObject("tweetsList", tweetGroup.tweets);
+
+        if (tweetsList.size() < tweetsPerPage) {
+                mv.addObject("tweetsList", tweetsList);
+                return mv;
+        }
+
+        List<Tweet> pageTweetsList;
+        int pages = tweetsList.size() / tweetsPerPage;
+        int offset = (page - 1) * tweetsPerPage;
+
+        pageTweetsList = (offset + tweetsPerPage < tweetsList.size())
+                         ? tweetsList.subList(offset, offset + tweetsPerPage)
+                         : tweetsList.subList(offset, tweetsList.size() - 1);
+
+        mv.addObject("tweetsList", pageTweetsList);
+        mv.addObject("page", page);
+        mv.addObject("pages", pages);
 
         return mv;
 }

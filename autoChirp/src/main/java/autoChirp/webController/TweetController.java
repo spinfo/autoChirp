@@ -26,21 +26,32 @@ import org.springframework.web.servlet.ModelAndView;
 public class TweetController {
 
 private int tweetsPerPage = 15;
+private int maxTweetLength = 140;
 
 @RequestMapping(value = "/view")
-public ModelAndView viewTweets(HttpSession session, @RequestParam(value = "page", defaultValue = "1") String pageParam) {
+public ModelAndView viewTweets(HttpSession session, @RequestParam(name = "page", defaultValue = "1") int page) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
-        // int page = Integer.parseInt(pageParam);
-        // int offset = (page - 1) * 15;
-        //
-        // List<Tweet> tweetsList = DBConnector.getTweetsForUser(userID, true, false, offset, tweetsPerPage);
-
         List<Tweet> tweetsList = DBConnector.getTweetsForUser(userID);
-
         ModelAndView mv = new ModelAndView("tweets");
-        mv.addObject("tweetsList", tweetsList);
+
+        if (tweetsList.size() < tweetsPerPage) {
+                mv.addObject("tweetsList", tweetsList);
+                return mv;
+        }
+
+        List<Tweet> pageTweetsList;
+        int pages = tweetsList.size() / tweetsPerPage;
+        int offset = (page - 1) * tweetsPerPage;
+
+        pageTweetsList = (offset + tweetsPerPage < tweetsList.size())
+                         ? tweetsList.subList(offset, offset + tweetsPerPage)
+                         : tweetsList.subList(offset, tweetsList.size() - 1);
+
+        mv.addObject("tweetsList", pageTweetsList);
+        mv.addObject("page", page);
+        mv.addObject("pages", pages);
         return mv;
 }
 
@@ -77,11 +88,29 @@ public ModelAndView addTweet(HttpSession session) {
 }
 
 @RequestMapping(value = "/add", method = RequestMethod.POST)
-public String addGroupPost(HttpSession session, @RequestParam("tweetGroup") String tweetGroup, @RequestParam("content") String content, @RequestParam("tweetDate") String tweetDate) {
-        if (session.getAttribute("account") == null) return "redirect:/account";
+public ModelAndView addGroupPost(HttpSession session, @RequestParam("tweetGroup") String tweetGroup, @RequestParam("content") String content, @RequestParam("tweetDate") String tweetDate, @RequestParam("tweetTime") String tweetTime) {
+        if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
-        Tweet tweetEntry = new Tweet(tweetDate, content);
+        if (content.length() > maxTweetLength) {
+                ModelAndView mv = new ModelAndView("error");
+                mv.addObject("error", "The tweet content may be no longer then " + maxTweetLength + " characters.");
+                return mv;
+        }
+
+        if (!tweetDate.matches("^[0-9]{4}(-[0-9]{2}){2}$")) {
+                ModelAndView mv = new ModelAndView("error");
+                mv.addObject("error", "The tweet date must match the pattern: YYYY-MM-DD");
+                return mv;
+        }
+
+        if (!tweetTime.matches("^[0-9]{2}:[0-9]{2}$")) {
+                ModelAndView mv = new ModelAndView("error");
+                mv.addObject("error", "The tweet time must match the pattern: HH:MM");
+                return mv;
+        }
+
+        Tweet tweetEntry = new Tweet(tweetDate + " " + tweetTime, content);
         int groupID;
         int tweetID;
 
@@ -101,9 +130,9 @@ public String addGroupPost(HttpSession session, @RequestParam("tweetGroup") Stri
                 tweetID = DBConnector.addTweetToGroup(userID, tweetEntry, groupID);
         }
 
-        return (groupID <= 0 || tweetID <= 0)
-               ? "redirect:/error"
-               : "redirect:/tweets/view/" + tweetID;
+        return (groupID > 0 || tweetID > 0)
+               ? new ModelAndView("redirect:/tweets/view/" + tweetID)
+               : new ModelAndView("redirect:/error");
 }
 
 
@@ -121,16 +150,34 @@ public ModelAndView addTweetToGroup(HttpSession session, @PathVariable int group
 }
 
 @RequestMapping(value = "/add/{groupID}", method = RequestMethod.POST)
-public String addGroupPost(HttpSession session, @PathVariable int groupID, @RequestParam("content") String content, @RequestParam("tweetDate") String tweetDate) {
-        if (session.getAttribute("account") == null) return "redirect:/account";
+public ModelAndView addGroupPost(HttpSession session, @PathVariable int groupID, @RequestParam("content") String content, @RequestParam("tweetDate") String tweetDate, @RequestParam("tweetTime") String tweetTime) {
+        if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
-        Tweet tweetEntry = new Tweet(tweetDate, content);
+        if (content.length() > maxTweetLength) {
+                ModelAndView mv = new ModelAndView("error");
+                mv.addObject("error", "The tweet content may be no longer then " + maxTweetLength + " characters.");
+                return mv;
+        }
+
+        if (!tweetDate.matches("^[0-9]{4}(-[0-9]{2}){2}$")) {
+                ModelAndView mv = new ModelAndView("error");
+                mv.addObject("error", "The tweet date must match the pattern: YYYY-MM-DD");
+                return mv;
+        }
+
+        if (!tweetTime.matches("^[0-9]{2}:[0-9]{2}$")) {
+                ModelAndView mv = new ModelAndView("error");
+                mv.addObject("error", "The tweet time must match the pattern: HH:MM");
+                return mv;
+        }
+
+        Tweet tweetEntry = new Tweet(tweetDate + " " + tweetTime, content);
         int tweetID = DBConnector.addTweetToGroup(userID, tweetEntry, groupID);
 
         return (tweetID > 0)
-               ? "redirect:/tweets/view/" + tweetID
-               : "redirect:/error";
+               ? new ModelAndView("redirect:/tweets/view/" + tweetID)
+               : new ModelAndView("redirect:/error");
 }
 
 @RequestMapping(value = "/edit/{tweetID}")
@@ -149,20 +196,26 @@ public ModelAndView editTweet(HttpSession session, @PathVariable int tweetID) {
 }
 
 @RequestMapping(value = "/edit/{tweetID}", method = RequestMethod.POST)
-public String editTweetPost(HttpSession session, @PathVariable int tweetID, @RequestParam("content") String content) {
-        if (session.getAttribute("account") == null) return "redirect:/account";
+public ModelAndView editTweetPost(HttpSession session, @PathVariable int tweetID, @RequestParam("content") String content) {
+        if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
+
+        if (content.length() > maxTweetLength) {
+                ModelAndView mv = new ModelAndView("error");
+                mv.addObject("error", "The tweet content may be no longer then " + maxTweetLength + " characters.");
+                return mv;
+        }
 
         DBConnector.editTweet(tweetID, content, userID);
 
-        return "redirect:/tweets/view/" + tweetID;
+        return new ModelAndView("redirect:/tweets/view/" + tweetID);
 }
 
 @RequestMapping(value = "/delete/{tweetID}")
 public String deleteTweet(HttpSession session, HttpServletRequest request, @PathVariable int tweetID) {
         if (session.getAttribute("account") == null) return "redirect:/account";
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
-        
+
         DBConnector.deleteTweet(tweetID, userID);
         String ref = request.getHeader("Referer");
 

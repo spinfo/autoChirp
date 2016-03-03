@@ -19,7 +19,7 @@ public LoginController(
 
 @Override
 protected String connectView(String providerId) {
-        return "redirect:/home";
+        return "redirect:/account";
 }
 
 @Override
