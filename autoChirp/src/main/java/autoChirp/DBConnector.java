@@ -372,45 +372,23 @@ public class DBConnector {
 		}
 	}
 
-
-
-
-
-
-
-	public static List<Tweet> getTweetsForUser(int userID, boolean scheduled, boolean tweeted, int groupID, int offset, int limit){
-		String query = "SELECT * FROM tweets WHERE(user_id = '"+userID+"' AND group_id = '"+groupID+"' AND scheduled = '"+scheduled+"' AND tweeted = '"+tweeted+"') LIMIT "+limit+" OFFSET "+offset;
-		return getTweets(query, userID);
-	}
-
 	public static List<Tweet> getTweetsForUser(int userID, boolean scheduled, boolean tweeted, int groupID){
-		String query = "SELECT * FROM tweets WHERE(user_id = '"+userID+"' AND group_id = '"+groupID+"' AND scheduled = '"+scheduled+"' AND tweeted = '"+tweeted+"')";
+		String query = "SELECT * FROM tweets WHERE(user_id = '"+userID+"' AND group_id = '"+groupID+"' AND scheduled = '"+scheduled+"' AND tweeted = '"+tweeted+"') ORDER BY scheduled_date ASC";
 		return getTweets(query, userID);
 	}
 
 	private static List<Tweet> getTweetsForUser(int userID, int groupID) {
-		String query = "SELECT * FROM tweets WHERE(user_id = '"+userID+"' AND group_id = '"+groupID+"')";
-		return getTweets(query, userID);
-	}
-
-
-	public static List<Tweet> getTweetsForUser(int userID, boolean scheduled, boolean tweeted, int offset, int limit){
-		String query = "SELECT * FROM tweets WHERE(user_id = '"+userID+"' AND scheduled = '"+scheduled+"' AND tweeted = '"+tweeted+"') LIMIT "+limit+" OFFSET "+offset;
+		String query = "SELECT * FROM tweets WHERE(user_id = '"+userID+"' AND group_id = '"+groupID+"') ORDER BY scheduled_date ASC";
 		return getTweets(query, userID);
 	}
 
 	public static List<Tweet> getTweetsForUser(int userID, boolean scheduled, boolean tweeted){
-		String query = "SELECT * FROM tweets WHERE(user_id = '"+userID+"' AND scheduled = '"+scheduled+"' AND tweeted = '"+tweeted+"')";
-		return getTweets(query, userID);
-	}
-
-	public static List<Tweet> getTweetsForUser(int userID, int offset, int limit){
-		String query = "SELECT * FROM tweets WHERE(user_id = '"+userID+"') LIMIT "+limit+" OFFSET "+offset;
+		String query = "SELECT * FROM tweets WHERE(user_id = '"+userID+"' AND scheduled = '"+scheduled+"' AND tweeted = '"+tweeted+"') ORDER BY scheduled_date ASC";
 		return getTweets(query, userID);
 	}
 
 	public static List<Tweet> getTweetsForUser(int userID){
-		String query = "SELECT * FROM tweets WHERE(user_id = '"+userID+"')";
+		String query = "SELECT * FROM tweets WHERE(user_id = '"+userID+"') ORDER BY scheduled_date ASC";
 		return getTweets(query, userID);
 	}
 
@@ -506,7 +484,7 @@ public class DBConnector {
 		}
 		return toReturn;
 	}
-	
+
 	public static void editGroup(int groupID,String title, String description, int userID){
 		try {
 			connection.setAutoCommit(false);
@@ -520,7 +498,7 @@ public class DBConnector {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void editTweet(int tweetID, String content, int userID){
 		try {
 			connection.setAutoCommit(false);
@@ -534,7 +512,7 @@ public class DBConnector {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static int addTweetToGroup(int userID, Tweet tweet, int groupID){
 		try {
 			connection.setAutoCommit(false);
@@ -553,7 +531,7 @@ public class DBConnector {
 			DBConnector.updateGroupStatus(groupID, false, userID);
 			System.out.println("TweetID: " + toReturn);
 			return toReturn;
-			
+
 		} catch (SQLException e) {
 			System.out.print("DBConnector.editTweet: ");
 			e.printStackTrace();
@@ -601,11 +579,11 @@ public class DBConnector {
 			connection.commit();
 		} catch (SQLException e) {
 			System.out.print("DBConnector.getAllEnabledGroupsByUser: ");
-			e.printStackTrace();	
+			e.printStackTrace();
 		}
 		return toReturn;
 	}
-	
+
 	public static void deleteUser(int userID){
 		try {
 			connection.setAutoCommit(false);
@@ -616,7 +594,7 @@ public class DBConnector {
 			stmt = connection.createStatement();
 			sql = "DELETE FROM groups WHERE user_id = '"+userID+"'";
 			stmt.executeUpdate(sql);
-			stmt.close(); 
+			stmt.close();
 			stmt = connection.createStatement();
 			sql = "DELETE FROM tweets WHERE user_id = '"+userID+"'";
 			stmt.executeUpdate(sql);
@@ -624,7 +602,7 @@ public class DBConnector {
 			connection.commit();
 		} catch (SQLException e) {
 			System.out.print("DBConnector.deleteUser: ");
-			e.printStackTrace();	
+			e.printStackTrace();
 		}
 	}
 }

@@ -28,7 +28,7 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping(value = "/groups")
 public class GroupController {
 
-private int groupsPerPage = 2;
+private int groupsPerPage = 15;
 private int tweetsPerPage = 15;
 
 @RequestMapping(value = "/view")
