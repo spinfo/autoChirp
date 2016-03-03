@@ -75,7 +75,7 @@
                     <nav class="text-center">
                       <ul class="pagination">
                         <li th:classappend="${page == 1} ? disabled"><a th:href="${page == 1} ? '#' : @{/groups/view/} + ${tweetGroup.groupID} + '?page=' + ${page - 1}" aria-label="Previous"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></a></li>
-                        <li th:each="i : ${#numbers.sequence(1, pages)}" th:classappend="${page == i} ? active"><a  th:href="@{/groups/view/} + ${tweetGroup.groupID} + "?page=" + ${i}" th:text="${i}"></a></li>
+                        <li th:each="i : ${#numbers.sequence(1, pages)}" th:classappend="${page == i} ? active"><a  th:href="@{/groups/view/} + ${tweetGroup.groupID} + '?page=' + ${i}" th:text="${i}"></a></li>
                         <li th:classappend="${page == pages} ? disabled"><a th:href="${page == pages} ? '#' : @{/groups/view/} + ${tweetGroup.groupID} + '?page=' + ${page + 1}" aria-label="Next"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></a></li>
                       </ul>
                     </nav>
