@@ -26,7 +26,7 @@ public static void main(String[] args) throws IOException {
 }
 
 @PostConstruct
-private void connectDatabase(){
+private void initializeApplication(){
         File file = new File(dbFilePath);
 
         if (!file.exists()) {

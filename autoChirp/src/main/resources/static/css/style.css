@@ -87,6 +87,11 @@ html {
       html body #footer .container {
         margin-top: 15px; }
 
+/* FORMVALIDATION */
+textarea[required]:invalid,
+input[required]:invalid {
+  background-color: #fcf8e3; }
+
 /* CUSTOM */
 .well-condensed *:first-child {
   margin-top: 0; }

@@ -7,6 +7,8 @@ import autoChirp.tweetCreation.TweetFactory;
 import autoChirp.tweetCreation.TweetGroup;
 import autoChirp.tweeting.TweetScheduler;
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -53,8 +55,8 @@ public ModelAndView viewGroups(HttpSession session, @RequestParam(name = "page",
         int offset = (page - 1) * groupsPerPage;
 
         pageGroupList = (offset + groupsPerPage < tweetGroups.size())
-                         ? tweetGroups.subList(offset, offset + groupsPerPage)
-                         : tweetGroups.subList(offset, tweetGroups.size() - 1);
+                        ? tweetGroups.subList(offset, offset + groupsPerPage)
+                        : tweetGroups.subList(offset, tweetGroups.size() - 1);
 
         mv.addObject("tweetGroups", pageGroupList);
         mv.addObject("page", page);
@@ -101,16 +103,28 @@ public ModelAndView addGroup(HttpSession session) {
 }
 
 @RequestMapping(value = "/add", method = RequestMethod.POST)
-public String addGroupPost(HttpSession session, @RequestParam("title") String title, @RequestParam("description") String description) {
-        if (session.getAttribute("account") == null) return "redirect:/account";
+public ModelAndView addGroupPost(HttpSession session, @RequestParam("title") String title, @RequestParam("description") String description) {
+        if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
+
+        if (title.length() > 255) {
+                ModelAndView mv = new ModelAndView("error");
+                mv.addObject("error", "The group title may be no longer then 255 characters.");
+                return mv;
+        }
+
+        if (description.length() > 255) {
+                ModelAndView mv = new ModelAndView("error");
+                mv.addObject("error", "The group description may be no longer then 255 characters.");
+                return mv;
+        }
 
         TweetGroup tweetGroup = new TweetGroup(title, description);
         int groupID = DBConnector.insertTweetGroup(tweetGroup, userID);
 
         return (groupID > 0)
-               ? "redirect:/groups/view/" + groupID
-               : "redirect:/error";
+               ? new ModelAndView("redirect:/groups/view/" + groupID)
+               : new ModelAndView("redirect:/error");
 }
 
 @RequestMapping(value = "/import/{importer}")
@@ -127,9 +141,21 @@ public ModelAndView importGroup(HttpSession session, @PathVariable String import
 }
 
 @RequestMapping(value = "/import/csv-file", method = RequestMethod.POST)
-public String importWikipediaPost(HttpSession session, @RequestParam("source") MultipartFile source, @RequestParam("title") String title, @RequestParam("description") String description, @RequestParam("delay") int delay) {
-        if (session.getAttribute("account") == null) return "redirect:/account";
+public ModelAndView importCSVGroupPost(HttpSession session, @RequestParam("source") MultipartFile source, @RequestParam("title") String title, @RequestParam("description") String description, @RequestParam("delay") int delay) {
+        if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
+
+        if (title.length() > 255) {
+                ModelAndView mv = new ModelAndView("error");
+                mv.addObject("error", "The group title may be no longer then 255 characters.");
+                return mv;
+        }
+
+        if (description.length() > 255) {
+                ModelAndView mv = new ModelAndView("error");
+                mv.addObject("error", "The group description may be no longer then 255 characters.");
+                return mv;
+        }
 
         File file;
         TweetFactory tweeter = new TweetFactory();
@@ -138,7 +164,7 @@ public String importWikipediaPost(HttpSession session, @RequestParam("source") M
                 file = File.createTempFile("upload-", ".csv");
                 source.transferTo(file);
         } catch (Exception e) {
-                return "redirect:/error";
+                return new ModelAndView("redirect:/error");
         }
 
         TweetGroup tweetGroup = tweeter.getTweetsFromCSV(file, title, description, (delay <= 0) ? 0 : delay);
@@ -146,17 +172,38 @@ public String importWikipediaPost(HttpSession session, @RequestParam("source") M
         int groupID = DBConnector.insertTweetGroup(tweetGroup, userID);
 
         return (groupID > 0)
-               ? "redirect:/groups/view/" + groupID
-               : "redirect:/error";
+               ? new ModelAndView("redirect:/groups/view/" + groupID)
+               : new ModelAndView("redirect:/error");
 }
 
 @RequestMapping(value = "/import/wikipedia", method = RequestMethod.POST)
-public String importWikipediaPost(HttpSession session, @RequestParam("source") String source, @RequestParam("title") String title, @RequestParam("prefix") String prefix, @RequestParam("description") String description) {
-        if (session.getAttribute("account") == null) return "redirect:/account";
+public ModelAndView importWikipediaGroupPost(HttpSession session, @RequestParam("source") String source, @RequestParam("title") String title, @RequestParam("prefix") String prefix, @RequestParam("description") String description) {
+        if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
-        if (!source.matches("https?:\\/\\/(de|en|es|fr)\\.wikipedia\\.org\\/wiki\\/.*"))
-                return "redirect:/error";
+        if (!source.matches("https?:\\/\\/(de|en|es|fr)\\.wikipedia\\.org\\/wiki\\/.*")) {
+                ModelAndView mv = new ModelAndView("error");
+                mv.addObject("error", "The URL mmust be a valid (english, german, spanish or french) Wikipedia Article.");
+                return mv;
+        }
+
+        if (title.length() > 255) {
+                ModelAndView mv = new ModelAndView("error");
+                mv.addObject("error", "The group title may be no longer then 255 characters.");
+                return mv;
+        }
+
+        if (prefix.length() > 20) {
+                ModelAndView mv = new ModelAndView("error");
+                mv.addObject("error", "The group prefix may be no longer then 20 characters.");
+                return mv;
+        }
+
+        if (description.length() > 255) {
+                ModelAndView mv = new ModelAndView("error");
+                mv.addObject("error", "The group description may be no longer then 255 characters.");
+                return mv;
+        }
 
         if (prefix == "")
                 prefix = null;
@@ -168,8 +215,8 @@ public String importWikipediaPost(HttpSession session, @RequestParam("source") S
         int groupID = DBConnector.insertTweetGroup(tweetGroup, userID);
 
         return (groupID > 0)
-               ? "redirect:/groups/view/" + groupID
-               : "redirect:/error";
+               ? new ModelAndView("redirect:/groups/view/" + groupID)
+               : new ModelAndView("redirect:/error");
 }
 
 @RequestMapping(value = "/edit/{groupID}")
@@ -186,13 +233,25 @@ public ModelAndView editGroup(HttpSession session, @PathVariable int groupID) {
 }
 
 @RequestMapping(value = "/edit/{groupID}", method = RequestMethod.POST)
-public String editGroupPost(HttpSession session, @PathVariable int groupID, @RequestParam("title") String title, @RequestParam("description") String description) {
-        if (session.getAttribute("account") == null) return "redirect:/account";
+public ModelAndView editGroupPost(HttpSession session, @PathVariable int groupID, @RequestParam("title") String title, @RequestParam("description") String description) {
+        if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
+
+        if (title.length() > 255) {
+                ModelAndView mv = new ModelAndView("error");
+                mv.addObject("error", "The group title may be no longer then 255 characters.");
+                return mv;
+        }
+
+        if (description.length() > 255) {
+                ModelAndView mv = new ModelAndView("error");
+                mv.addObject("error", "The group description may be no longer then 255 characters.");
+                return mv;
+        }
 
         DBConnector.editGroup(groupID, title, description, userID);
 
-        return "redirect:/groups/view/" + groupID;
+        return new ModelAndView("redirect:/groups/view/" + groupID);
 }
 
 @RequestMapping(value = "/toggle/{groupID}")
@@ -211,15 +270,25 @@ public String toggleGroup(HttpSession session, @PathVariable int groupID) {
 }
 
 @RequestMapping(value = "/delete/{groupID}")
-public String deleteGroup(HttpSession session, HttpServletRequest request, @PathVariable int groupID) {
+public ModelAndView deleteGroup(HttpSession session, HttpServletRequest request, @PathVariable int groupID) throws URISyntaxException {
+        if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
+        int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
+        String referer = new URI(request.getHeader("referer")).getPath();
+
+        ModelAndView mv = new ModelAndView("confirm");
+        mv.addObject("confirm", "Do You want to delete Your group \"" + DBConnector.getGroupTitle(groupID, userID) + "\" and all containing tweets?");
+        if (!referer.matches("^/groups/.+?[0-9]$")) mv.addObject("referer", referer);
+
+        return mv;
+}
+
+@RequestMapping(value = "/delete/{groupID}/confirm")
+public String confirmedDeleteGroup(HttpSession session, HttpServletRequest request, @PathVariable int groupID, @RequestParam(name = "referer", defaultValue = "/groups/view") String referer) {
         if (session.getAttribute("account") == null) return "redirect:/account";
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
         DBConnector.deleteGroup(groupID, userID);
-        String ref = request.getHeader("Referer");
-
-        return (ref.endsWith("/groups/view/" + groupID))
-               ? "redirect:/groups/view"
-               : "redirect:" + request.getHeader("Referer");
+        return "redirect:" + referer;
 }
+
 
 }

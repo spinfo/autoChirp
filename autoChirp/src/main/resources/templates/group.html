@@ -21,14 +21,14 @@
             <div class="form-group">
               <label for="title" class="col-sm-2 control-label">Title</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" id="title" name="title" required="required" placeholder="My group" th:value="${#httpServletRequest.requestURI.startsWith('/groups/add')} ? '' : ${tweetGroup.title}" th:disabled="${#httpServletRequest.requestURI.startsWith('/groups/view/')}">
+                <input type="text" class="form-control" id="title" name="title" required="required" maxlength="255" placeholder="My group" th:value="${#httpServletRequest.requestURI.startsWith('/groups/add')} ? '' : ${tweetGroup.title}" th:disabled="${#httpServletRequest.requestURI.startsWith('/groups/view/')}">
                 </input>
               </div>
             </div>
             <div class="form-group">
               <label for="description" class="col-sm-2 control-label">Description</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" id="description" name="description" required="required" placeholder="A group with my tweets" th:value="${#httpServletRequest.requestURI.startsWith('/groups/add')} ? '' : ${tweetGroup.description}" th:disabled="${#httpServletRequest.requestURI.startsWith('/groups/view/')}">
+                <input type="text" class="form-control" id="description" name="description" required="required" maxlength="255" placeholder="A group with my tweets" th:value="${#httpServletRequest.requestURI.startsWith('/groups/add')} ? '' : ${tweetGroup.description}" th:disabled="${#httpServletRequest.requestURI.startsWith('/groups/view/')}">
                 </input>
               </div>
             </div>

@@ -3,6 +3,8 @@ package autoChirp.webController;
 import autoChirp.DBConnector;
 import autoChirp.tweetCreation.Tweet;
 import autoChirp.tweetCreation.TweetGroup;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -88,7 +90,7 @@ public ModelAndView addTweet(HttpSession session) {
 }
 
 @RequestMapping(value = "/add", method = RequestMethod.POST)
-public ModelAndView addGroupPost(HttpSession session, @RequestParam("tweetGroup") String tweetGroup, @RequestParam("content") String content, @RequestParam("tweetDate") String tweetDate, @RequestParam("tweetTime") String tweetTime) {
+public ModelAndView addTweetPost(HttpSession session, @RequestParam("tweetGroup") String tweetGroup, @RequestParam("content") String content, @RequestParam("tweetDate") String tweetDate, @RequestParam("tweetTime") String tweetTime) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
@@ -150,9 +152,10 @@ public ModelAndView addTweetToGroup(HttpSession session, @PathVariable int group
 }
 
 @RequestMapping(value = "/add/{groupID}", method = RequestMethod.POST)
-public ModelAndView addGroupPost(HttpSession session, @PathVariable int groupID, @RequestParam("content") String content, @RequestParam("tweetDate") String tweetDate, @RequestParam("tweetTime") String tweetTime) {
+public ModelAndView addTweetToGroupPost(HttpSession session, @PathVariable int groupID, @RequestParam("content") String content, @RequestParam("tweetDate") String tweetDate, @RequestParam("tweetTime") String tweetTime) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
+        boolean enabledGroup = DBConnector.isEnabledGroup(groupID, userID);
 
         if (content.length() > maxTweetLength) {
                 ModelAndView mv = new ModelAndView("error");
@@ -175,9 +178,16 @@ public ModelAndView addGroupPost(HttpSession session, @PathVariable int groupID,
         Tweet tweetEntry = new Tweet(tweetDate + " " + tweetTime, content);
         int tweetID = DBConnector.addTweetToGroup(userID, tweetEntry, groupID);
 
-        return (tweetID > 0)
-               ? new ModelAndView("redirect:/tweets/view/" + tweetID)
-               : new ModelAndView("redirect:/error");
+        if (tweetID < 0)
+                return new ModelAndView("redirect:/error");
+
+        if (enabledGroup) {
+                ModelAndView mv = new ModelAndView("confirm");
+                mv.addObject("confirm", "Do You want to keep Your group \"" + DBConnector.getGroupTitle(groupID, userID) + "\" enabled?");
+                mv.addObject("next", "/groups/toggle/" + groupID);
+                mv.addObject("prev", "/tweets/view/" + tweetID);
+                return mv;
+        } else return new ModelAndView("redirect:/tweets/view/" + tweetID);
 }
 
 @RequestMapping(value = "/edit/{tweetID}")
@@ -212,16 +222,25 @@ public ModelAndView editTweetPost(HttpSession session, @PathVariable int tweetID
 }
 
 @RequestMapping(value = "/delete/{tweetID}")
-public String deleteTweet(HttpSession session, HttpServletRequest request, @PathVariable int tweetID) {
+public ModelAndView deleteTweet(HttpSession session, HttpServletRequest request, @PathVariable int tweetID) throws URISyntaxException {
+        if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
+        int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
+        Tweet tweetEntry = DBConnector.getTweetByID(tweetID, userID);
+        String referer = new URI(request.getHeader("referer")).getPath();
+
+        ModelAndView mv = new ModelAndView("confirm");
+        mv.addObject("confirm", "Do You want to delete Your tweet \"" + tweetEntry.content + "\" from Your group \"" + tweetEntry.groupName + "\"?");
+        if (!referer.matches("^/tweets/.+?[0-9]$")) mv.addObject("referer", referer);
+
+        return mv;
+}
+
+@RequestMapping(value = "/delete/{tweetID}/confirm")
+public String confirmedDeleteTweet(HttpSession session, HttpServletRequest request, @PathVariable int tweetID, @RequestParam(name = "referer", defaultValue = "/tweets/view") String referer) {
         if (session.getAttribute("account") == null) return "redirect:/account";
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
-
         DBConnector.deleteTweet(tweetID, userID);
-        String ref = request.getHeader("Referer");
-
-        return (ref.endsWith("/tweets/view/" + tweetID))
-               ? "redirect:/tweets/view"
-               : "redirect:" + request.getHeader("Referer");
+        return "redirect:" + referer;
 }
 
 }

@@ -36,7 +36,7 @@
             <div class="form-group">
               <label for="content" class="col-sm-2 control-label">Tweet Content</label>
               <div class="col-sm-10">
-                <textarea class="form-control" id="content" name="content" rows="3" maxlength="140" required="required" placeholder="Maximum 140 characters" th:text="${#httpServletRequest.requestURI.startsWith('/tweets/add')} ? '' : ${tweetEntry.content}" th:disabled="${#httpServletRequest.requestURI.startsWith('/tweets/view/')}">
+                <textarea class="form-control" id="content" name="content" rows="3" required="required" maxlength="140" placeholder="Maximum 140 characters" th:text="${#httpServletRequest.requestURI.startsWith('/tweets/add')} ? '' : ${tweetEntry.content}" th:disabled="${#httpServletRequest.requestURI.startsWith('/tweets/view/')}">
                 </textarea>
               </div>
             </div>

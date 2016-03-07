@@ -86,7 +86,19 @@ public String logout(HttpSession session, Model model) {
 }
 
 @RequestMapping(value = "/account/delete")
-public String delete(HttpSession session, Model model) {
+public ModelAndView delete(HttpSession session, Model model) {
+        if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
+        int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
+
+        ModelAndView mv = new ModelAndView("confirm");
+        mv.addObject("confirm", "Do You want to delete Your account and all associated data?");
+
+        return mv;
+
+}
+
+@RequestMapping(value = "/account/delete/confirm")
+public String confirmedDelete(HttpSession session, Model model) {
         if (session.getAttribute("account") == null) return "redirect:/account";
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 

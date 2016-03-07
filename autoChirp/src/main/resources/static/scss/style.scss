@@ -125,6 +125,12 @@ html {
   }
 }
 // FOOTER
+/* FORMVALIDATION */
+textarea[required]:invalid,
+input[required]:invalid {
+  background-color: #fcf8e3;
+}
+// FORMVALIDATION
 /* CUSTOM */
 .well-condensed {
   *:first-child {
