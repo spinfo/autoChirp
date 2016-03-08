@@ -1,9 +1,10 @@
 package autoChirp.webController;
 
-import autoChirp.DBConnector;
 import java.util.Hashtable;
+
 import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
+
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.ConnectionRepository;
@@ -13,21 +14,34 @@ import org.springframework.social.twitter.api.UserOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 
+import autoChirp.DBConnector;
+
+/**
+ * @author Philip Schildkamp
+ *
+ */
 @Controller
 public class AccountController {
 
 private ConnectionRepository connectionRepository;
 private Twitter twitter;
 
+/**
+ * @param connectionRepository
+ * @param twitter
+ */
 @Inject
 public AccountController(ConnectionRepository connectionRepository, Twitter twitter) {
         this.connectionRepository = connectionRepository;
         this.twitter = twitter;
 }
 
+/**
+ * @param session
+ * @return
+ */
 @RequestMapping("/account")
 public ModelAndView account(HttpSession session) {
         ModelAndView mv = new ModelAndView("account");
@@ -44,6 +58,10 @@ public ModelAndView account(HttpSession session) {
         return mv;
 }
 
+/**
+ * @param session
+ * @return
+ */
 @RequestMapping("/account/login")
 public String login(HttpSession session) {
         if (connectionRepository.findPrimaryConnection(Twitter.class) != null) {
@@ -76,6 +94,11 @@ public String login(HttpSession session) {
         return "redirect:/account";
 }
 
+/**
+ * @param session
+ * @param model
+ * @return
+ */
 @RequestMapping("/account/logout")
 public String logout(HttpSession session, Model model) {
         connectionRepository.removeConnections("twitter");
@@ -85,6 +108,11 @@ public String logout(HttpSession session, Model model) {
         return "redirect:/home";
 }
 
+/**
+ * @param session
+ * @param model
+ * @return
+ */
 @RequestMapping(value = "/account/delete")
 public ModelAndView delete(HttpSession session, Model model) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
@@ -97,6 +125,11 @@ public ModelAndView delete(HttpSession session, Model model) {
 
 }
 
+/**
+ * @param session
+ * @param model
+ * @return
+ */
 @RequestMapping(value = "/account/delete/confirm")
 public String confirmedDelete(HttpSession session, Model model) {
         if (session.getAttribute("account") == null) return "redirect:/account";

@@ -375,10 +375,7 @@ public class TweetFactory {
 			pattern = Pattern.compile(regex);
 			matcher = pattern.matcher(date);
 			if (matcher.find()) {
-				System.out.println("found formatter: ");
 				DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern(dateFormats.get(i));
-				System.out.println("i: "+i);
-				System.out.println(dtFormatter.toString());
 				ldt = LocalDateTime.parse(date, dtFormatter);
 				return ldt;
 			}

@@ -12,6 +12,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
+/**
+ * @author Philip Schildkamp
+ *
+ */
 @SpringBootApplication
 public class Application {
 
@@ -21,10 +25,17 @@ private String dbFilePath;
 @Value("${createDatabaseFile}")
 private String createDatabaseFile;
 
+/**
+ * @param args
+ * @throws IOException
+ */
 public static void main(String[] args) throws IOException {
         ApplicationContext ctx = SpringApplication.run(Application.class, args);
 }
 
+/**
+ * 
+ */
 @PostConstruct
 private void initializeApplication(){
         File file = new File(dbFilePath);
@@ -39,7 +50,7 @@ private void initializeApplication(){
         Map<Integer,List<TweetGroup> > toSchedule = DBConnector.getAllEnabledGroups();
         for (int userID : toSchedule.keySet()) {
                 for (TweetGroup group : toSchedule.get(userID)) {
-                        TweetScheduler.scheduleGroup(group.tweets, userID);
+                        TweetScheduler.scheduleTweetsForUser(group.tweets, userID);
                 }
         }
 }

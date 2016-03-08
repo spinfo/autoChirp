@@ -1,28 +1,31 @@
 package autoChirp.webController;
 
-import autoChirp.DBConnector;
-import autoChirp.tweetCreation.Tweet;
-import autoChirp.tweetCreation.TweetGroup;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import autoChirp.DBConnector;
+import autoChirp.tweetCreation.Tweet;
+import autoChirp.tweetCreation.TweetGroup;
+
+/**
+ * @author Philip Schildkamp
+ *
+ */
 @Controller
 @RequestMapping(value = "/tweets")
 public class TweetController {
@@ -30,6 +33,11 @@ public class TweetController {
 private int tweetsPerPage = 15;
 private int maxTweetLength = 140;
 
+/**
+ * @param session
+ * @param page
+ * @return
+ */
 @RequestMapping(value = "/view")
 public ModelAndView viewTweets(HttpSession session, @RequestParam(name = "page", defaultValue = "1") int page) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
@@ -54,6 +62,11 @@ public ModelAndView viewTweets(HttpSession session, @RequestParam(name = "page",
         return mv;
 }
 
+/**
+ * @param session
+ * @param tweetID
+ * @return
+ */
 @RequestMapping(value = "/view/{tweetID}")
 public ModelAndView viewTweet(HttpSession session, @PathVariable int tweetID) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
@@ -69,6 +82,10 @@ public ModelAndView viewTweet(HttpSession session, @PathVariable int tweetID) {
         return mv;
 }
 
+/**
+ * @param session
+ * @return
+ */
 @RequestMapping(value = "/add")
 public ModelAndView addTweet(HttpSession session) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
@@ -86,6 +103,14 @@ public ModelAndView addTweet(HttpSession session) {
         return mv;
 }
 
+/**
+ * @param session
+ * @param tweetGroup
+ * @param content
+ * @param tweetDate
+ * @param tweetTime
+ * @return
+ */
 @RequestMapping(value = "/add", method = RequestMethod.POST)
 public ModelAndView addTweetPost(HttpSession session, @RequestParam("tweetGroup") String tweetGroup, @RequestParam("content") String content, @RequestParam("tweetDate") String tweetDate, @RequestParam("tweetTime") String tweetTime) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
@@ -145,6 +170,11 @@ public ModelAndView addTweetPost(HttpSession session, @RequestParam("tweetGroup"
 }
 
 
+/**
+ * @param session
+ * @param groupID
+ * @return
+ */
 @RequestMapping(value = "/add/{groupID}")
 public ModelAndView addTweetToGroup(HttpSession session, @PathVariable int groupID) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
@@ -158,6 +188,14 @@ public ModelAndView addTweetToGroup(HttpSession session, @PathVariable int group
         return mv;
 }
 
+/**
+ * @param session
+ * @param groupID
+ * @param content
+ * @param tweetDate
+ * @param tweetTime
+ * @return
+ */
 @RequestMapping(value = "/add/{groupID}", method = RequestMethod.POST)
 public ModelAndView addTweetToGroupPost(HttpSession session, @PathVariable int groupID, @RequestParam("content") String content, @RequestParam("tweetDate") String tweetDate, @RequestParam("tweetTime") String tweetTime) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
@@ -197,6 +235,11 @@ public ModelAndView addTweetToGroupPost(HttpSession session, @PathVariable int g
         } else return new ModelAndView("redirect:/tweets/view/" + tweetID);
 }
 
+/**
+ * @param session
+ * @param tweetID
+ * @return
+ */
 @RequestMapping(value = "/edit/{tweetID}")
 public ModelAndView editTweet(HttpSession session, @PathVariable int tweetID) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
@@ -212,6 +255,12 @@ public ModelAndView editTweet(HttpSession session, @PathVariable int tweetID) {
         return mv;
 }
 
+/**
+ * @param session
+ * @param tweetID
+ * @param content
+ * @return
+ */
 @RequestMapping(value = "/edit/{tweetID}", method = RequestMethod.POST)
 public ModelAndView editTweetPost(HttpSession session, @PathVariable int tweetID, @RequestParam("content") String content) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
@@ -228,6 +277,13 @@ public ModelAndView editTweetPost(HttpSession session, @PathVariable int tweetID
         return new ModelAndView("redirect:/tweets/view/" + tweetID);
 }
 
+/**
+ * @param session
+ * @param request
+ * @param tweetID
+ * @return
+ * @throws URISyntaxException
+ */
 @RequestMapping(value = "/delete/{tweetID}")
 public ModelAndView deleteTweet(HttpSession session, HttpServletRequest request, @PathVariable int tweetID) throws URISyntaxException {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
@@ -242,6 +298,13 @@ public ModelAndView deleteTweet(HttpSession session, HttpServletRequest request,
         return mv;
 }
 
+/**
+ * @param session
+ * @param request
+ * @param tweetID
+ * @param referer
+ * @return
+ */
 @RequestMapping(value = "/delete/{tweetID}/confirm")
 public String confirmedDeleteTweet(HttpSession session, HttpServletRequest request, @PathVariable int tweetID, @RequestParam(name = "referer", defaultValue = "/tweets/view") String referer) {
         if (session.getAttribute("account") == null) return "redirect:/account";
