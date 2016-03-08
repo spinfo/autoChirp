@@ -6,7 +6,8 @@ import autoChirp.DBConnector;
  * 
  * @author Alena Geduldig
  * 
- * represents a single tweet consisting of content, tweetDate, tweetID, and the status-attributes scheduled and tweeted
+ *         represents a single tweet consisting of content, tweetDate, tweetID,
+ *         groupID, groupName and the status-attributes scheduled and tweeted
  */
 public class Tweet implements Comparable<Tweet> {
 	public String tweetDate;
@@ -16,9 +17,9 @@ public class Tweet implements Comparable<Tweet> {
 	public boolean scheduled;
 	public boolean tweeted;
 	public String groupName;
-	
+
 	/**
-	 * Constructor for tweets read from DB
+	 * Constructor for tweets read from the database
 	 * 
 	 * @param tweetDate
 	 * @param content
@@ -26,7 +27,8 @@ public class Tweet implements Comparable<Tweet> {
 	 * @param scheduled
 	 * @param tweeted
 	 */
-	public Tweet(String tweetDate, String content, int tweetID, int groupID, boolean scheduled, boolean tweeted, int userID){
+	public Tweet(String tweetDate, String content, int tweetID, int groupID, boolean scheduled, boolean tweeted,
+			int userID) {
 		this.tweetDate = tweetDate;
 		this.content = content;
 		this.tweetID = tweetID;
@@ -35,23 +37,21 @@ public class Tweet implements Comparable<Tweet> {
 		this.groupID = groupID;
 		this.groupName = DBConnector.getGroupTitle(groupID, userID);
 	}
-	
+
 	/**
-	 * Constructor for new tweets, which are not stored in the DB yet
+	 * Constructor for new tweets, which are not stored in the database yet.
+	 * 
 	 * @param tweetDate
 	 * @param content
 	 */
-	public Tweet(String tweetDate, String content){
+	public Tweet(String tweetDate, String content) {
 		this.tweetDate = tweetDate;
 		this.content = content;
 	}
-	
 
-
-	
-	
-	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override

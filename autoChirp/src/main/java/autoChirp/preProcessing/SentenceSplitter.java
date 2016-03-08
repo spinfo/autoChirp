@@ -12,38 +12,37 @@ import opennlp.tools.sentdetect.SentenceModel;
 /**
  * @author Alena Geduldig
  * 
- * A class to split text into sentences using the OpenNLP SentenceDetector
+ *         A class to split text into sentences using the OpenNLP
+ *         SentenceDetector
  *
  */
 
+public class SentenceSplitter {
 
-public  class SentenceSplitter {
-		
 	private SentenceModel sentenceModel;
-	private Language language;
-	
+
 	/**
-	 * initialize a SentenceSplitter for the given language
+	 * initializes a SentenceSplitter for the given language
+	 * 
 	 * @param language
 	 */
-	public SentenceSplitter(Language language){
-			setSentenceSplittingModel(language);
+	public SentenceSplitter(Language language) {
+		setSentenceSplittingModel(language);
 	}
-	
-	
+
 	/**
 	 * loads the SentenceModel for the given language
+	 * 
 	 * @param language
 	 * 
 	 */
-	private void setSentenceSplittingModel(Language language){
-		String model = "/opennlp/"+language.toString()+"-sent.bin";
+	private void setSentenceSplittingModel(Language language) {
+		String model = "/opennlp/" + language.toString() + "-sent.bin";
 		InputStream modelIn = null;
 		try {
 			modelIn = getClass().getResourceAsStream(model);
 			System.out.println(modelIn);
 			sentenceModel = new SentenceModel(modelIn);
-			this.language = language;
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -58,14 +57,14 @@ public  class SentenceSplitter {
 
 	/**
 	 * @param text
-	 *        - text to split
+	 *            - text to split
 	 * @param language
-	 * @return list of sentences
+	 * @return text splitted into sentences
 	 */
-	public List<String> splitIntoSentences(String text){
+	public List<String> splitIntoSentences(String text) {
 		String[] sentences = null;
 		SentenceDetectorME detector = new SentenceDetectorME(sentenceModel);
-		sentences = detector.sentDetect(text);	
-		return Arrays.asList(sentences);	
+		sentences = detector.sentDetect(text);
+		return Arrays.asList(sentences);
 	}
 }

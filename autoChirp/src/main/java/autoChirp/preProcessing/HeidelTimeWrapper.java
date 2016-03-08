@@ -16,10 +16,10 @@ import de.unihd.dbs.uima.annotator.heideltime.resources.Language;
 
 
 /**
- * @author Alena Geduldig, Philip Schildkamp
+ * @author Alena Geduldig
  *
  *
- * A Wrapper-Class for HeideltimeStandalone
+ * A wrapper-class for HeideltimeStandalone
  *
  * Overrides the readConfigsFile()- Method to avoid using a FileInputStrean
  *

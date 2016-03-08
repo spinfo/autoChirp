@@ -5,23 +5,20 @@ import autoChirp.preProcessing.Document;
 /**
  * @author Alena Geduldig
  * 
- * A simple Interface for a Parser (e.g. WikipediaParser)
- * Ensures that each Parser has to return a Document-Object consisting of text, title, url and language.
+ *         A simple interface for a parser (e.g. WikipediaParser) Ensures that
+ *         each parser has to return a Document-object with text, title, url and
+ *         language.
  *
  */
 
 public interface Parser {
-	
-	
-	
+
 	/**
-	 * creates a Document-Object from an url including text, title, url and langauge
-	 * @param url 
-	 * @return a document object
+	 * creates a Document from an url
+	 * 
+	 * @param url
+	 * @return an object of class Document
 	 */
 	public Document parse(String url);
-	
-	
-	
 
 }
