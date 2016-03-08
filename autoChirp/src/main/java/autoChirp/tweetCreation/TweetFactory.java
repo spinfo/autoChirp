@@ -58,10 +58,10 @@ public class TweetFactory {
 		addDateTimeForm("[0-9]{2}\\.[0-9]{2}\\.[0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2}", "dd.MM.yyyy HH:mm:ss");
 		// 12.08.2016 12:24
 		addDateTimeForm("[0-9]{2}\\.[0-9]{2}\\.[0-9]{4} [0-9]{2}:[0-9]{2}", "dd.MM.yyyy HH:mm");
-		// 12.08.16 12:24
-	    addDateTimeForm("[0-9]{2}\\.[0-9]{2}\\.[0-9]{2} [0-9]{2}:[0-9]{2}", "dd.MM.yy HH:mm");
 		// 12.08.16 12:24:22
 	    addDateTimeForm("[0-9]{2}\\.[0-9]{2}\\.[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}", "dd.MM.yy HH:mm:ss");
+		// 12.08.16 12:24
+	    addDateTimeForm("[0-9]{2}\\.[0-9]{2}\\.[0-9]{2} [0-9]{2}:[0-9]{2}", "dd.MM.yy HH:mm");
 		// 2016-12-08
 		addDateForm("[0-9]{4}-[0-9]{2}-[0-9]{2}", "yyyy-MM-dd");
 		// 2016-12
@@ -375,7 +375,10 @@ public class TweetFactory {
 			pattern = Pattern.compile(regex);
 			matcher = pattern.matcher(date);
 			if (matcher.find()) {
+				System.out.println("found formatter: ");
 				DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern(dateFormats.get(i));
+				System.out.println("i: "+i);
+				System.out.println(dtFormatter.toString());
 				ldt = LocalDateTime.parse(date, dtFormatter);
 				return ldt;
 			}
