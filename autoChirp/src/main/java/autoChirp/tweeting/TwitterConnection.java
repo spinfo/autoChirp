@@ -1,6 +1,7 @@
 package autoChirp.tweeting;
 
 
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,16 +16,19 @@ import autoChirp.tweetCreation.Tweet;
 @Component
 public class TwitterConnection {
 
-private String appID;
-private String appSecret;
+@Value("${spring.social.twitter.appId}")
+private String appIDProp;
 
-public TwitterConnection() {
-}
+@Value("${spring.social.twitter.appSecret}")
+private String appSecretProp;
 
-@Autowired
-public TwitterConnection(@Value("${spring.social.twitter.appId}") String appID, @Value("${spring.social.twitter.appSecret}") String appSecret) {
-        this.appID = appID;
-        this.appSecret = appSecret;
+private static String appID;
+private static String appSecret;
+
+@PostConstruct
+public void initializeConnection() {
+        this.appID = appIDProp;
+        this.appSecret = appSecretProp;
 }
 
 public void run(int user_id, int tweetID) {
@@ -41,30 +45,12 @@ public void run(int user_id, int tweetID) {
         }
 
         String[] userConfig = DBConnector.getUserConfig(user_id);
-//      String[] appConfig= DBConnector.getAppConfig();
-//      String consumerKey = appConfig[1];
-//      String consumerSecret = appConfig[2];
         String token = userConfig[1];
         String tokenSecret = userConfig[2];
-        //tweeting with spring-social
+
         Twitter twitter = new TwitterTemplate(appID, appSecret, token, tokenSecret);
         twitter.timelineOperations().updateStatus(toTweet.content);
         DBConnector.flagAsTweeted(tweetID, user_id);
-
-
-//tweetig with twitter4j
-//		Twitter twitter = new TwitterFactory().getInstance();
-//		twitter.setOAuthConsumer(consumerKey, consumerSecret);
-//		twitter.setOAuthAccessToken(new AccessToken(token, tokenSecret));
-//
-//	    Status status;
-//		try {
-//			status = twitter.updateStatus(toTweet);
-//			System.out.println("Successfully updated the status to [" + status.getText() + "].");
-//		} catch (TwitterException e) {
-//			e.printStackTrace();
-//		}
-
 }
 
 }

@@ -259,7 +259,7 @@ public class DBConnector {
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
-			String sql = "UPDATE tweets SET scheduled = 'true' WHERE (tweet_id = '"+tweetID+"' AND user_id = '"+userID+"')";
+			String sql = "UPDATE tweets SET scheduled = '1' WHERE (tweet_id = '"+tweetID+"' AND user_id = '"+userID+"')";
 			stmt.executeUpdate(sql);
 			stmt.close();
 			connection.commit();
@@ -273,7 +273,7 @@ public class DBConnector {
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
-			String sql = "UPDATE tweets SET tweeted = 'true' WHERE (tweet_id = '"+tweetID+"' AND user_id = '"+userID+"')";
+			String sql = "UPDATE tweets SET tweeted = '1' WHERE (tweet_id = '"+tweetID+"' AND user_id = '"+userID+"')";
 			stmt.executeUpdate(sql);
 			stmt.close();
 			connection.commit();

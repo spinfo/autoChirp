@@ -28,6 +28,7 @@
                 <tr>
                   <th>Group</th>
                   <th>Content</th>
+                  <th class="text-center">Tweeted</th>
                   <th class="text-center fixlist">When</th>
                   <th class="text-right fixlist">Actions</th>
                 </tr>
@@ -36,6 +37,7 @@
                 <tr th:each="tweetEntry : ${tweetsList}" th:classappend="${false} ? danger">
                   <td><a th:href="@{/groups/view/} + ${tweetEntry.groupID}" th:text="${tweetEntry.groupName}"></a></td>
                   <td th:text="${tweetEntry.content}"></td>
+                  <td class="text-center"><span class="glyphicon" th:classappend="${tweetEntry.tweeted} ? 'glyphicon glyphicon-ok' : 'glyphicon-time'" aria-hidden="true"></span></td>
                   <td th:text="${tweetEntry.tweetDate}" class="text-center"></td>
                   <td class="text-right">
                     <a th:href="@{/tweets/view/} + ${tweetEntry.tweetID}">View</a> |

@@ -45,20 +45,18 @@ public ModelAndView viewGroups(HttpSession session, @RequestParam(name = "page",
         for (int groupID : tweetGroupIDs)
                 tweetGroups.add(DBConnector.getTweetGroupForUser(userID, groupID));
 
-        if (tweetGroups.size() < groupsPerPage) {
+        if (tweetGroups.size() <= groupsPerPage) {
                 mv.addObject("tweetGroups", tweetGroups);
                 return mv;
         }
 
         List<TweetGroup> pageGroupList;
-        int pages = tweetGroups.size() / groupsPerPage;
+        double pgnum = (double) tweetGroups.size() / (double) groupsPerPage;
+        int pages = (pgnum > (int) pgnum) ? (int) (pgnum + 1.0) : (int) pgnum;
         int offset = (page - 1) * groupsPerPage;
+        int endset = (offset + groupsPerPage <= tweetGroups.size()) ? offset + groupsPerPage : tweetGroups.size();
 
-        pageGroupList = (offset + groupsPerPage < tweetGroups.size())
-                        ? tweetGroups.subList(offset, offset + groupsPerPage)
-                        : tweetGroups.subList(offset, tweetGroups.size() - 1);
-
-        mv.addObject("tweetGroups", pageGroupList);
+        mv.addObject("tweetGroups", tweetGroups.subList(offset, endset));
         mv.addObject("page", page);
         mv.addObject("pages", pages);
         return mv;
@@ -74,23 +72,19 @@ public ModelAndView viewGroup(HttpSession session, @PathVariable int groupID, @R
         ModelAndView mv = new ModelAndView("group");
         mv.addObject("tweetGroup", tweetGroup);
 
-        if (tweetsList.size() < tweetsPerPage) {
+        if (tweetsList.size() <= tweetsPerPage) {
                 mv.addObject("tweetsList", tweetsList);
                 return mv;
         }
 
-        List<Tweet> pageTweetsList;
-        int pages = tweetsList.size() / tweetsPerPage;
+        double pgnum = (double) tweetsList.size() / (double) tweetsPerPage;
+        int pages = (pgnum > (int) pgnum) ? (int) (pgnum + 1.0) : (int) pgnum;
         int offset = (page - 1) * tweetsPerPage;
+        int endset = (offset + tweetsPerPage <= tweetsList.size()) ? offset + tweetsPerPage : tweetsList.size();
 
-        pageTweetsList = (offset + tweetsPerPage < tweetsList.size())
-                         ? tweetsList.subList(offset, offset + tweetsPerPage)
-                         : tweetsList.subList(offset, tweetsList.size() - 1);
-
-        mv.addObject("tweetsList", pageTweetsList);
+        mv.addObject("tweetsList", tweetsList.subList(offset, endset));
         mv.addObject("page", page);
         mv.addObject("pages", pages);
-
         return mv;
 }
 

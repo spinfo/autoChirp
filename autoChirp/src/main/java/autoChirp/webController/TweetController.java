@@ -38,20 +38,17 @@ public ModelAndView viewTweets(HttpSession session, @RequestParam(name = "page",
         List<Tweet> tweetsList = DBConnector.getTweetsForUser(userID);
         ModelAndView mv = new ModelAndView("tweets");
 
-        if (tweetsList.size() < tweetsPerPage) {
+        if (tweetsList.size() <= tweetsPerPage) {
                 mv.addObject("tweetsList", tweetsList);
                 return mv;
         }
 
-        List<Tweet> pageTweetsList;
-        int pages = tweetsList.size() / tweetsPerPage;
+        double pgnum = (double) tweetsList.size() / (double) tweetsPerPage;
+        int pages = (pgnum > (int) pgnum) ? (int) (pgnum + 1.0) : (int) pgnum;
         int offset = (page - 1) * tweetsPerPage;
+        int endset = (offset + tweetsPerPage <= tweetsList.size()) ? offset + tweetsPerPage : tweetsList.size();
 
-        pageTweetsList = (offset + tweetsPerPage < tweetsList.size())
-                         ? tweetsList.subList(offset, offset + tweetsPerPage)
-                         : tweetsList.subList(offset, tweetsList.size() - 1);
-
-        mv.addObject("tweetsList", pageTweetsList);
+        mv.addObject("tweetsList", tweetsList.subList(offset, endset));
         mv.addObject("page", page);
         mv.addObject("pages", pages);
         return mv;
@@ -113,6 +110,7 @@ public ModelAndView addTweetPost(HttpSession session, @RequestParam("tweetGroup"
         }
 
         Tweet tweetEntry = new Tweet(tweetDate + " " + tweetTime, content);
+        boolean enabledGroup;
         int groupID;
         int tweetID;
 
@@ -121,6 +119,7 @@ public ModelAndView addTweetPost(HttpSession session, @RequestParam("tweetGroup"
                 if (!DBConnector.getGroupIDsForUser(userID).contains(groupID))
                         throw new Exception();
 
+                enabledGroup = DBConnector.isEnabledGroup(groupID, userID);
                 tweetID = DBConnector.addTweetToGroup(userID, tweetEntry, groupID);
         } catch (Exception e) {
                 Date now = new Date();
@@ -130,11 +129,19 @@ public ModelAndView addTweetPost(HttpSession session, @RequestParam("tweetGroup"
                 TweetGroup newGroup = new TweetGroup(tweetGroup, "Shorthand-added: " + date);
                 groupID = DBConnector.insertTweetGroup(newGroup, userID);
                 tweetID = DBConnector.addTweetToGroup(userID, tweetEntry, groupID);
+                enabledGroup = false;
         }
 
-        return (groupID > 0 || tweetID > 0)
-               ? new ModelAndView("redirect:/tweets/view/" + tweetID)
-               : new ModelAndView("redirect:/error");
+        if (groupID < 0 || tweetID < 0)
+                return new ModelAndView("redirect:/error");
+
+        if (enabledGroup) {
+                ModelAndView mv = new ModelAndView("confirm");
+                mv.addObject("confirm", "Do You want to keep Your group \"" + DBConnector.getGroupTitle(groupID, userID) + "\" enabled?");
+                mv.addObject("next", "/groups/toggle/" + groupID);
+                mv.addObject("prev", "/tweets/view/" + tweetID);
+                return mv;
+        } else return new ModelAndView("redirect:/tweets/view/" + tweetID);
 }
 
 
