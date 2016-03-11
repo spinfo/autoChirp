@@ -221,9 +221,9 @@ public ModelAndView importWikipediaGroupPost(HttpSession session, @RequestParam(
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
-        if (!source.matches("https?:\\/\\/(de|en|es|fr)\\.wikipedia\\.org\\/wiki\\/.*")) {
+        if (!source.matches("https?:\\/\\/(de|en)\\.wikipedia\\.org\\/wiki\\/.*")) {
                 ModelAndView mv = new ModelAndView("error");
-                mv.addObject("error", "The URL mmust be a valid (english, german, spanish or french) Wikipedia Article.");
+                mv.addObject("error", "The URL mmust be a valid (english or german) Wikipedia Article.");
                 return mv;
         }
 

@@ -1,7 +1,9 @@
 package autoChirp.webController;
 
-import javax.inject.Inject;
+import javax.annotation.PostConstruct;
 
+import autoChirp.tweeting.TwitterAccount;
+import javax.inject.Inject;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.web.ConnectController;
@@ -14,15 +16,25 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class LoginController extends ConnectController {
 
+private TwitterAccount twitterAccount;
+
 /**
  * @param connectionFactoryLocator
  * @param connectionRepository
+ * @param twitterAccount
  */
 @Inject
 public LoginController(
         ConnectionFactoryLocator connectionFactoryLocator,
-        ConnectionRepository connectionRepository) {
+        ConnectionRepository connectionRepository,
+        TwitterAccount twitterAccount) {
         super(connectionFactoryLocator, connectionRepository);
+        this.twitterAccount = twitterAccount;
+}
+
+@PostConstruct
+public void twitterAccountInterceptor() {
+        this.addInterceptor(twitterAccount);
 }
 
 /* (non-Javadoc)
@@ -38,7 +50,7 @@ protected String connectView(String providerId) {
  */
 @Override
 protected String connectedView(String providerId){
-        return "redirect:/account/login";
+        return "redirect:/account";
 }
 
 }
