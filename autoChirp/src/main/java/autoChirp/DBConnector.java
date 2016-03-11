@@ -115,7 +115,7 @@ public class DBConnector {
 		} catch (SQLException e) {
 			System.out.print("DBConnector: checkForUser: ");
 			e.printStackTrace();
-			return -2;
+			return -1;
 		}
 	}
 
@@ -174,6 +174,9 @@ public class DBConnector {
 					+ "';";
 			Statement stmt = connection.createStatement();
 			ResultSet result = stmt.executeQuery(sql);
+			if(!result.next()){
+				return toReturn;
+			}
 			toReturn = new String[3];
 			toReturn[0] = Integer.toString(result.getInt(1));
 			toReturn[1] = result.getString(2);
@@ -374,8 +377,10 @@ public class DBConnector {
 	 * @return a list of all tweets which satisfy the given status-combination
 	 */
 	public static List<Tweet> getTweetsForUser(int userID, boolean scheduled, boolean tweeted, int groupID) {
+		int scheduledInt = (scheduled)? 1 : 0;
+		int tweetedInt = (tweeted)? 1 : 0;
 		String query = "SELECT * FROM tweets WHERE(user_id = '" + userID + "' AND group_id = '" + groupID
-				+ "' AND scheduled = '" + scheduled + "' AND tweeted = '" + tweeted + "') ORDER BY scheduled_date ASC";
+				+ "' AND scheduled = '" + scheduledInt + "' AND tweeted = '" + tweetedInt + "') ORDER BY scheduled_date ASC";
 		return getTweets(query, userID);
 	}
 
@@ -400,8 +405,10 @@ public class DBConnector {
 	 * @return all tweets which satisfy the given status-combination
 	 */
 	public static List<Tweet> getTweetsForUser(int userID, boolean scheduled, boolean tweeted) {
-		String query = "SELECT * FROM tweets WHERE(user_id = '" + userID + "' AND scheduled = '" + scheduled
-				+ "' AND tweeted = '" + tweeted + "') ORDER BY scheduled_date ASC";
+		int scheduledInt = (scheduled)? 1 : 0;
+		int tweetedInt = (tweeted)? 1 : 0;
+		String query = "SELECT * FROM tweets WHERE(user_id = '" + userID + "' AND scheduled = '" + scheduledInt
+				+ "' AND tweeted = '" + tweetedInt + "') ORDER BY scheduled_date ASC";
 		return getTweets(query, userID);
 	}
 
@@ -425,7 +432,7 @@ public class DBConnector {
 	 * @return list of tweets selected with the query
 	 */
 	private static List<Tweet> getTweets(String query, int userID) {
-		List<Tweet> tweets = new ArrayList<Tweet>();
+		List<Tweet> toReturn = new ArrayList<Tweet>();
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
@@ -433,7 +440,7 @@ public class DBConnector {
 			while (result.next()) {
 				Tweet tweet = new Tweet(result.getString(4), result.getString(5), result.getInt(1), result.getInt(3),
 						result.getBoolean(6), result.getBoolean(7), userID);
-				tweets.add(tweet);
+				toReturn.add(tweet);
 			}
 			stmt.close();
 			connection.commit();
@@ -441,7 +448,7 @@ public class DBConnector {
 			System.out.print("DBConnector.getTweets: ");
 			e.printStackTrace();
 		}
-		return tweets;
+		return toReturn;
 	}
 
 	/**
@@ -506,7 +513,6 @@ public class DBConnector {
 	 * @return
 	 */
 	public static Tweet getTweetByID(int tweetID, int userID) {
-		System.out.println("getTweetNxID: TweetID: " + tweetID);
 		Tweet toReturn = null;
 		try {
 			connection.setAutoCommit(false);
@@ -667,7 +673,7 @@ public class DBConnector {
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
-			String sql = "SELECT user_id, group_id FROM groups WHERE (enabled = 'true')";
+			String sql = "SELECT user_id, group_id FROM groups WHERE (enabled = '1')";
 			ResultSet result = stmt.executeQuery(sql);
 			TweetGroup group;
 			while (result.next()) {
