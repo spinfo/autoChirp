@@ -277,10 +277,14 @@ public class TweetFactory {
 	 */
 	private String trimToTweet(String toTrim, String url) {
 		if (toTrim.length() > 140) {
-			toTrim = toTrim.substring(0, 115);
-			toTrim = toTrim.substring(0, toTrim.lastIndexOf(" "));
 			if (url != null) {
+				toTrim = toTrim.substring(0, 115);
+				toTrim = toTrim.substring(0, toTrim.lastIndexOf(" "));
 				toTrim = toTrim + " " + url;
+			}
+			else{
+				toTrim = toTrim.substring(0, 140);
+				toTrim = toTrim.substring(0, toTrim.lastIndexOf(" "));
 			}
 		}
 		return toTrim;
