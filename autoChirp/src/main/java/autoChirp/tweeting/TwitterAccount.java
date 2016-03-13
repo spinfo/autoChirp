@@ -16,21 +16,35 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.request.WebRequest;
 
+/**
+ * @author Philip Schildkamp
+ *
+ */
 @Component
 public class TwitterAccount implements ConnectInterceptor<Twitter> {
 
 private ConnectionRepository connectionRepository;
 private HttpSession session;
 
+/**
+ * @param connectionRepository
+ * @param session
+ */
 @Inject
 public TwitterAccount(ConnectionRepository connectionRepository, HttpSession session) {
         this.connectionRepository = connectionRepository;
         this.session = session;
 }
 
+/* (non-Javadoc)
+ * @see org.springframework.social.connect.web.ConnectInterceptor#preConnect(org.springframework.social.connect.ConnectionFactory, org.springframework.util.MultiValueMap, org.springframework.web.context.request.WebRequest)
+ */
 public void preConnect(ConnectionFactory<Twitter> connectionFactory, MultiValueMap<String, String> parameters, WebRequest request) {
 }
 
+/* (non-Javadoc)
+ * @see org.springframework.social.connect.web.ConnectInterceptor#postConnect(org.springframework.social.connect.Connection, org.springframework.web.context.request.WebRequest)
+ */
 public void postConnect(Connection<Twitter> twitterConnection, WebRequest request) {
         Twitter twitter = twitterConnection.getApi();
         UserOperations userOperations = twitter.userOperations();

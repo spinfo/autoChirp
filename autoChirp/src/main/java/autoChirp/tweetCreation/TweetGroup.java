@@ -5,11 +5,13 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * @author Alena Geduldig
+ * represents a group of related tweets (e.g. generated from one
+ * wikipedia-articel or a tsv-file). consists of a list of tweets, title,
+ * description, groupID and the status-attribute enabled , which indicates if
+ * the group is active (= its tweets are scheduled and prepared for tweeting) or
+ * not.
  * 
- * represents a group of related tweets (e.g. generated from one wikipedia-articel or an excel-file).
- * consists of a list of tweets, title, description, groupID and the status-attribute enabled , which indicates if the 
- * group is active (= its tweets are scheduled and will be tweeted)
+ * @author Alena Geduldig
  *
  */
 public class TweetGroup {
@@ -19,11 +21,13 @@ public class TweetGroup {
 	public boolean enabled;
 	public int groupID;
 
-
 	/**
 	 * Constructor for new TweetGroup-objects (not read from the database)
+	 * 
 	 * @param title
+	 *            title of this group
 	 * @param description
+	 *            description of this group
 	 */
 	public TweetGroup(String title, String description) {
 		this.title = title;
@@ -31,14 +35,21 @@ public class TweetGroup {
 	}
 
 	/**
-	 * Constructor for TweetGroups read from the database
+	 * Constructor for TweetGroups read from the database. In contrast to new
+	 * TweetGoups, TweetGroups read from DB already habe a groupID and a status
+	 * attribute.
+	 * 
 	 * @param groupID
+	 *            db-key
 	 * @param title
+	 *            title of this group
 	 * @param description
+	 *            description of this group
 	 * @param enabled
+	 *            group is active (= tweets are prepared for tweeting)
 	 */
-	public TweetGroup(int groupID, String title, String description, boolean enabled){
-    this.groupID = groupID;
+	public TweetGroup(int groupID, String title, String description, boolean enabled) {
+		this.groupID = groupID;
 		this.title = title;
 		this.description = description;
 		this.enabled = enabled;
@@ -46,18 +57,22 @@ public class TweetGroup {
 
 	/**
 	 * adds a list of tweets to the group
+	 * 
 	 * @param tweets
+	 *            list of tweets
 	 */
-	public void setTweets(List<Tweet> tweets){
+	public void setTweets(List<Tweet> tweets) {
 		this.tweets.addAll(tweets);
 		Collections.sort(this.tweets);
 	}
 
 	/**
 	 * adds a single tweet to the group
+	 * 
 	 * @param tweet
+	 *            tweet to add
 	 */
-	public void addTweet(Tweet tweet){
+	public void addTweet(Tweet tweet) {
 		tweets.add(tweet);
 		Collections.sort(tweets);
 	}

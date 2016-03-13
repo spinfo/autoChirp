@@ -18,11 +18,10 @@ import autoChirp.tweetCreation.Tweet;
 import autoChirp.tweetCreation.TweetGroup;
 
 /**
- *
+ * A class for database input/output. Includes methods to write in and read from
+ * the database
+ * 
  * @author Alena Geduldig
- *
- *         A class for database input/output. Includes methods to write in and
- *         read from the database
  *
  */
 public class DBConnector {
@@ -33,6 +32,7 @@ public class DBConnector {
 	 * connects to a database
 	 *
 	 * @param dbFilePath
+	 *            file to database
 	 * @return connection
 	 *
 	 */
@@ -58,6 +58,7 @@ public class DBConnector {
 	 * creates (or overrides) output-tables defined in dbCreationFileName
 	 *
 	 * @param dbCreationFileName
+	 *            file to the db-specification
 	 *
 	 */
 	public static void createOutputTables(String dbCreationFileName) {
@@ -93,7 +94,7 @@ public class DBConnector {
 	 * checks if the user with the given twitterID is already registered.
 	 * 
 	 * @param twitter_id
-	 *            - the global TwitterID
+	 *            the global TwitterID
 	 * @return returns the local userID if user already exists in the database,
 	 *         or -1 if not.
 	 */
@@ -123,11 +124,11 @@ public class DBConnector {
 	 * creates a new user in the table 'users' and returns its local userID
 	 *
 	 * @param twitterID
-	 *            - the users global twitterID
+	 *            the users global twitterID
 	 * @param oauthToken
-	 *            -the users twitter oauthToken
+	 *            the users twitter oauthToken
 	 * @param oauthTokenSecret
-	 *            - the users twitter oauthTokenSecret
+	 *            the users twitter oauthTokenSecret
 	 * @return the local userID of the new user or -1 if insertion was not
 	 *         successful
 	 */
@@ -163,6 +164,7 @@ public class DBConnector {
 	 * oauthToken config[2]: the users oauthTokenSecret
 	 *
 	 * @param userID
+	 *            userID
 	 * @return string-array with twitterID (0), oauthToken (1) and
 	 *         oauthTokenSecret (2)
 	 */
@@ -174,7 +176,7 @@ public class DBConnector {
 					+ "';";
 			Statement stmt = connection.createStatement();
 			ResultSet result = stmt.executeQuery(sql);
-			if(!result.next()){
+			if (!result.next()) {
 				return toReturn;
 			}
 			toReturn = new String[3];
@@ -191,14 +193,14 @@ public class DBConnector {
 	}
 
 	/**
-	 * writes a TweetGroup into the database and returns its new groupID -
+	 * writes a TweetGroup into the database and returns its new groupID.
 	 * updates the tables 'groups' and 'tweets'.
 	 *
 	 * @param tweetGroup
-	 *            - a TweetGroup-Object consisting of title, description and a
+	 *            a TweetGroup-Object consisting of title, description and a
 	 *            list of tweets
 	 * @param userID
-	 *            - the users local userID
+	 *            the users local userID
 	 * @return the groupID of the inserted tweetGroup, or -1 if insertion failed
 	 *
 	 */
@@ -246,12 +248,15 @@ public class DBConnector {
 
 	/**
 	 * enables/disables (activates/deactivates) the given TweetGroup for
-	 * tweeting (if userID fits to groupID) - updates the field 'enabled' in
+	 * tweeting (if userID fits to groupID) and updates the field 'enabled' in
 	 * table 'groups'
 	 *
 	 * @param groupID
+	 *            groupID
 	 * @param enabled
+	 *            to update
 	 * @param userID
+	 *            userID
 	 * @return returns true if update was successful
 	 */
 	public static boolean updateGroupStatus(int groupID, boolean enabled, int userID) {
@@ -276,7 +281,9 @@ public class DBConnector {
 	 * flags the given tweet as scheduled (if userID fits to tweetID )
 	 * 
 	 * @param tweetID
+	 *            tweetID
 	 * @param userID
+	 *            userID
 	 * @return returns true if update was successful
 	 */
 	public static boolean flagAsScheduled(int tweetID, int userID) {
@@ -300,7 +307,9 @@ public class DBConnector {
 	 * flags the given tweet as tweeted (if userID fits to tweetID )
 	 * 
 	 * @param tweetID
+	 *            tweetID
 	 * @param userID
+	 *            userID
 	 * @return returns true if update was successful
 	 */
 	public static boolean flagAsTweeted(int tweetID, int userID) {
@@ -325,7 +334,9 @@ public class DBConnector {
 	 * tweets in table 'tweets' related to this group
 	 * 
 	 * @param groupID
+	 *            to delete
 	 * @param userID
+	 *            userID
 	 */
 	public static void deleteGroup(int groupID, int userID) {
 		try {
@@ -350,7 +361,9 @@ public class DBConnector {
 	 * deletes a single tweet in table 'tweets'
 	 * 
 	 * @param tweetID
+	 *            to delete
 	 * @param userID
+	 *            userID
 	 */
 	public static void deleteTweet(int tweetID, int userID) {
 		try {
@@ -371,16 +384,21 @@ public class DBConnector {
 	 * scheduled- and tweeted-status
 	 * 
 	 * @param userID
+	 *            userID
 	 * @param scheduled
+	 *            selected scheduled status
 	 * @param tweeted
+	 *            selected tweeted status
 	 * @param groupID
+	 *            goupID
 	 * @return a list of all tweets which satisfy the given status-combination
 	 */
 	public static List<Tweet> getTweetsForUser(int userID, boolean scheduled, boolean tweeted, int groupID) {
-		int scheduledInt = (scheduled)? 1 : 0;
-		int tweetedInt = (tweeted)? 1 : 0;
+		int scheduledInt = (scheduled) ? 1 : 0;
+		int tweetedInt = (tweeted) ? 1 : 0;
 		String query = "SELECT * FROM tweets WHERE(user_id = '" + userID + "' AND group_id = '" + groupID
-				+ "' AND scheduled = '" + scheduledInt + "' AND tweeted = '" + tweetedInt + "') ORDER BY scheduled_date ASC";
+				+ "' AND scheduled = '" + scheduledInt + "' AND tweeted = '" + tweetedInt
+				+ "') ORDER BY scheduled_date ASC";
 		return getTweets(query, userID);
 	}
 
@@ -400,13 +418,16 @@ public class DBConnector {
 	 * tweeted-status
 	 * 
 	 * @param userID
+	 *            iserID
 	 * @param scheduled
+	 *            selected scheduled status
 	 * @param tweeted
+	 *            selected tweeted status
 	 * @return all tweets which satisfy the given status-combination
 	 */
 	public static List<Tweet> getTweetsForUser(int userID, boolean scheduled, boolean tweeted) {
-		int scheduledInt = (scheduled)? 1 : 0;
-		int tweetedInt = (tweeted)? 1 : 0;
+		int scheduledInt = (scheduled) ? 1 : 0;
+		int tweetedInt = (tweeted) ? 1 : 0;
 		String query = "SELECT * FROM tweets WHERE(user_id = '" + userID + "' AND scheduled = '" + scheduledInt
 				+ "' AND tweeted = '" + tweetedInt + "') ORDER BY scheduled_date ASC";
 		return getTweets(query, userID);
@@ -416,7 +437,8 @@ public class DBConnector {
 	 * returns a list of all tweets from a user
 	 * 
 	 * @param userID
-	 * @return all tweets
+	 *            userID
+	 * @return all tweets from the user
 	 */
 	public static List<Tweet> getTweetsForUser(int userID) {
 		String query = "SELECT * FROM tweets WHERE(user_id = '" + userID + "') ORDER BY scheduled_date ASC";
@@ -424,10 +446,8 @@ public class DBConnector {
 	}
 
 	/**
-	 * a universal method to read tweets for a specific user
 	 * 
 	 * @param query
-	 *            - a query for tweets
 	 * @param userID
 	 * @return list of tweets selected with the query
 	 */
@@ -455,8 +475,10 @@ public class DBConnector {
 	 * returns the tweetGroup with the given groupID (if userID fits to groupID)
 	 * 
 	 * @param userID
+	 *            userID
 	 * @param groupID
-	 * @return TweetGroup with groupID
+	 *            groupID
+	 * @return tweetGroup with groupID
 	 */
 	public static TweetGroup getTweetGroupForUser(int userID, int groupID) {
 		try {
@@ -485,7 +507,8 @@ public class DBConnector {
 	 * returns a list with all groupIDs for the given user
 	 * 
 	 * @param userID
-	 * @return groupIDs
+	 *            userID
+	 * @return groupIDs of the users group
 	 */
 	public static List<Integer> getGroupIDsForUser(int userID) {
 		List<Integer> toReturn = new ArrayList<Integer>();
@@ -509,8 +532,10 @@ public class DBConnector {
 	 * fits to tweetID)
 	 * 
 	 * @param tweetID
+	 *            tweetID
 	 * @param userID
-	 * @return
+	 *            userID
+	 * @return tweet with tweetID
 	 */
 	public static Tweet getTweetByID(int tweetID, int userID) {
 		Tweet toReturn = null;
@@ -535,8 +560,10 @@ public class DBConnector {
 	 * returns the groupTitle of the given group (if userID fits to groupID)
 	 * 
 	 * @param groupID
+	 *            groupID
 	 * @param userID
-	 * @return groupTitle
+	 *            userID
+	 * @return groupTitle of the given group
 	 */
 	public static String getGroupTitle(int groupID, int userID) {
 		String toReturn = null;
@@ -562,9 +589,13 @@ public class DBConnector {
 	 * groupID)
 	 * 
 	 * @param groupID
+	 *            groupID
 	 * @param title
+	 *            new title
 	 * @param description
+	 *            new description
 	 * @param userID
+	 *            userID
 	 */
 	public static void editGroup(int groupID, String title, String description, int userID) {
 		try {
@@ -586,8 +617,11 @@ public class DBConnector {
 	 * fits to tweetID)
 	 * 
 	 * @param tweetID
+	 *            tweetID
 	 * @param content
+	 *            new content
 	 * @param userID
+	 *            userID
 	 */
 	public static void editTweet(int tweetID, String content, int userID) {
 		try {
@@ -605,18 +639,22 @@ public class DBConnector {
 	}
 
 	/**
-	 * adds a single tweet to an existing group and returns its tweetID 
+	 * adds a single tweet to an existing group and returns its tweetID
+	 * 
 	 * @param userID
-	 * @param toAdd
+	 *            userID
+	 * @param tweet
+	 *            to add
 	 * @param groupID
-	 * @return tweetID
+	 *            groupID
+	 * @return tweetID of the new tweet
 	 */
-	public static int addTweetToGroup(int userID, Tweet toAdd, int groupID) {
+	public static int addTweetToGroup(int userID, Tweet tweet, int groupID) {
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
 			String sql = "INSERT INTO tweets (user_id, group_id, scheduled_date, tweet, scheduled, tweeted) VALUES ('"
-					+ userID + "', " + "'" + groupID + "', " + "'" + toAdd.tweetDate + "', " + "'" + toAdd.content
+					+ userID + "', " + "'" + groupID + "', " + "'" + tweet.tweetDate + "', " + "'" + tweet.content
 					+ "', " + "'false', 'false')";
 			stmt.executeUpdate(sql);
 			stmt.close();
@@ -640,9 +678,12 @@ public class DBConnector {
 
 	/**
 	 * returns the status (enabled/disabled) of the given group
+	 * 
 	 * @param groupID
+	 *            groupID
 	 * @param userID
-	 * @return enabled
+	 *            userID
+	 * @return enabled enabled status
 	 */
 	public static boolean isEnabledGroup(int groupID, int userID) {
 		try {
@@ -664,9 +705,11 @@ public class DBConnector {
 
 	/**
 	 * 
-	 * returns a map of all enabled (active) groups from the database, sorted by its usersIDs.
-	 * This method is called once at the start of the application, to schedule all active tweets.
-	 * @return
+	 * returns a map of all enabled (active) groups from the database, sorted by
+	 * its usersIDs. This method is called once at the start of the application,
+	 * to schedule all active tweets.
+	 * 
+	 * @return a map of all active TweetGroups sorted by its users
 	 */
 	public static Map<Integer, List<TweetGroup>> getAllEnabledGroups() {
 		Map<Integer, List<TweetGroup>> toReturn = new HashMap<Integer, List<TweetGroup>>();
@@ -697,11 +740,12 @@ public class DBConnector {
 	}
 
 	/**
-	 * deletes a user from the database
-	 * - deletes user config. from table 'users'
-	 * - deletes all tweetGroups in table 'groups'
-	 * - deletes all tweets in table 'tweets'
+	 * deletes a user from the database - deletes user config. from table
+	 * 'users' - deletes all tweetGroups in table 'groups' - deletes all tweets
+	 * in table 'tweets'
+	 * 
 	 * @param userID
+	 * userID
 	 */
 	public static void deleteUser(int userID) {
 		try {
@@ -722,60 +766,6 @@ public class DBConnector {
 		} catch (SQLException e) {
 			System.out.print("DBConnector.deleteUser: ");
 			e.printStackTrace();
-		}
-	}
-
-	/**
-	 *
-	 * (only for testing) inserts the twitter-configuration parameters for this
-	 * application
-	 *
-	 * @param twitter_callback_url
-	 * @param twitter_consumer_key
-	 * @param twitter_consumer_secret
-	 * @return returns true if insertion was successful
-	 */
-	public static boolean insertTwitterConfiguration(String twitter_callback_url, String twitter_consumer_key,
-			String twitter_consumer_secret) {
-		try {
-			connection.setAutoCommit(false);
-			Statement stmt = connection.createStatement();
-			String sql = "INSERT INTO configuration (twitter_callback_url, twitter_consumer_key, twitter_consumer_secret) VALUES('"
-					+ twitter_callback_url + "','" + twitter_consumer_key + "','" + twitter_consumer_secret + "')";
-			stmt.execute(sql);
-			stmt.close();
-			connection.commit();
-		} catch (SQLException e) {
-			System.out.println("DBConnector.insertTweitterConfiguration: couldnt insert tweitter-config");
-			e.printStackTrace();
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * (only for testing) reads the twitter-configuration of this app
-	 *
-	 * @return String-Array with twitter_callback_url (0), twitter_consumer_key
-	 *         (1) twitter_consumer_secret (2)
-	 */
-	public static String[] getAppConfig() {
-		try {
-			connection.setAutoCommit(false);
-			Statement stmt = connection.createStatement();
-			String sql = "SELECT twitter_callback_url, twitter_consumer_key, twitter_consumer_secret FROM configuration";
-			ResultSet result = stmt.executeQuery(sql);
-			String[] toReturn = new String[3];
-			toReturn[0] = result.getString(1);
-			toReturn[1] = result.getString(2);
-			toReturn[2] = result.getString(3);
-			stmt.close();
-			connection.commit();
-			return toReturn;
-		} catch (SQLException e) {
-			System.out.print("DBConnctor.getTwitterConfiguration: ");
-			e.printStackTrace();
-			return null;
 		}
 	}
 }

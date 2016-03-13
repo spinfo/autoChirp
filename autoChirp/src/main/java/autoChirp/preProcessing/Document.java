@@ -5,12 +5,11 @@ import java.util.List;
 import de.unihd.dbs.uima.annotator.heideltime.resources.Language;
 
 /**
+ * 
+ * Represents a document created from an url by a parser. Every document consists of a
+ * text (plain text of the website), url, title, and language.
+ * 
  * @author Alena Geduldig
- * 
- *         Represents a document created from a parser. Every document consists
- *         of a text, url, title, and language.
- * 
- *
  */
 
 public class Document {
@@ -23,9 +22,13 @@ public class Document {
 
 	/**
 	 * @param text
+	 * 			plain text of the website this document is created from
 	 * @param url
+	 * 			the url of the website
 	 * @param title
+	 * 			e.g. extracted from the header-element
 	 * @param language
+	 * 			the language of the documents text
 	 */
 	public Document(String text, String url, String title, Language language) {
 		this.text = text;
@@ -64,7 +67,7 @@ public class Document {
 
 	/**
 	 * @param sentences
-	 *            - text splitted into sentences
+	 *            - text, splitted into sentences e.g. by a SentenceSplitter
 	 */
 	public void setSentences(List<String> sentences) {
 		this.sentences = sentences;

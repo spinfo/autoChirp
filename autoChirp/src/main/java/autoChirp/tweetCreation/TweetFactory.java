@@ -23,10 +23,10 @@ import de.unihd.dbs.heideltime.standalone.POSTagger;
 import de.unihd.dbs.heideltime.standalone.exceptions.DocumentCreationTimeMissingException;
 
 /**
- * @author Alena Geduldig
+ * A class to generate tweets and tweetGroups from different input-types (e.g.
+ * excel-files or urls)
  * 
- *         A class to generate tweets and tweetGroups from different input-data
- *         (e.g. excel-files or urls )
+ * @author Alena Geduldig
  *
  */
 
@@ -43,6 +43,9 @@ public class TweetFactory {
 	// a formatter to normalize the different input formats
 	private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
+	/**
+	 * sets the current year and the accepted formats for date-inputs
+	 */
 	public TweetFactory() {
 		// set current year
 		currentYear = LocalDateTime.now().getYear();
@@ -59,9 +62,9 @@ public class TweetFactory {
 		// 12.08.2016 12:24
 		addDateTimeForm("[0-9]{2}\\.[0-9]{2}\\.[0-9]{4} [0-9]{2}:[0-9]{2}", "dd.MM.yyyy HH:mm");
 		// 12.08.16 12:24:22
-	    addDateTimeForm("[0-9]{2}\\.[0-9]{2}\\.[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}", "dd.MM.yy HH:mm:ss");
+		addDateTimeForm("[0-9]{2}\\.[0-9]{2}\\.[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}", "dd.MM.yy HH:mm:ss");
 		// 12.08.16 12:24
-	    addDateTimeForm("[0-9]{2}\\.[0-9]{2}\\.[0-9]{2} [0-9]{2}:[0-9]{2}", "dd.MM.yy HH:mm");
+		addDateTimeForm("[0-9]{2}\\.[0-9]{2}\\.[0-9]{2} [0-9]{2}:[0-9]{2}", "dd.MM.yy HH:mm");
 		// 2016-12-08
 		addDateForm("[0-9]{4}-[0-9]{2}-[0-9]{2}", "yyyy-MM-dd");
 		// 2016-12
@@ -102,24 +105,25 @@ public class TweetFactory {
 	}
 
 	/**
-	 * creates a TweetGroup-object from an excel-file by building a tweet for
-	 * each row, which is in the following format: [date][tabulator][time
+	 * creates a TweetGroup-object from a tsv-file by building a tweet for each
+	 * row, which is in the following format: [date][tabulator][time
 	 * (optional)][tabulator][tweet-content]
 	 * 
-	 * @param excelFile
+	 * @param tsvFile
+	 *            the input file
 	 * @param title
 	 *            - a title for the created tweetGroup
 	 * @param description
 	 *            - a description for the created tweetGroup
 	 * @param delay
-	 *            - the number of years between the given date in the file and
+	 *            - the number of years between the written date in the file and
 	 *            the calculated tweet-date
 	 * @return a new tweetGroup with a tweet for each row in the file
 	 */
-	public TweetGroup getTweetsFromExcelFile(File excelFile, String title, String description, int delay) {
+	public TweetGroup getTweetsFromExcelFile(File tsvFile, String title, String description, int delay) {
 		TweetGroup group = new TweetGroup(title, description);
 		try {
-			BufferedReader in = new BufferedReader(new FileReader(excelFile));
+			BufferedReader in = new BufferedReader(new FileReader(tsvFile));
 			String line = in.readLine();
 			String content;
 			String date;
@@ -188,15 +192,16 @@ public class TweetFactory {
 	 * date and its containing sentence and adds it to the TweetGroup
 	 * 
 	 * @param url
+	 *            url
 	 * @param parser
-	 *            - the appropriate parser for the given url (e.g.
+	 *            the appropriate parser for the given url (e.g.
 	 *            WikipediaParser for Wikipedia-urls)
 	 * @param description
-	 *            - a description for the created TweetGroup
+	 *            a description for the created TweetGroup
 	 * @param prefix
-	 *            - a prefix for each tweet in the created tweetGroup. Each
+	 *            a prefix for each tweet in the created tweetGroup. Each
 	 *            tweet-content will start with "[prefix]: " *
-	 * @return a new TweetGroup-object
+	 * @return a new TweetGroup
 	 */
 	public TweetGroup getTweetsFromUrl(String url, Parser parser, String description, String prefix) {
 		// create document
@@ -281,8 +286,7 @@ public class TweetFactory {
 				toTrim = toTrim.substring(0, 115);
 				toTrim = toTrim.substring(0, toTrim.lastIndexOf(" "));
 				toTrim = toTrim + " " + url;
-			}
-			else{
+			} else {
 				toTrim = toTrim.substring(0, 140);
 				toTrim = toTrim.substring(0, toTrim.lastIndexOf(" "));
 			}

@@ -13,15 +13,12 @@ import de.unihd.dbs.heideltime.standalone.OutputType;
 import de.unihd.dbs.heideltime.standalone.POSTagger;
 import de.unihd.dbs.uima.annotator.heideltime.resources.Language;
 
-
-
 /**
+ *
+ * A wrapper-class for HeideltimeStandalone Overrides the readConfigsFile()-
+ * Method to avoid using a FileInputStrean
+ * 
  * @author Alena Geduldig
- *
- *
- * A wrapper-class for HeideltimeStandalone
- *
- * Overrides the readConfigsFile()- Method to avoid using a FileInputStrean
  *
  */
 public class HeidelTimeWrapper extends HeidelTimeStandalone {
@@ -29,14 +26,21 @@ public class HeidelTimeWrapper extends HeidelTimeStandalone {
 	/**
 	 *
 	 * @param language
+	 *            language to be processed with the created copy of HeidelTime
 	 * @param typeToProcess
+	 *            Domain type to be processed
 	 * @param outputType
+	 *            output type
 	 * @param configPath
+	 *            path to the configuration file for HeidlTime Standalone
 	 * @param posTagger
+	 *            POS Tagger to use for preprocessing
 	 * @param doIntervalTagging
+	 *            whether or not to invoke the IntervalTagger
 	 */
 
-	public HeidelTimeWrapper(Language language, DocumentType typeToProcess, OutputType outputType, String configPath, POSTagger posTagger, Boolean doIntervalTagging){
+	public HeidelTimeWrapper(Language language, DocumentType typeToProcess, OutputType outputType, String configPath,
+			POSTagger posTagger, Boolean doIntervalTagging) {
 
 		setLanguage(language);
 		setDocumentType(typeToProcess);
@@ -47,10 +51,9 @@ public class HeidelTimeWrapper extends HeidelTimeStandalone {
 
 	}
 
-
 	/**
-	 * @param configPath 
-	 *        - Path to config.props
+	 * @param configPath
+	 *            - Path to the configuration File for HeidelTime Standalone
 	 */
 	public static void readConfigFile(String configPath) {
 		InputStream configStream = null;

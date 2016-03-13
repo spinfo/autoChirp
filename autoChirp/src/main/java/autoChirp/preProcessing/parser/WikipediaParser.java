@@ -12,11 +12,14 @@ import autoChirp.preProcessing.Document;
 import de.unihd.dbs.uima.annotator.heideltime.resources.Language;
 
 /**
- * @author Alena Geduldig
+ * A Parser for Wikipedia-Urls using the org.cyberneko.html.parsers.DOMParser;
+ * Creates an object of class Document, which consists of text, title, url and
+ * language. This Parser appends the content of each p-element to the documents
+ * text and selects the first h1-element as the documents title. The documents
+ * language is read directly from the Wikipedia-Url (e.g.
+ * https://de.wikipedia.org/wiki/Köln)
  * 
- *         A Parser for Wikipedia-urls using
- *         org.cyberneko.html.parsers.DOMParser; - selects the content of each
- *         p-element as text - selects the first h1-element as title
+ * @author Alena Geduldig
  *
  */
 public class WikipediaParser implements Parser {
@@ -28,10 +31,12 @@ public class WikipediaParser implements Parser {
 	// regex for footnotes in wikipedia
 	private String regex = "((\\[[0-9]+\\])+(:[0-9]+)?)";
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * extracts the plain text (p-elements) and title (first h1-element) of the
+	 * given wikipedia-url and returns an object of class Document
 	 * 
-	 * @see autoChirp.Parser#parse(java.lang.String)
+	 * @param url
+	 *            the url to parse
 	 */
 	@Override
 	public Document parse(String url) {

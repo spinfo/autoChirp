@@ -11,10 +11,10 @@ import autoChirp.DBConnector;
 import autoChirp.tweetCreation.Tweet;
 
 /**
- * @author Alena Geduldig
+ * This class executes the actual twitter status-update using
+ * Spring Social Twitter API
  * 
- *         This class executes the actual twitter status-update using
- *         org.springframework.social.twitter
+ * @author Alena Geduldig
  *
  */
 @Component
@@ -39,36 +39,38 @@ public class TwitterConnection {
 	}
 
 	/**
-	 * updates the users twitter-status to the tweets content - reads the tweet
-	 * with the given tweetID from the database - checks if the related
-	 * tweetGroup is still enabled and tweet wasn't tweeted already - reads the
-	 * users oAuthToken and oAuthTokenSecret from the database - updates the
+	 * updates the users twitter-status to the tweets content. 1. reads the tweet
+	 * with the given tweetID from the database 2. checks if the related
+	 * tweetGroup is still enabled and tweet wasn't tweeted already 3. reads the
+	 * users oAuthToken and oAuthTokenSecret from the database 4. updates the
 	 * users twitter status to the tweets tweetContent
 	 * 
 	 * @param user_id
+	 * 		userID
 	 * @param tweetID
+	 * tweetID
 	 */
-	public void run(int user_id, int tweetID) {
-		Tweet toTweet = DBConnector.getTweetByID(tweetID, user_id);
+	public void run(int userID, int tweetID) {
+		Tweet toTweet = DBConnector.getTweetByID(tweetID, userID);
 		if (toTweet == null) {
 			return;
 		}
-		//check if tweet was not tweeted already
+		// check if tweet was not tweeted already
 		if (toTweet.tweeted) {
 			return;
 		}
 		// check if tweetGroup is still enabled
-		if (!DBConnector.isEnabledGroup(toTweet.groupID, user_id)) {
+		if (!DBConnector.isEnabledGroup(toTweet.groupID, userID)) {
 			return;
 		}
-		//read userConfig
-		String[] userConfig = DBConnector.getUserConfig(user_id);
+		// read userConfig
+		String[] userConfig = DBConnector.getUserConfig(userID);
 		String token = userConfig[1];
 		String tokenSecret = userConfig[2];
-		//tweeting with org.springframework.social.twitter
+		// tweeting with org.springframework.social.twitter
 		Twitter twitter = new TwitterTemplate(appID, appSecret, token, tokenSecret);
 		twitter.timelineOperations().updateStatus(toTweet.content);
-		DBConnector.flagAsTweeted(tweetID, user_id);
+		DBConnector.flagAsTweeted(tweetID, userID);
 	}
 
 }

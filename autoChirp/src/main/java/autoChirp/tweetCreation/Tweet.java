@@ -4,10 +4,10 @@ import autoChirp.DBConnector;
 
 /**
  * 
- * @author Alena Geduldig
+ * represents a single tweet consisting of content, tweetDate, tweetID, groupID,
+ * groupName and the status-attributes scheduled and tweeted
  * 
- *         represents a single tweet consisting of content, tweetDate, tweetID,
- *         groupID, groupName and the status-attributes scheduled and tweeted
+ * @author Alena Geduldig
  */
 public class Tweet implements Comparable<Tweet> {
 	public String tweetDate;
@@ -19,13 +19,24 @@ public class Tweet implements Comparable<Tweet> {
 	public String groupName;
 
 	/**
-	 * Constructor for tweets read from the database
+	 * Constructor for tweets read from the database. In contrast to new tweets
+	 * tweets read from DB already have a tweetID, groupID, userID and
+	 * status-attributes
 	 * 
 	 * @param tweetDate
+	 *            scheduling date of the tweet
 	 * @param content
+	 *            the tweets content
 	 * @param tweetID
+	 *            db-key
+	 * @param groupID
+	 *            db-group-assignment key
 	 * @param scheduled
+	 *            tweet is already scheduled and will be tweeted
 	 * @param tweeted
+	 *            tweet has already been tweeted
+	 * @param userID
+	 *            db-user-assignment key
 	 */
 	public Tweet(String tweetDate, String content, int tweetID, int groupID, boolean scheduled, boolean tweeted,
 			int userID) {
@@ -39,10 +50,12 @@ public class Tweet implements Comparable<Tweet> {
 	}
 
 	/**
-	 * Constructor for new tweets, which are not stored in the database yet.
+	 * Constructor for new tweets, which were not stored in the database yet.
 	 * 
 	 * @param tweetDate
+	 *            scheduling date of the tweet
 	 * @param content
+	 *            the tweets content
 	 */
 	public Tweet(String tweetDate, String content) {
 		this.tweetDate = tweetDate;
