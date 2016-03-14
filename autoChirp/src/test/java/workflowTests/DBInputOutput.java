@@ -1,4 +1,4 @@
-package autoChirp;
+package workflowTests;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import autoChirp.DBConnector;
 import autoChirp.tweetCreation.Tweet;
 import autoChirp.tweetCreation.TweetGroup;
 
