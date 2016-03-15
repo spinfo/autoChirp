@@ -85,10 +85,10 @@ public class Tweet implements Comparable<Tweet> {
 		this.latitude = latitude;
 	}
 
-//	public Tweet(String tweetDate, String content) {
-//		this.tweetDate = tweetDate;
-//		this.content = content;
-//	}
+	public Tweet(String tweetDate, String content) {
+		this.tweetDate = tweetDate;
+		this.content = content;
+	}
 
 	/*
 	 * (non-Javadoc)

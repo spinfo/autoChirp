@@ -22,12 +22,12 @@ import autoChirp.tweeting.TweetScheduler;
  * @author Alena Geduldig
  * 
  *         A test class for scheduling and twitter tweets - requires the file
- *         src/test/resources/twitter_secrets.txt with TwitterHandle, oAuthToken and oAuthTokenSecret
+ *         src/test/resources/twitter_secrets.txt with a valid TwitterHandle, oAuthToken and oAuthTokenSecret
  *
  *         Twitter-Handle: ...
  *         Access Token: ...
  *         Access Token Secret: ...
- *   
+
  *
  */
 public class TweetWorkflow {
@@ -71,7 +71,7 @@ public class TweetWorkflow {
 	 * schedule a TweetGroup
 	 */
 	@Test
-	public static void scheduleTweetsForUser() {
+	public  void scheduleTweetsForUser() {
 		// insert new user
 		int userID = DBConnector.insertNewUser(12, twitterSecrets[1], twitterSecrets[2]);
 		

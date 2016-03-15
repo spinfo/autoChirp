@@ -20,7 +20,7 @@ import autoChirp.tweetCreation.TweetGroup;
  *
  */
 
-public class DBInputOutput {
+public class DBInputOutputTest {
 
 	private static String dbPath = "src/test/resources/";
 	private static String dbFileName = "autoChirp.db";
@@ -45,9 +45,10 @@ public class DBInputOutput {
 	public static void createTestData(){
 		testTweets = new ArrayList<Tweet>();
 		testGroup = new TweetGroup("testTitle", "testDescription");
-		Tweet tweet = new Tweet("1478-12-12 00:12", "testTweet1");
+		Tweet tweet = new Tweet("1478-12-12 00:12", "testTweet1", "imageUrl1", 5.22f, 6.56f);
 		testTweets.add(tweet);
-		tweet = new Tweet("1999-10-08 12:00", "testTweet2");
+		//tweet with imgUrl and geo-location
+		tweet = new Tweet("1999-10-08 12:00", "testTweet2", "imageUrl1", 5f, 66f);
 		testTweets.add(tweet);
 		tweet = new Tweet("1999-10-08 13:58", "testTweet3");
 		testTweets.add(tweet);
@@ -68,10 +69,12 @@ public class DBInputOutput {
 		TweetGroup read = DBConnector.getTweetGroupForUser(userID, groupID);
 		Assert.assertTrue(read.tweets.size() == testGroup.tweets.size());
 		for (int i = 0; i < read.tweets.size();i++) {
-			Assert.assertTrue(read.tweets.get(i).content.equals(testTweets.get(i).content));
+			Assert.assertEquals(read.tweets.get(i).content, testTweets.get(i).content);
+			Assert.assertEquals(read.tweets.get(i).tweetDate, testTweets.get(i).tweetDate);
+			Assert.assertEquals(read.tweets.get(i).imageUrl, testTweets.get(i).imageUrl);
+			Assert.assertTrue(read.tweets.get(i).latitude == testTweets.get(i).latitude);
+			Assert.assertTrue(read.tweets.get(i).longitude == testTweets.get(i).longitude);
 		}
-		Assert.assertEquals("testTweet4", read.tweets.get(3).content);
-		Assert.assertEquals("1478-12-12 00:12", read.tweets.get(0).tweetDate);
 		Assert.assertEquals("testTitle", read.title);
 		Assert.assertEquals("testDescription", read.description);
 	}

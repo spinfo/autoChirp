@@ -46,9 +46,9 @@ public class TweetCreationWorkflow {
 	public void generateTweetsFromWikipediaUrl(){
 		TweetFactory factory = new TweetFactory();
 		List<String> urls = new ArrayList<String>();
-		String url = "https://de.wikipedia.org/wiki/Star_Wars";
+		String url = "https://de.wikipedia.org/wiki/Universität_zu_Köln";
 		urls.add(url);
-		url = "https://en.wikipedia.org/wiki/Woody_Allen";
+		url = "https://en.wikipedia.org/wiki/Harvard_University";
 		urls.add(url);
 		for (String currentUrl : urls) {
 			TweetGroup group = factory.getTweetsFromUrl(currentUrl, new WikipediaParser(),"testDescription", "prefix");
@@ -64,16 +64,16 @@ public class TweetCreationWorkflow {
 	}
 	
 	/**
-	 * test for csv-imports
+	 * test for tsv-imports
 	 */
 	@Test
-	public void generateTweetsFromCSVFile(){
+	public void generateTweetsFromTSVFile(){
 		TweetFactory factory = new TweetFactory();
-		File testFile = new File("src/test/resources/testCSVFile.csv");
+		File testFile = new File("src/test/resources/autoChirpTestFile.txt");
 		
 		//without delay
 		TweetGroup group = factory.getTweetsFromTSVFile(testFile, "testTitle", "testDescription", 0);
-		Assert.assertEquals(group.tweets.size(), 5);
+		Assert.assertEquals(group.tweets.size(), 3);
 		System.out.println("Title: " + group.title);
 		System.out.println("Description: " + group.description);
 		System.out.println("numberOfTweets: " + group.tweets.size());
@@ -84,14 +84,14 @@ public class TweetCreationWorkflow {
 		}
 		//with delay
 		group = factory.getTweetsFromTSVFile(testFile, "testTitle", "testDescription", 3);
-		Assert.assertEquals(group.tweets.size(), 5);
+		Assert.assertEquals(group.tweets.size(), 3);
 		System.out.println("Title: " + group.title);
 		System.out.println("Description: " + group.description);
 		System.out.println("numberOfTweets: " + group.tweets.size());
 		System.out.println("Tweets: ");
 		for (Tweet tweet : group.tweets) {
 			Assert.assertTrue(tweet.tweetDate.startsWith("2019"));
-			System.out.println(tweet.tweetDate+": "+ tweet.content);
+			System.out.println(tweet.tweetDate+": "+ tweet.content+" "+tweet.imageUrl+" "+tweet.longitude+" "+tweet.latitude);
 		}
 	}
 }
