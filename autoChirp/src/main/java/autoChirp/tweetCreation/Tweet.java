@@ -18,6 +18,8 @@ public class Tweet implements Comparable<Tweet> {
 	public boolean tweeted;
 	public String groupName;
 	public String imageUrl;
+	public float longitude;
+	public float latitude;
 
 	/**
 	 * Constructor for tweets read from the database. In contrast to new tweets

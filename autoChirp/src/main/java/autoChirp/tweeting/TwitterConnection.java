@@ -75,8 +75,10 @@ public class TwitterConnection {
 		// tweeting with org.springframework.social.twitter
 		Twitter twitter = new TwitterTemplate(appID, appSecret, token, tokenSecret);
 		TweetData tweetData = new TweetData(toTweet.content);
+		
 		if(toTweet.imageUrl != null){
 			System.out.println("tweet image...");
+			System.out.println("img: "+toTweet.imageUrl);
 			try {
 				UrlResource img = new UrlResource(toTweet.imageUrl);
 				tweetData = tweetData.withMedia(img);
@@ -87,6 +89,9 @@ public class TwitterConnection {
 			}
 			
 		}
+		
+		
+		
 		else{
 			twitter.timelineOperations().updateStatus(tweetData);
 		}

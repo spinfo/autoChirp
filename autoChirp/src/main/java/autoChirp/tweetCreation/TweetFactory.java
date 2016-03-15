@@ -300,9 +300,9 @@ public class TweetFactory {
 		if(url != null){
 			toTrim = toTrim.concat(" "+url);
 		}
-		if(imageUrl != null){
-			toTrim = toTrim.concat(" "+imageUrl);
-		}
+//		if(imageUrl != null){
+//			toTrim = toTrim.concat(" "+imageUrl);
+//		}
 		return toTrim;
 	}
 
