@@ -402,9 +402,8 @@ public ModelAndView deleteTweet(HttpSession session, HttpServletRequest request,
 @RequestMapping(value = "/delete/{tweetID}/confirm")
 public String confirmedDeleteTweet(
         HttpSession session,
-        HttpServletRequest request,
         @PathVariable int tweetID,
-        @RequestParam(name = "referer", required = false) String referer
+        @RequestParam(name = "referer", defaultValue = "") String referer
         ) {
         if (session.getAttribute("account") == null) return "redirect:/account";
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));

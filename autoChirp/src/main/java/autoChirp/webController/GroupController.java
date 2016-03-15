@@ -122,7 +122,11 @@ public ModelAndView addGroup(HttpSession session) {
  * @return
  */
 @RequestMapping(value = "/add", method = RequestMethod.POST)
-public ModelAndView addGroupPost(HttpSession session, @RequestParam("title") String title, @RequestParam("description") String description) {
+public ModelAndView addGroupPost(
+        HttpSession session,
+        @RequestParam("title") String title,
+        @RequestParam("description") String description
+        ) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
@@ -155,7 +159,7 @@ public ModelAndView addGroupPost(HttpSession session, @RequestParam("title") Str
 public ModelAndView importGroup(HttpSession session, @PathVariable String importer) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
 
-        if (!Arrays.asList("csv-file", "wikipedia").contains(importer))
+        if (!Arrays.asList("tsv-file", "wikipedia").contains(importer))
                 return new ModelAndView("redirect:/error");
 
         ModelAndView mv = new ModelAndView("import");
@@ -172,8 +176,14 @@ public ModelAndView importGroup(HttpSession session, @PathVariable String import
  * @param delay
  * @return
  */
-@RequestMapping(value = "/import/csv-file", method = RequestMethod.POST)
-public ModelAndView importCSVGroupPost(HttpSession session, @RequestParam("source") MultipartFile source, @RequestParam("title") String title, @RequestParam("description") String description, @RequestParam("delay") int delay) {
+@RequestMapping(value = "/import/tsv-file", method = RequestMethod.POST)
+public ModelAndView importTSVGroupPost(
+        HttpSession session,
+        @RequestParam("source") MultipartFile source,
+        @RequestParam("title") String title,
+        @RequestParam("description") String description,
+        @RequestParam("delay") int delay
+        ) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
@@ -193,13 +203,13 @@ public ModelAndView importCSVGroupPost(HttpSession session, @RequestParam("sourc
         TweetFactory tweeter = new TweetFactory();
 
         try {
-                file = File.createTempFile("upload-", ".csv");
+                file = File.createTempFile("upload-", ".tsv");
                 source.transferTo(file);
         } catch (Exception e) {
                 return new ModelAndView("redirect:/error");
         }
 
-        TweetGroup tweetGroup = tweeter.getTweetsFromExcelFile(file, title, description, (delay <= 0) ? 0 : delay);
+        TweetGroup tweetGroup = tweeter.getTweetsFromTSVFile(file, title, description, (delay <= 0) ? 0 : delay);
         file.delete();
         int groupID = DBConnector.insertTweetGroup(tweetGroup, userID);
 
@@ -217,7 +227,13 @@ public ModelAndView importCSVGroupPost(HttpSession session, @RequestParam("sourc
  * @return
  */
 @RequestMapping(value = "/import/wikipedia", method = RequestMethod.POST)
-public ModelAndView importWikipediaGroupPost(HttpSession session, @RequestParam("source") String source, @RequestParam("title") String title, @RequestParam("prefix") String prefix, @RequestParam("description") String description) {
+public ModelAndView importWikipediaGroupPost(
+        HttpSession session,
+        @RequestParam("source") String source,
+        @RequestParam("title") String title,
+        @RequestParam("prefix") String prefix,
+        @RequestParam("description") String description
+        ) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
@@ -285,7 +301,12 @@ public ModelAndView editGroup(HttpSession session, @PathVariable int groupID) {
  * @return
  */
 @RequestMapping(value = "/edit/{groupID}", method = RequestMethod.POST)
-public ModelAndView editGroupPost(HttpSession session, @PathVariable int groupID, @RequestParam("title") String title, @RequestParam("description") String description) {
+public ModelAndView editGroupPost(
+        HttpSession session,
+        @PathVariable int groupID,
+        @RequestParam("title") String title,
+        @RequestParam("description") String description
+        ) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
@@ -354,9 +375,14 @@ public ModelAndView deleteGroup(HttpSession session, HttpServletRequest request,
  * @return
  */
 @RequestMapping(value = "/delete/{groupID}/confirm")
-public String confirmedDeleteGroup(HttpSession session, HttpServletRequest request, @PathVariable int groupID, @RequestParam(name = "referer", defaultValue = "/groups/view") String referer) {
+public String confirmedDeleteGroup(
+        HttpSession session,
+        @PathVariable int groupID,
+        @RequestParam(name = "referer", defaultValue = "/groups/view") String referer
+        ) {
         if (session.getAttribute("account") == null) return "redirect:/account";
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
+
         DBConnector.deleteGroup(groupID, userID);
         return "redirect:" + referer;
 }

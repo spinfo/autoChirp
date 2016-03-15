@@ -34,7 +34,7 @@
             <li><a th:href="@{/groups/add}">Add new group</a></li>
             <li role="separator" class="divider"></li>
             <li><a th:href="@{/groups/import/wikipedia}">Import from Wikipedia</a></li>
-            <li><a th:href="@{/groups/import/csv-file}">Import from CSV-file</a></li>
+            <li><a th:href="@{/groups/import/tsv-file}">Import from TSV-file</a></li>
           </ul>
         </li>
         <li th:classappend="${#httpServletRequest.requestURI.equals('/account')} ? 'active'">
