@@ -162,6 +162,16 @@ public class TweetFactory {
 				if(split.length > 3){
 					imageUrl = split[3];
 				}
+				//get longitude
+				float longitude = 0;
+				if(split.length > 4){
+					longitude = Float.parseFloat(split[4]);
+				}
+				//getlatidue
+				float latidue = 0;
+				if(split.length > 5){
+					latidue = Float.parseFloat(split[5]);
+				}
 				// get tweet-content
 				content = split[2];
 				// trim content to max. 140 characters
@@ -173,7 +183,7 @@ public class TweetFactory {
 					}
 				}
 				if (ldt.isAfter(LocalDateTime.now())) {
-					tweet = new Tweet(formattedDate, content, imageUrl);
+					tweet = new Tweet(formattedDate, content, imageUrl, longitude, latidue);
 					group.addTweet(tweet);
 				}
 				line = in.readLine();
@@ -233,7 +243,7 @@ public class TweetFactory {
 				} else {
 					content = trimToTweet(doc.getSentences().get(i - 1), url, null);
 				}
-				tweet = new Tweet(tweetDate, content, null);
+				tweet = new Tweet(tweetDate, content, null, 0, 0);
 				tweets.add(tweet);
 			}
 		}
@@ -396,8 +406,6 @@ public class TweetFactory {
 			matcher = pattern.matcher(date);
 			if (matcher.find()) {
 				DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern(dateFormats.get(i));
-				System.out.println(date);
-				System.out.println(dtFormatter);
 				ldt = LocalDateTime.parse(date, dtFormatter);
 				return ldt;
 			}
@@ -409,8 +417,6 @@ public class TweetFactory {
 			matcher = pattern.matcher(date);
 			if (matcher.find()) {
 				DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern(dateFormats.get(j + dateTimes));
-				System.out.println(date);
-				System.out.println(dtFormatter);
 				ld = LocalDate.parse(date, dtFormatter);
 				ldt = LocalDateTime.of(ld, LocalTime.of(12, 0));
 				return ldt;

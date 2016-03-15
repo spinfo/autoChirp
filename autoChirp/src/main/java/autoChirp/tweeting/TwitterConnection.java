@@ -5,7 +5,9 @@ import java.net.MalformedURLException;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.social.twitter.api.StatusDetails;
 import org.springframework.social.twitter.api.TweetData;
 import org.springframework.social.twitter.api.Twitter;
 import org.springframework.social.twitter.api.impl.TwitterTemplate;
@@ -74,27 +76,28 @@ public class TwitterConnection {
 		String tokenSecret = userConfig[2];
 		// tweeting with org.springframework.social.twitter
 		Twitter twitter = new TwitterTemplate(appID, appSecret, token, tokenSecret);
-		TweetData tweetData = new TweetData(toTweet.content);
 		
+		//TweetData tweetData = new TweetData(toTweet.content);
+		String tweet = toTweet.content;
+		TweetData tweetData = new TweetData(tweet);
 		if(toTweet.imageUrl != null){
-			System.out.println("tweet image...");
-			System.out.println("img: "+toTweet.imageUrl);
+			//tweet = tweet+" "+toTweet.imageUrl;
 			try {
-				UrlResource img = new UrlResource(toTweet.imageUrl);
+				Resource img = new UrlResource(toTweet.imageUrl);
 				tweetData = tweetData.withMedia(img);
-				twitter.timelineOperations().updateStatus(tweetData);
 			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
+				tweetData = new TweetData(tweet+" "+toTweet.imageUrl);
 				e.printStackTrace();
 			}
 			
 		}
-		
-		
-		
-		else{
-			twitter.timelineOperations().updateStatus(tweetData);
+		if(toTweet.longitude != 0 || toTweet.latitude != 0){
+			System.out.println("long: " + toTweet.longitude);
+			System.out.println("lat: " + toTweet.latitude);
+			tweetData = tweetData.atLocation(toTweet.longitude, toTweet.latitude);
 		}
+		twitter.timelineOperations().updateStatus(tweetData);
+	
 		
 		DBConnector.flagAsTweeted(tweetID, userID);
 	}

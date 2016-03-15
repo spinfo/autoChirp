@@ -42,7 +42,7 @@ public class Tweet implements Comparable<Tweet> {
 	 *            db-user-assignment key
 	 */
 	public Tweet(String tweetDate, String content, int tweetID, int groupID, boolean scheduled, boolean tweeted,
-			int userID, String imageUrl) {
+			int userID, String imageUrl, float longitude, float latitude) {
 		this.tweetDate = tweetDate;
 		this.content = content;
 		this.tweetID = tweetID;
@@ -51,6 +51,8 @@ public class Tweet implements Comparable<Tweet> {
 		this.groupID = groupID;
 		this.groupName = DBConnector.getGroupTitle(groupID, userID);
 		this.imageUrl = imageUrl;
+		this.longitude = longitude;
+		this.latitude = latitude;
 	}
 
 	/**
@@ -61,10 +63,12 @@ public class Tweet implements Comparable<Tweet> {
 	 * @param content
 	 *            the tweets content
 	 */
-	public Tweet(String tweetDate, String content, String imageUrl) {
+	public Tweet(String tweetDate, String content, String imageUrl, float longitude, float latitude) {
 		this.tweetDate = tweetDate;
 		this.content = content;
 		this.imageUrl = imageUrl;
+		this.longitude = longitude;
+		this.latitude = latitude;
 	}
 	
 	public Tweet(String tweetDate, String content){

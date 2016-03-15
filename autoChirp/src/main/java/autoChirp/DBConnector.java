@@ -211,7 +211,7 @@ public class DBConnector {
 			PreparedStatement prepUsers = connection
 					.prepareStatement("INSERT INTO groups(user_id, group_name, description, enabled) VALUES(?,?,?,?)");
 			PreparedStatement prepTweets = connection.prepareStatement(
-					"INSERT INTO tweets(user_id, group_id, scheduled_date, tweet, scheduled, tweeted, img_url) VALUES(?,?,?,?,?,?,?)");
+					"INSERT INTO tweets(user_id, group_id, scheduled_date, tweet, scheduled, tweeted, img_url, longitude, latitude) VALUES(?,?,?,?,?,?,?,?,?)");
 			// update table users
 			prepUsers.setInt(1, userID);
 			prepUsers.setString(2, tweetGroup.title);
@@ -233,6 +233,8 @@ public class DBConnector {
 				prepTweets.setBoolean(5, false);
 				prepTweets.setBoolean(6, false);
 				prepTweets.setString(7, tweet.imageUrl);
+				prepTweets.setFloat(8, tweet.longitude);
+				prepTweets.setFloat(9, tweet.latitude);
 				prepTweets.executeUpdate();
 			}
 			prepUsers.close();
@@ -460,7 +462,7 @@ public class DBConnector {
 			ResultSet result = stmt.executeQuery(query);
 			while (result.next()) {
 				Tweet tweet = new Tweet(result.getString(4), result.getString(5), result.getInt(1), result.getInt(3),
-						result.getBoolean(6), result.getBoolean(7), userID, result.getString(8));
+						result.getBoolean(6), result.getBoolean(7), userID, result.getString(8), result.getFloat(9), result.getFloat(10));
 				toReturn.add(tweet);
 			}
 			stmt.close();
@@ -549,7 +551,7 @@ public class DBConnector {
 				return null;
 			}
 			toReturn = new Tweet(result.getString(4), result.getString(5), result.getInt(1), result.getInt(3),
-					result.getBoolean(6), result.getBoolean(7), userID, result.getString(8));
+					result.getBoolean(6), result.getBoolean(7), userID, result.getString(8), result.getFloat(9), result.getFloat(10));
 		} catch (SQLException e) {
 			System.out.print("DBConnector.getGroupIDsForUser: ");
 			e.printStackTrace();
@@ -624,11 +626,11 @@ public class DBConnector {
 	 * @param userID
 	 *            userID
 	 */
-	public static void editTweet(int tweetID, String content, int userID) {
+	public static void editTweet(int tweetID, String content, int userID, String imageUrl, float longitude, float latitude) {
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
-			String sql = "UPDATE tweets SET tweet = '" + content + "'  WHERE (tweet_id = '" + tweetID
+			String sql = "UPDATE tweets SET tweet = '" + content + "', img_url = '"+imageUrl+"', longitude = '"+longitude+"', latitude = '"+latitude+"'  WHERE (tweet_id = '" + tweetID
 					+ "' AND user_id = '" + userID + "')";
 			stmt.executeUpdate(sql);
 			stmt.close();
@@ -654,9 +656,9 @@ public class DBConnector {
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
-			String sql = "INSERT INTO tweets (user_id, group_id, scheduled_date, tweet, scheduled, tweeted, img_url) VALUES ('"
+			String sql = "INSERT INTO tweets (user_id, group_id, scheduled_date, tweet, scheduled, tweeted, img_url, longitude, latitude) VALUES ('"
 					+ userID + "', " + "'" + groupID + "', " + "'" + tweet.tweetDate + "', " + "'" + tweet.content
-					+ "', " + "'false', 'false', '"+tweet.imageUrl+"')";
+					+ "', " + "'false', 'false', '"+tweet.imageUrl+"', '"+tweet.longitude+"', '"+tweet.latitude+"' )";
 			stmt.executeUpdate(sql);
 			stmt.close();
 			connection.commit();
