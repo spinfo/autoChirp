@@ -200,7 +200,7 @@ public ModelAndView importCSVGroupPost(HttpSession session, @RequestParam("sourc
         }
 
         TweetGroup tweetGroup = tweeter.getTweetsFromExcelFile(file, title, description, (delay <= 0) ? 0 : delay);
-
+        file.delete();
         int groupID = DBConnector.insertTweetGroup(tweetGroup, userID);
 
         return (groupID > 0)
