@@ -410,9 +410,8 @@ public String confirmedDeleteTweet(
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
         Tweet tweetEntry = DBConnector.getTweetByID(tweetID, userID);
 
-        referer = (referer.isEmpty())
-                  ? "/groups/view/" + tweetEntry.groupID
-                  : referer;
+        if (referer.isEmpty())
+                referer = "/groups/view/" + tweetEntry.groupID;
 
         DBConnector.deleteTweet(tweetID, userID);
         return "redirect:" + referer;
