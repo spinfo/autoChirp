@@ -32,6 +32,9 @@ CREATE TABLE tweets (
   tweet VARCHAR(140) NOT NULL,
   scheduled bool DEFAULT FALSE,
   tweeted bool DEFAULT FALSE,
+  img_url VARCHAR(255) DEFAULT NULL,
+  longitude DOUBLE DEFAULT NULL,
+  latitude DOUBLE DEFAULT NULL,
   CONSTRAINT FK_USERS_USERID_TWEETS_USERID FOREIGN KEY (user_id) REFERENCES users (user_id)
 );
 
