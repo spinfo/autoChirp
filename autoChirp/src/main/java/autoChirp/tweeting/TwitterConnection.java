@@ -81,13 +81,11 @@ public class TwitterConnection {
 		String tweet = toTweet.content;
 		TweetData tweetData = new TweetData(tweet);
 		if(toTweet.imageUrl != null){
-			//tweet = tweet+" "+toTweet.imageUrl;
 			try {
 				Resource img = new UrlResource(toTweet.imageUrl);
 				tweetData = tweetData.withMedia(img);
 			} catch (MalformedURLException e) {
 				tweetData = new TweetData(tweet+" "+toTweet.imageUrl);
-				e.printStackTrace();
 			}
 			
 		}
