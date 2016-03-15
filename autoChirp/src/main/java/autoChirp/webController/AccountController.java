@@ -15,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class AccountController {
 
+
 /**
  * @param session
  * @return
@@ -35,6 +36,7 @@ public ModelAndView account(HttpSession session) {
         return mv;
 }
 
+
 /**
  * @param session
  * @param model
@@ -48,6 +50,7 @@ public String logout(HttpSession session, Model model) {
 
         return "redirect:/home";
 }
+
 
 /**
  * @param session
@@ -65,6 +68,7 @@ public ModelAndView delete(HttpSession session, Model model) {
         return mv;
 
 }
+
 
 /**
  * @param session

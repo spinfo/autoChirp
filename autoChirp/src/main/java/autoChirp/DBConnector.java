@@ -462,7 +462,8 @@ public class DBConnector {
 			ResultSet result = stmt.executeQuery(query);
 			while (result.next()) {
 				Tweet tweet = new Tweet(result.getString(4), result.getString(5), result.getInt(1), result.getInt(3),
-						result.getBoolean(6), result.getBoolean(7), userID, result.getString(8), result.getFloat(9), result.getFloat(10));
+						result.getBoolean(6), result.getBoolean(7), userID, result.getString(8), result.getFloat(9),
+						result.getFloat(10));
 				toReturn.add(tweet);
 			}
 			stmt.close();
@@ -551,7 +552,8 @@ public class DBConnector {
 				return null;
 			}
 			toReturn = new Tweet(result.getString(4), result.getString(5), result.getInt(1), result.getInt(3),
-					result.getBoolean(6), result.getBoolean(7), userID, result.getString(8), result.getFloat(9), result.getFloat(10));
+					result.getBoolean(6), result.getBoolean(7), userID, result.getString(8), result.getFloat(9),
+					result.getFloat(10));
 		} catch (SQLException e) {
 			System.out.print("DBConnector.getGroupIDsForUser: ");
 			e.printStackTrace();
@@ -616,8 +618,8 @@ public class DBConnector {
 	}
 
 	/**
-	 * updates the content of a single tweet specified by tweetID (if userID
-	 * fits to tweetID)
+	 * updates the content, imageUrl and/or geo-location of a single tweet (if
+	 * userID fits to tweetID)
 	 * 
 	 * @param tweetID
 	 *            tweetID
@@ -625,12 +627,20 @@ public class DBConnector {
 	 *            new content
 	 * @param userID
 	 *            userID
+	 * @param imageUrl
+	 *            new imageUrl
+	 * @param longitude
+	 *            new longitude
+	 * @param latitude
+	 *            new latitude
 	 */
-	public static void editTweet(int tweetID, String content, int userID, String imageUrl, float longitude, float latitude) {
+	public static void editTweet(int tweetID, String content, int userID, String imageUrl, float longitude,
+			float latitude) {
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
-			String sql = "UPDATE tweets SET tweet = '" + content + "', img_url = '"+imageUrl+"', longitude = '"+longitude+"', latitude = '"+latitude+"'  WHERE (tweet_id = '" + tweetID
+			String sql = "UPDATE tweets SET tweet = '" + content + "', img_url = '" + imageUrl + "', longitude = '"
+					+ longitude + "', latitude = '" + latitude + "'  WHERE (tweet_id = '" + tweetID
 					+ "' AND user_id = '" + userID + "')";
 			stmt.executeUpdate(sql);
 			stmt.close();
@@ -658,7 +668,8 @@ public class DBConnector {
 			Statement stmt = connection.createStatement();
 			String sql = "INSERT INTO tweets (user_id, group_id, scheduled_date, tweet, scheduled, tweeted, img_url, longitude, latitude) VALUES ('"
 					+ userID + "', " + "'" + groupID + "', " + "'" + tweet.tweetDate + "', " + "'" + tweet.content
-					+ "', " + "'false', 'false', '"+tweet.imageUrl+"', '"+tweet.longitude+"', '"+tweet.latitude+"' )";
+					+ "', " + "'false', 'false', '" + tweet.imageUrl + "', '" + tweet.longitude + "', '"
+					+ tweet.latitude + "' )";
 			stmt.executeUpdate(sql);
 			stmt.close();
 			connection.commit();
@@ -748,7 +759,7 @@ public class DBConnector {
 	 * in table 'tweets'
 	 * 
 	 * @param userID
-	 * userID
+	 *            userID
 	 */
 	public static void deleteUser(int userID) {
 		try {

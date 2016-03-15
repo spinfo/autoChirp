@@ -37,6 +37,7 @@ public class GroupController {
 private int groupsPerPage = 15;
 private int tweetsPerPage = 15;
 
+
 /**
  * @param session
  * @param page
@@ -71,6 +72,7 @@ public ModelAndView viewGroups(HttpSession session, @RequestParam(name = "page",
         return mv;
 }
 
+
 /**
  * @param session
  * @param groupID
@@ -103,6 +105,7 @@ public ModelAndView viewGroup(HttpSession session, @PathVariable int groupID, @R
         return mv;
 }
 
+
 /**
  * @param session
  * @return
@@ -114,6 +117,7 @@ public ModelAndView addGroup(HttpSession session) {
         ModelAndView mv = new ModelAndView("group");
         return mv;
 }
+
 
 /**
  * @param session
@@ -150,6 +154,7 @@ public ModelAndView addGroupPost(
                : new ModelAndView("redirect:/error");
 }
 
+
 /**
  * @param session
  * @param importer
@@ -167,6 +172,7 @@ public ModelAndView importGroup(HttpSession session, @PathVariable String import
 
         return mv;
 }
+
 
 /**
  * @param session
@@ -217,6 +223,7 @@ public ModelAndView importTSVGroupPost(
                ? new ModelAndView("redirect:/groups/view/" + groupID)
                : new ModelAndView("redirect:/error");
 }
+
 
 /**
  * @param session
@@ -275,6 +282,7 @@ public ModelAndView importWikipediaGroupPost(
                : new ModelAndView("redirect:/error");
 }
 
+
 /**
  * @param session
  * @param groupID
@@ -292,6 +300,7 @@ public ModelAndView editGroup(HttpSession session, @PathVariable int groupID) {
 
         return mv;
 }
+
 
 /**
  * @param session
@@ -327,6 +336,7 @@ public ModelAndView editGroupPost(
         return new ModelAndView("redirect:/groups/view/" + groupID);
 }
 
+
 /**
  * @param session
  * @param groupID
@@ -346,6 +356,7 @@ public String toggleGroup(HttpSession session, @PathVariable int groupID) {
 
         return "redirect:/groups/view/" + groupID;
 }
+
 
 /**
  * @param session
@@ -367,9 +378,9 @@ public ModelAndView deleteGroup(HttpSession session, HttpServletRequest request,
         return mv;
 }
 
+
 /**
  * @param session
- * @param request
  * @param groupID
  * @param referer
  * @return

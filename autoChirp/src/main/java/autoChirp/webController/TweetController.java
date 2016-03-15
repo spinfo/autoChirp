@@ -35,6 +35,7 @@ public class TweetController {
 private int tweetsPerPage = 15;
 private int maxTweetLength = 140;
 
+
 /**
  * @param session
  * @param page
@@ -64,6 +65,7 @@ public ModelAndView viewTweets(HttpSession session, @RequestParam(name = "page",
         return mv;
 }
 
+
 /**
  * @param session
  * @param tweetID
@@ -83,6 +85,7 @@ public ModelAndView viewTweet(HttpSession session, @PathVariable int tweetID) {
 
         return mv;
 }
+
 
 /**
  * @param session
@@ -105,12 +108,16 @@ public ModelAndView addTweet(HttpSession session) {
         return mv;
 }
 
+
 /**
  * @param session
  * @param tweetGroup
  * @param content
  * @param tweetDate
  * @param tweetTime
+ * @param imageUrl
+ * @param latitude
+ * @param longitude
  * @return
  */
 @RequestMapping(value = "/add", method = RequestMethod.POST)
@@ -203,6 +210,7 @@ public ModelAndView addTweetPost(
 }
 
 
+
 /**
  * @param session
  * @param groupID
@@ -221,12 +229,16 @@ public ModelAndView addTweetToGroup(HttpSession session, @PathVariable int group
         return mv;
 }
 
+
 /**
  * @param session
  * @param groupID
  * @param content
  * @param tweetDate
  * @param tweetTime
+ * @param imageUrl
+ * @param latitude
+ * @param longitude
  * @return
  */
 @RequestMapping(value = "/add/{groupID}", method = RequestMethod.POST)
@@ -319,10 +331,14 @@ public ModelAndView editTweet(HttpSession session, @PathVariable int tweetID) {
         return mv;
 }
 
+
 /**
  * @param session
  * @param tweetID
  * @param content
+ * @param imageUrl
+ * @param latitude
+ * @param longitude
  * @return
  */
 @RequestMapping(value = "/edit/{tweetID}", method = RequestMethod.POST)
@@ -371,6 +387,7 @@ public ModelAndView editTweetPost(
         return new ModelAndView("redirect:/groups/view/" + tweetEntry.groupID);
 }
 
+
 /**
  * @param session
  * @param request
@@ -392,9 +409,9 @@ public ModelAndView deleteTweet(HttpSession session, HttpServletRequest request,
         return mv;
 }
 
+
 /**
  * @param session
- * @param request
  * @param tweetID
  * @param referer
  * @return

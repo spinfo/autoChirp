@@ -18,6 +18,7 @@ public class LoginController extends ConnectController {
 
 private TwitterAccount twitterAccount;
 
+
 /**
  * @param connectionFactoryLocator
  * @param connectionRepository
@@ -32,6 +33,10 @@ public LoginController(
         this.twitterAccount = twitterAccount;
 }
 
+
+/**
+ * 
+ */
 @PostConstruct
 public void twitterAccountInterceptor() {
         this.addInterceptor(twitterAccount);

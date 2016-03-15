@@ -4,8 +4,9 @@ import autoChirp.DBConnector;
 
 /**
  * 
- * represents a single tweet consisting of content, tweetDate, tweetID, groupID,
- * groupName and the status-attributes scheduled and tweeted
+ * represents a single tweet consisting of content, tweetDate, imageUrl,
+ * geo-locations, tweetID, groupID, groupName and the status-attributes
+ * scheduled and tweeted
  * 
  * @author Alena Geduldig
  */
@@ -40,6 +41,12 @@ public class Tweet implements Comparable<Tweet> {
 	 *            tweet has already been tweeted
 	 * @param userID
 	 *            db-user-assignment key
+	 * @param imageUrl
+	 *            link to an image
+	 * @param longitude
+	 *            longitude of geo-location
+	 * @param latitude
+	 *            latitude of geo-location
 	 */
 	public Tweet(String tweetDate, String content, int tweetID, int groupID, boolean scheduled, boolean tweeted,
 			int userID, String imageUrl, float longitude, float latitude) {
@@ -56,12 +63,19 @@ public class Tweet implements Comparable<Tweet> {
 	}
 
 	/**
-	 * Constructor for new tweets, which were not stored in the database yet.
+	 * Constructor for new created tweets, which were not stored in the database yet.
+	 * (don't have a tweetID, groupID or status-attributes)
 	 * 
 	 * @param tweetDate
 	 *            scheduling date of the tweet
 	 * @param content
 	 *            the tweets content
+	 * @param imageUrl
+	 *            link to an image
+	 * @param longitude
+	 *            longitude of geo-location
+	 * @param latitude
+	 *            latitude of geo-location
 	 */
 	public Tweet(String tweetDate, String content, String imageUrl, float longitude, float latitude) {
 		this.tweetDate = tweetDate;
@@ -70,11 +84,11 @@ public class Tweet implements Comparable<Tweet> {
 		this.longitude = longitude;
 		this.latitude = latitude;
 	}
-	
-	public Tweet(String tweetDate, String content){
-		this.tweetDate = tweetDate;
-		this.content = content;
-	}
+
+//	public Tweet(String tweetDate, String content) {
+//		this.tweetDate = tweetDate;
+//		this.content = content;
+//	}
 
 	/*
 	 * (non-Javadoc)
