@@ -53,7 +53,7 @@ public class TweetFactory {
 		dateRegexes = new ArrayList<String>();
 		dateFormats = new ArrayList<String>();
 		// set accepted date and time formats
-		// e.g. 2016-12-08 12:00:00
+		// 2016-12-08 12:00:00
 		addDateTimeForm("[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}", "yyyy-MM-dd HH:mm:ss");
 		// 2016-12-08 12:00
 		addDateTimeForm("[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}", "yyyy-MM-dd HH:mm");
@@ -74,7 +74,7 @@ public class TweetFactory {
 		// 30.10.15
 		addDateForm("[0-9]{2}\\.[0-9]{2}\\.[0-9]{2}", "dd.MM.yy");
 		// 2016/10/31
-		addDateForm("[0-9]{4}\\/[0-9]{2}\\/[0-9]{2}", "dd/MM/yyyy");
+		addDateForm("[0-9]{4}\\/[0-9]{2}\\/[0-9]{2}", "yyyy/MM/dd");
 	}
 
 	/**
@@ -157,10 +157,15 @@ public class TweetFactory {
 				if (!midnight) {
 					formattedDate = formattedDate.replace(" 00:00", " 12:00");
 				}
+				//get tweet-image
+				String imageUrl = null;
+				if(split.length > 3){
+					imageUrl = split[3];
+				}
 				// get tweet-content
 				content = split[2];
 				// trim content to max. 140 characters
-				content = trimToTweet(content, null);
+				content = trimToTweet(content, null, imageUrl);
 				// calc. next possible tweetDate
 				if (delay == 0) {
 					while (ldt.isBefore(LocalDateTime.now())) {
@@ -168,7 +173,7 @@ public class TweetFactory {
 					}
 				}
 				if (ldt.isAfter(LocalDateTime.now())) {
-					tweet = new Tweet(formattedDate, content);
+					tweet = new Tweet(formattedDate, content, imageUrl);
 					group.addTweet(tweet);
 				}
 				line = in.readLine();
@@ -224,11 +229,11 @@ public class TweetFactory {
 					continue;
 				// trim sentence to 140 characters
 				if (prefix != null) {
-					content = trimToTweet(prefix + ": " + doc.getSentences().get(i - 1), url);
+					content = trimToTweet(prefix + ": " + doc.getSentences().get(i - 1), url, null);
 				} else {
-					content = trimToTweet(doc.getSentences().get(i - 1), url);
+					content = trimToTweet(doc.getSentences().get(i - 1), url, null);
 				}
-				tweet = new Tweet(tweetDate, content);
+				tweet = new Tweet(tweetDate, content, null);
 				tweets.add(tweet);
 			}
 		}
@@ -280,16 +285,23 @@ public class TweetFactory {
 	 * @param url
 	 * @return a valid tweet content
 	 */
-	private String trimToTweet(String toTrim, String url) {
+	private String trimToTweet(String toTrim, String url, String imageUrl) {
 		if (toTrim.length() > 140) {
-			if (url != null) {
-				toTrim = toTrim.substring(0, 115);
-				toTrim = toTrim.substring(0, toTrim.lastIndexOf(" "));
-				toTrim = toTrim + " " + url;
-			} else {
-				toTrim = toTrim.substring(0, 140);
-				toTrim = toTrim.substring(0, toTrim.lastIndexOf(" "));
+			int characters = 140;
+			if(url != null){
+				characters = characters-25;
 			}
+			if(imageUrl != null){
+				characters = characters-25;
+			}
+			toTrim = toTrim.substring(0,characters);
+			toTrim = toTrim.substring(0, toTrim.lastIndexOf(" "));
+		}
+		if(url != null){
+			toTrim = toTrim.concat(" "+url);
+		}
+		if(imageUrl != null){
+			toTrim = toTrim.concat(" "+imageUrl);
 		}
 		return toTrim;
 	}
@@ -384,6 +396,8 @@ public class TweetFactory {
 			matcher = pattern.matcher(date);
 			if (matcher.find()) {
 				DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern(dateFormats.get(i));
+				System.out.println(date);
+				System.out.println(dtFormatter);
 				ldt = LocalDateTime.parse(date, dtFormatter);
 				return ldt;
 			}
@@ -395,6 +409,8 @@ public class TweetFactory {
 			matcher = pattern.matcher(date);
 			if (matcher.find()) {
 				DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern(dateFormats.get(j + dateTimes));
+				System.out.println(date);
+				System.out.println(dtFormatter);
 				ld = LocalDate.parse(date, dtFormatter);
 				ldt = LocalDateTime.of(ld, LocalTime.of(12, 0));
 				return ldt;

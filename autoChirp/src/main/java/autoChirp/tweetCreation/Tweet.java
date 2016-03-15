@@ -17,6 +17,7 @@ public class Tweet implements Comparable<Tweet> {
 	public boolean scheduled;
 	public boolean tweeted;
 	public String groupName;
+	public String imageUrl;
 
 	/**
 	 * Constructor for tweets read from the database. In contrast to new tweets
@@ -39,7 +40,7 @@ public class Tweet implements Comparable<Tweet> {
 	 *            db-user-assignment key
 	 */
 	public Tweet(String tweetDate, String content, int tweetID, int groupID, boolean scheduled, boolean tweeted,
-			int userID) {
+			int userID, String imageUrl) {
 		this.tweetDate = tweetDate;
 		this.content = content;
 		this.tweetID = tweetID;
@@ -47,6 +48,7 @@ public class Tweet implements Comparable<Tweet> {
 		this.tweeted = tweeted;
 		this.groupID = groupID;
 		this.groupName = DBConnector.getGroupTitle(groupID, userID);
+		this.imageUrl = imageUrl;
 	}
 
 	/**
@@ -57,7 +59,13 @@ public class Tweet implements Comparable<Tweet> {
 	 * @param content
 	 *            the tweets content
 	 */
-	public Tweet(String tweetDate, String content) {
+	public Tweet(String tweetDate, String content, String imageUrl) {
+		this.tweetDate = tweetDate;
+		this.content = content;
+		this.imageUrl = imageUrl;
+	}
+	
+	public Tweet(String tweetDate, String content){
 		this.tweetDate = tweetDate;
 		this.content = content;
 	}

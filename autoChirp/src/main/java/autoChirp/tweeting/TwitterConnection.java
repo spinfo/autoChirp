@@ -1,8 +1,12 @@
 package autoChirp.tweeting;
 
+import java.net.MalformedURLException;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.UrlResource;
+import org.springframework.social.twitter.api.TweetData;
 import org.springframework.social.twitter.api.Twitter;
 import org.springframework.social.twitter.api.impl.TwitterTemplate;
 import org.springframework.stereotype.Component;
@@ -63,13 +67,30 @@ public class TwitterConnection {
 		if (!DBConnector.isEnabledGroup(toTweet.groupID, userID)) {
 			return;
 		}
+		
 		// read userConfig
 		String[] userConfig = DBConnector.getUserConfig(userID);
 		String token = userConfig[1];
 		String tokenSecret = userConfig[2];
 		// tweeting with org.springframework.social.twitter
 		Twitter twitter = new TwitterTemplate(appID, appSecret, token, tokenSecret);
-		twitter.timelineOperations().updateStatus(toTweet.content);
+		TweetData tweetData = new TweetData(toTweet.content);
+		if(toTweet.imageUrl != null){
+			System.out.println("tweet image...");
+			try {
+				UrlResource img = new UrlResource(toTweet.imageUrl);
+				tweetData = tweetData.withMedia(img);
+				twitter.timelineOperations().updateStatus(tweetData);
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		else{
+			twitter.timelineOperations().updateStatus(tweetData);
+		}
+		
 		DBConnector.flagAsTweeted(tweetID, userID);
 	}
 

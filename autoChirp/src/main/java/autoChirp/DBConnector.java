@@ -211,7 +211,7 @@ public class DBConnector {
 			PreparedStatement prepUsers = connection
 					.prepareStatement("INSERT INTO groups(user_id, group_name, description, enabled) VALUES(?,?,?,?)");
 			PreparedStatement prepTweets = connection.prepareStatement(
-					"INSERT INTO tweets(user_id, group_id, scheduled_date, tweet, scheduled, tweeted) VALUES(?,?,?,?,?,?)");
+					"INSERT INTO tweets(user_id, group_id, scheduled_date, tweet, scheduled, tweeted, img_url) VALUES(?,?,?,?,?,?,?)");
 			// update table users
 			prepUsers.setInt(1, userID);
 			prepUsers.setString(2, tweetGroup.title);
@@ -232,6 +232,7 @@ public class DBConnector {
 				prepTweets.setString(4, tweet.content);
 				prepTweets.setBoolean(5, false);
 				prepTweets.setBoolean(6, false);
+				prepTweets.setString(7, tweet.imageUrl);
 				prepTweets.executeUpdate();
 			}
 			prepUsers.close();
@@ -459,7 +460,7 @@ public class DBConnector {
 			ResultSet result = stmt.executeQuery(query);
 			while (result.next()) {
 				Tweet tweet = new Tweet(result.getString(4), result.getString(5), result.getInt(1), result.getInt(3),
-						result.getBoolean(6), result.getBoolean(7), userID);
+						result.getBoolean(6), result.getBoolean(7), userID, result.getString(8));
 				toReturn.add(tweet);
 			}
 			stmt.close();
@@ -548,7 +549,7 @@ public class DBConnector {
 				return null;
 			}
 			toReturn = new Tweet(result.getString(4), result.getString(5), result.getInt(1), result.getInt(3),
-					result.getBoolean(6), result.getBoolean(7), userID);
+					result.getBoolean(6), result.getBoolean(7), userID, result.getString(8));
 		} catch (SQLException e) {
 			System.out.print("DBConnector.getGroupIDsForUser: ");
 			e.printStackTrace();
@@ -653,9 +654,9 @@ public class DBConnector {
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
-			String sql = "INSERT INTO tweets (user_id, group_id, scheduled_date, tweet, scheduled, tweeted) VALUES ('"
+			String sql = "INSERT INTO tweets (user_id, group_id, scheduled_date, tweet, scheduled, tweeted, img_url) VALUES ('"
 					+ userID + "', " + "'" + groupID + "', " + "'" + tweet.tweetDate + "', " + "'" + tweet.content
-					+ "', " + "'false', 'false')";
+					+ "', " + "'false', 'false', '"+tweet.imageUrl+"')";
 			stmt.executeUpdate(sql);
 			stmt.close();
 			connection.commit();
