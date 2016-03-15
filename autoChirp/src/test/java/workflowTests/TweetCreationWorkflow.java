@@ -72,7 +72,7 @@ public class TweetCreationWorkflow {
 		File testFile = new File("src/test/resources/testCSVFile.csv");
 		
 		//without delay
-		TweetGroup group = factory.getTweetsFromExcelFile(testFile, "testTitle", "testDescription", 0);
+		TweetGroup group = factory.getTweetsFromTSVFile(testFile, "testTitle", "testDescription", 0);
 		Assert.assertEquals(group.tweets.size(), 5);
 		System.out.println("Title: " + group.title);
 		System.out.println("Description: " + group.description);
@@ -83,7 +83,7 @@ public class TweetCreationWorkflow {
 			System.out.println(tweet.tweetDate+": "+ tweet.content);
 		}
 		//with delay
-		group = factory.getTweetsFromExcelFile(testFile, "testTitle", "testDescription", 3);
+		group = factory.getTweetsFromTSVFile(testFile, "testTitle", "testDescription", 3);
 		Assert.assertEquals(group.tweets.size(), 5);
 		System.out.println("Title: " + group.title);
 		System.out.println("Description: " + group.description);

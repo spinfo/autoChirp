@@ -120,7 +120,7 @@ public class TweetFactory {
 	 *            the calculated tweet-date
 	 * @return a new tweetGroup with a tweet for each row in the file
 	 */
-	public TweetGroup getTweetsFromExcelFile(File tsvFile, String title, String description, int delay) {
+	public TweetGroup getTweetsFromTSVFile(File tsvFile, String title, String description, int delay) {
 		TweetGroup group = new TweetGroup(title, description);
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(tsvFile));
