@@ -28,7 +28,9 @@
                 <tr>
                   <th>Group</th>
                   <th>Content</th>
-                  <th class="text-center">Tweeted</th>
+                  <th class="text-center"><span class="glyphicon glyphicon-picture" aria-hidden="true"></span></th>
+                  <th class="text-center"><span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span></th>
+                  <th class="text-center"><span class="glyphicon glyphicon-send" aria-hidden="true"></span></th>
                   <th class="text-center fixlist">When</th>
                   <th class="text-right fixlist">Actions</th>
                 </tr>
@@ -37,7 +39,18 @@
                 <tr th:each="tweetEntry : ${tweetsList}" th:classappend="${false} ? danger">
                   <td><a th:href="@{/groups/view/} + ${tweetEntry.groupID}" th:text="${tweetEntry.groupName}"></a></td>
                   <td th:text="${tweetEntry.content}"></td>
-                  <td class="text-center"><span class="glyphicon" th:classappend="${tweetEntry.tweeted} ? 'glyphicon glyphicon-ok' : 'glyphicon-time'" aria-hidden="true"></span></td>
+                  <td class="text-center">
+                    <a th:unless="${#strings.isEmpty(tweetEntry.imageUrl)}" th:href="${tweetEntry.imageUrl}" target="_blank">
+                      <span class="glyphicon glyphicon-picture" aria-hidden="true"></span></a>
+                  </td>
+                  <td class="text-center">
+                    <a th:unless="${tweetEntry.latitude eq 0.0 and tweetEntry.longitude eq 0.0}" th:href="'https://www.google.de/maps/@' + ${tweetEntry.latitude} + ',' + ${tweetEntry.longitude} + ',17z'" target="_blank">
+                      <span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span></a>
+                  </td>
+                  <td class="text-center">
+                    <span class="glyphicon" th:classappend="${tweetEntry.tweeted} ? 'glyphicon-ok' : 'glyphicon-hourglass'" aria-hidden="true">
+                    </span>
+                  </td>
                   <td th:text="${tweetEntry.tweetDate}" class="text-center"></td>
                   <td class="text-right">
                     <a th:href="@{/tweets/view/} + ${tweetEntry.tweetID}">View</a> |

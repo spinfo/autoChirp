@@ -48,7 +48,6 @@ html {
       > a {
         color: #9d9d9d;
         border-left: 2px solid transparent;
-        //        font-size: 13px;
         font-weight: 400;
         padding: 4px 20px;
       }
@@ -143,6 +142,11 @@ input[required]:invalid {
 tr {
   .fixlist {
     width: 10em;
+  }
+}
+span.form-control[disabled] {
+  > a {
+    text-decoration: underline;
   }
 }
 // CUSTOM

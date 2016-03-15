@@ -101,4 +101,7 @@ input[required]:invalid {
 tr .fixlist {
   width: 10em; }
 
+span.form-control[disabled] > a {
+  text-decoration: underline; }
+
 /*# sourceMappingURL=style.css.map */

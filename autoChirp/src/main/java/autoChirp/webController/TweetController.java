@@ -1,7 +1,9 @@
 package autoChirp.webController;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -112,7 +114,16 @@ public ModelAndView addTweet(HttpSession session) {
  * @return
  */
 @RequestMapping(value = "/add", method = RequestMethod.POST)
-public ModelAndView addTweetPost(HttpSession session, @RequestParam("tweetGroup") String tweetGroup, @RequestParam("content") String content, @RequestParam("tweetDate") String tweetDate, @RequestParam("tweetTime") String tweetTime) {
+public ModelAndView addTweetPost(
+        HttpSession session,
+        @RequestParam("tweetGroup") String tweetGroup,
+        @RequestParam("content") String content,
+        @RequestParam("tweetDate") String tweetDate,
+        @RequestParam("tweetTime") String tweetTime,
+        @RequestParam("imageUrl") String imageUrl,
+        @RequestParam(name = "latitude", defaultValue = "0.0") float latitude,
+        @RequestParam(name = "longitude", defaultValue = "0.0") float longitude
+        ) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
@@ -134,7 +145,29 @@ public ModelAndView addTweetPost(HttpSession session, @RequestParam("tweetGroup"
                 return mv;
         }
 
-        Tweet tweetEntry = new Tweet(tweetDate + " " + tweetTime, content);
+        if (!imageUrl.isEmpty()) {
+                try {
+                        URL url = new URL(imageUrl);
+                } catch (MalformedURLException e) {
+                        ModelAndView mv = new ModelAndView("error");
+                        mv.addObject("error", "The image URL must be a valid url.");
+                        return mv;
+                }
+        }
+
+        if (latitude < -90 || latitude > 90) {
+                ModelAndView mv = new ModelAndView("error");
+                mv.addObject("error", "The latitude must be withing the margins of -90 to +90.");
+                return mv;
+        }
+
+        if (longitude < -180 || longitude > 180) {
+                ModelAndView mv = new ModelAndView("error");
+                mv.addObject("error", "The longitude must be withing the margins of -180 to +180.");
+                return mv;
+        }
+
+        Tweet tweetEntry = new Tweet(tweetDate + " " + tweetTime, content, imageUrl, longitude, latitude);
         boolean enabledGroup;
         int groupID;
         int tweetID;
@@ -164,9 +197,9 @@ public ModelAndView addTweetPost(HttpSession session, @RequestParam("tweetGroup"
                 ModelAndView mv = new ModelAndView("confirm");
                 mv.addObject("confirm", "Do You want to keep Your group \"" + DBConnector.getGroupTitle(groupID, userID) + "\" enabled?");
                 mv.addObject("next", "/groups/toggle/" + groupID);
-                mv.addObject("prev", "/tweets/view/" + tweetID);
+                mv.addObject("prev", "/groups/view/" + groupID);
                 return mv;
-        } else return new ModelAndView("redirect:/tweets/view/" + tweetID);
+        } else return new ModelAndView("redirect:/groups/view/" + groupID);
 }
 
 
@@ -197,7 +230,16 @@ public ModelAndView addTweetToGroup(HttpSession session, @PathVariable int group
  * @return
  */
 @RequestMapping(value = "/add/{groupID}", method = RequestMethod.POST)
-public ModelAndView addTweetToGroupPost(HttpSession session, @PathVariable int groupID, @RequestParam("content") String content, @RequestParam("tweetDate") String tweetDate, @RequestParam("tweetTime") String tweetTime) {
+public ModelAndView addTweetToGroupPost(
+        HttpSession session,
+        @PathVariable int groupID,
+        @RequestParam("content") String content,
+        @RequestParam("tweetDate") String tweetDate,
+        @RequestParam("tweetTime") String tweetTime,
+        @RequestParam("imageUrl") String imageUrl,
+        @RequestParam(name = "latitude", defaultValue = "0.0") float latitude,
+        @RequestParam(name = "longitude", defaultValue = "0.0") float longitude
+        ) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
         boolean enabledGroup = DBConnector.isEnabledGroup(groupID, userID);
@@ -220,7 +262,29 @@ public ModelAndView addTweetToGroupPost(HttpSession session, @PathVariable int g
                 return mv;
         }
 
-        Tweet tweetEntry = new Tweet(tweetDate + " " + tweetTime, content);
+        if (!imageUrl.isEmpty()) {
+                try {
+                        URL url = new URL(imageUrl);
+                } catch (MalformedURLException e) {
+                        ModelAndView mv = new ModelAndView("error");
+                        mv.addObject("error", "The image URL must be a valid url.");
+                        return mv;
+                }
+        }
+
+        if (latitude < -90 || latitude > 90) {
+                ModelAndView mv = new ModelAndView("error");
+                mv.addObject("error", "The latitude must be withing the margins of -90 to +90.");
+                return mv;
+        }
+
+        if (longitude < -180 || longitude > 180) {
+                ModelAndView mv = new ModelAndView("error");
+                mv.addObject("error", "The longitude must be withing the margins of -180 to +180.");
+                return mv;
+        }
+
+        Tweet tweetEntry = new Tweet(tweetDate + " " + tweetTime, content, imageUrl, longitude, latitude);
         int tweetID = DBConnector.addTweetToGroup(userID, tweetEntry, groupID);
 
         if (tweetID < 0)
@@ -230,9 +294,9 @@ public ModelAndView addTweetToGroupPost(HttpSession session, @PathVariable int g
                 ModelAndView mv = new ModelAndView("confirm");
                 mv.addObject("confirm", "Do You want to keep Your group \"" + DBConnector.getGroupTitle(groupID, userID) + "\" enabled?");
                 mv.addObject("next", "/groups/toggle/" + groupID);
-                mv.addObject("prev", "/tweets/view/" + tweetID);
+                mv.addObject("prev", "/groups/view/" + groupID);
                 return mv;
-        } else return new ModelAndView("redirect:/tweets/view/" + tweetID);
+        } else return new ModelAndView("redirect:/groups/view/" + groupID);
 }
 
 /**
@@ -262,7 +326,14 @@ public ModelAndView editTweet(HttpSession session, @PathVariable int tweetID) {
  * @return
  */
 @RequestMapping(value = "/edit/{tweetID}", method = RequestMethod.POST)
-public ModelAndView editTweetPost(HttpSession session, @PathVariable int tweetID, @RequestParam("content") String content) {
+public ModelAndView editTweetPost(
+        HttpSession session,
+        @PathVariable int tweetID,
+        @RequestParam("content") String content,
+        @RequestParam("imageUrl") String imageUrl,
+        @RequestParam(name = "latitude", defaultValue = "0.0") float latitude,
+        @RequestParam(name = "longitude", defaultValue = "0.0") float longitude
+        ) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
@@ -272,9 +343,32 @@ public ModelAndView editTweetPost(HttpSession session, @PathVariable int tweetID
                 return mv;
         }
 
-        DBConnector.editTweet(tweetID, content, userID);
+        if (!imageUrl.isEmpty()) {
+                try {
+                        URL url = new URL(imageUrl);
+                } catch (MalformedURLException e) {
+                        ModelAndView mv = new ModelAndView("error");
+                        mv.addObject("error", "The image URL must be a valid url.");
+                        return mv;
+                }
+        }
 
-        return new ModelAndView("redirect:/tweets/view/" + tweetID);
+        if (latitude < -90 || latitude > 90) {
+                ModelAndView mv = new ModelAndView("error");
+                mv.addObject("error", "The latitude must be withing the margins of -90 to +90.");
+                return mv;
+        }
+
+        if (longitude < -180 || longitude > 180) {
+                ModelAndView mv = new ModelAndView("error");
+                mv.addObject("error", "The longitude must be withing the margins of -180 to +180.");
+                return mv;
+        }
+
+        DBConnector.editTweet(tweetID, content, userID, imageUrl, longitude, latitude);
+        Tweet tweetEntry = DBConnector.getTweetByID(tweetID, userID);
+
+        return new ModelAndView("redirect:/groups/view/" + tweetEntry.groupID);
 }
 
 /**
@@ -306,9 +400,20 @@ public ModelAndView deleteTweet(HttpSession session, HttpServletRequest request,
  * @return
  */
 @RequestMapping(value = "/delete/{tweetID}/confirm")
-public String confirmedDeleteTweet(HttpSession session, HttpServletRequest request, @PathVariable int tweetID, @RequestParam(name = "referer", defaultValue = "/tweets/view") String referer) {
+public String confirmedDeleteTweet(
+        HttpSession session,
+        HttpServletRequest request,
+        @PathVariable int tweetID,
+        @RequestParam(name = "referer", required = false) String referer
+        ) {
         if (session.getAttribute("account") == null) return "redirect:/account";
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
+        Tweet tweetEntry = DBConnector.getTweetByID(tweetID, userID);
+
+        referer = (referer.isEmpty())
+                  ? "/groups/view/" + tweetEntry.groupID
+                  : referer;
+
         DBConnector.deleteTweet(tweetID, userID);
         return "redirect:" + referer;
 }
