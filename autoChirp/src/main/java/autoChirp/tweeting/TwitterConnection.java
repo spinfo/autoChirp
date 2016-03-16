@@ -92,12 +92,12 @@ public class TwitterConnection {
 		if(toTweet.longitude != 0 || toTweet.latitude != 0){
 			System.out.println("long: " + toTweet.longitude);
 			System.out.println("lat: " + toTweet.latitude);
-			tweetData = tweetData.atLocation(toTweet.longitude, toTweet.latitude);
+			tweetData = tweetData.atLocation(toTweet.longitude, toTweet.latitude).displayCoordinates(true);
 		}
+
 		twitter.timelineOperations().updateStatus(tweetData);
-	
-		
 		DBConnector.flagAsTweeted(tweetID, userID);
+		
 	}
 
 }
