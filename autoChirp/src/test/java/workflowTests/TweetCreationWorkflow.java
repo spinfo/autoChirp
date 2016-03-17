@@ -72,7 +72,7 @@ public class TweetCreationWorkflow {
 	@Test
 	public void generateTweetsFromTSVFile(){
 		TweetFactory factory = new TweetFactory();
-		File testFile = new File("src/test/resources/autoChirpTestFile.txt");
+		File testFile = new File("src/test/resources/testTSVFile_Image_Locations.txt");
 		
 		//without delay
 		TweetGroup group = factory.getTweetsFromTSVFile(testFile, "testTitle", "testDescription", 0);
@@ -104,7 +104,7 @@ public class TweetCreationWorkflow {
 	 */
 	@Test
 	public void dateTimeFomatsTest() throws IOException{
-		File file = new File("src/test/resources/allDateTimeFormats_Tweets.txt");
+		File file = new File("src/test/resources/testTSVFile_DateFormats.txt");
 		TweetFactory factory = new TweetFactory();
 		TweetGroup group = factory.getTweetsFromTSVFile(file, "dateFormatTest", "test all supported formats", 2);
 		Assert.assertEquals(group.tweets.size(), 18);
