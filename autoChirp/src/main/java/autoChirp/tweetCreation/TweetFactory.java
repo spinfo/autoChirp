@@ -2,6 +2,7 @@ package autoChirp.tweetCreation;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -32,14 +33,15 @@ import de.unihd.dbs.heideltime.standalone.exceptions.DocumentCreationTimeMissing
 
 public class TweetFactory {
 
+	private File dateFormatsFile = new File("src/main/resources/dateTimeFormats/dateTimeFormats.txt");
 	// the current year is needed to calculate the next possible tweet-date.
 	private int currentYear;
 	// regexes for the accepted date and time formats
-	private List<String> dateTimeRegexes;
+	private List<String> dateTimeRegexes = new ArrayList<String>();
 	// regexes for the accepted date formats
-	private List<String> dateRegexes;
+	private List<String> dateRegexes = new ArrayList<String>();
 	// accepted date and time formats
-	private List<String> dateFormats;
+	private List<String> dateFormats = new ArrayList<String>();
 	// a formatter to normalize the different input formats
 	private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
@@ -49,32 +51,28 @@ public class TweetFactory {
 	public TweetFactory() {
 		// set current year
 		currentYear = LocalDateTime.now().getYear();
-		dateTimeRegexes = new ArrayList<String>();
-		dateRegexes = new ArrayList<String>();
-		dateFormats = new ArrayList<String>();
-		// set accepted date and time formats
-		// 2016-12-08 12:00:00
-		addDateTimeForm("[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}", "yyyy-MM-dd HH:mm:ss");
-		// 2016-12-08 12:00
-		addDateTimeForm("[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}", "yyyy-MM-dd HH:mm");
-		// 12.08.2016 12:24:13
-		addDateTimeForm("[0-9]{2}\\.[0-9]{2}\\.[0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2}", "dd.MM.yyyy HH:mm:ss");
-		// 12.08.2016 12:24
-		addDateTimeForm("[0-9]{2}\\.[0-9]{2}\\.[0-9]{4} [0-9]{2}:[0-9]{2}", "dd.MM.yyyy HH:mm");
-		// 12.08.16 12:24:22
-		addDateTimeForm("[0-9]{2}\\.[0-9]{2}\\.[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}", "dd.MM.yy HH:mm:ss");
-		// 12.08.16 12:24
-		addDateTimeForm("[0-9]{2}\\.[0-9]{2}\\.[0-9]{2} [0-9]{2}:[0-9]{2}", "dd.MM.yy HH:mm");
-		// 2016-12-08
-		addDateForm("[0-9]{4}-[0-9]{2}-[0-9]{2}", "yyyy-MM-dd");
-		// 2016-12
-		addDateForm("[0-9]{4}-[0-9]{2}", "yyyy-MM");
-		// 30.10.2015
-		addDateForm("[0-9]{2}\\.[0-9]{2}\\.[0-9]{4}", "dd.MM.yyyy");
-		// 30.10.15
-		addDateForm("[0-9]{2}\\.[0-9]{2}\\.[0-9]{2}", "dd.MM.yy");
-		// 2016/10/31
-		addDateForm("[0-9]{4}\\/[0-9]{2}\\/[0-9]{2}", "yyyy/MM/dd");
+		readDateFormatsFromFile();
+	}
+	
+	public void readDateFormatsFromFile() {
+		try {
+			BufferedReader in = new BufferedReader(new FileReader(dateFormatsFile));
+			String line = in.readLine();
+			while(line!= null){
+				String[] split = line.split("\t");
+				if(line.startsWith("DateTime:")){
+					addDateTimeForm(split[1], split[2]);
+				}
+				if(line.startsWith("Date:")){
+					addDateForm(split[1], split[2]);
+				}
+				line = in.readLine();
+			}
+			in.close();
+		} catch (IOException e) {
+			System.out.println("couldnt read dateFormats from File");
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -106,8 +104,9 @@ public class TweetFactory {
 
 	/**
 	 * creates a TweetGroup-object from a tsv-file by building a tweet for each
-	 * row, which is in the following format: [date][tabulator][time
-	 * (optional)][tabulator][tweet-content]
+	 * row, which has to be in the following format: [date] tab [time(optional)]
+	 * tab [tweet-content] tab [imageUrl (optional)] tab [latitude (optional)]
+	 * tab [longitude (optional)]
 	 * 
 	 * @param tsvFile
 	 *            the input file
@@ -131,9 +130,17 @@ public class TweetFactory {
 			LocalDateTime ldt;
 			Tweet tweet;
 			while (line != null) {
+				if(line.equals("")){
+					line = in.readLine();
+					continue;
+				}
 				String[] split = line.split("\t");
 				// get tweet-date
 				date = split[0].trim();
+				if(date.length() <= 7){
+					//add missing day of month
+					date = date.concat("-01");
+				}
 				time = split[1].trim();
 				if (time.equals("")) {
 					ldt = parseDateString(date);
@@ -157,20 +164,20 @@ public class TweetFactory {
 				if (!midnight) {
 					formattedDate = formattedDate.replace(" 00:00", " 12:00");
 				}
-				//get tweet-image
+				// get tweet-image
 				String imageUrl = null;
-				if(split.length > 3){
+				if (split.length > 3) {
 					imageUrl = split[3];
 				}
-				//get longitude
-				float longitude = 0;
-				if(split.length > 4){
-					longitude = Float.parseFloat(split[4]);
+				// get latitude
+				float latitude = 0;
+				if (split.length > 4) {
+					latitude = Float.parseFloat(split[4]);
 				}
-				//getlatidue
-				float latidue = 0;
-				if(split.length > 5){
-					latidue = Float.parseFloat(split[5]);
+				// get longitude
+				float longitude = 0;
+				if (split.length > 5) {
+					longitude = Float.parseFloat(split[5]);
 				}
 				// get tweet-content
 				content = split[2];
@@ -183,7 +190,7 @@ public class TweetFactory {
 					}
 				}
 				if (ldt.isAfter(LocalDateTime.now())) {
-					tweet = new Tweet(formattedDate, content, imageUrl, longitude, latidue);
+					tweet = new Tweet(formattedDate, content, imageUrl, longitude, latitude);
 					group.addTweet(tweet);
 				}
 				line = in.readLine();
@@ -209,8 +216,8 @@ public class TweetFactory {
 	 * @param url
 	 *            url
 	 * @param parser
-	 *            the appropriate parser for the given url (e.g.
-	 *            WikipediaParser for Wikipedia-urls)
+	 *            the appropriate parser for the given url (e.g. WikipediaParser
+	 *            for Wikipedia-urls)
 	 * @param description
 	 *            a description for the created TweetGroup
 	 * @param prefix
@@ -298,21 +305,21 @@ public class TweetFactory {
 	private String trimToTweet(String toTrim, String url, String imageUrl) {
 		if (toTrim.length() > 140) {
 			int characters = 140;
-			if(url != null){
-				characters = characters-25;
+			if (url != null) {
+				characters = characters - 25;
 			}
-			if(imageUrl != null){
-				characters = characters-25;
+			if (imageUrl != null) {
+				characters = characters - 25;
 			}
-			toTrim = toTrim.substring(0,characters);
+			toTrim = toTrim.substring(0, characters);
 			toTrim = toTrim.substring(0, toTrim.lastIndexOf(" "));
 		}
-		if(url != null){
-			toTrim = toTrim.concat(" "+url);
+		if (url != null) {
+			toTrim = toTrim.concat(" " + url);
 		}
-//		if(imageUrl != null){
-//			toTrim = toTrim.concat(" "+imageUrl);
-//		}
+		// if(imageUrl != null){
+		// toTrim = toTrim.concat(" "+imageUrl);
+		// }
 		return toTrim;
 	}
 

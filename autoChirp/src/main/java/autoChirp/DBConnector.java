@@ -680,7 +680,6 @@ public class DBConnector {
 			stmt.close();
 			connection.commit();
 			DBConnector.updateGroupStatus(groupID, false, userID);
-			System.out.println("TweetID: " + toReturn);
 			return toReturn;
 
 		} catch (SQLException e) {

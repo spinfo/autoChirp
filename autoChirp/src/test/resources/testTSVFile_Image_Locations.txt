@@ -1,0 +1,3 @@
+12.12.2016	10:32:33	#autoChirp image and location-test	http://dixit.uni-koeln.de/wp-content/uploads/uni-koeln.jpg	50.9	6.9
+2016/12		#autoChirp image-test	http://dixit.uni-koeln.de/wp-content/uploads/uni-koeln.jpg
+2016-03-17	10:40	#autoChirp new location-test		51.268056	6.951782

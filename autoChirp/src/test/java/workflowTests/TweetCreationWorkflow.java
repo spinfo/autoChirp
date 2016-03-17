@@ -1,5 +1,8 @@
 package workflowTests;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,5 +96,17 @@ public class TweetCreationWorkflow {
 			Assert.assertTrue(tweet.tweetDate.startsWith("2019"));
 			System.out.println(tweet.tweetDate+": "+ tweet.content+" "+tweet.imageUrl+" "+tweet.longitude+" "+tweet.latitude);
 		}
+	}
+	
+	/**
+	 * test all supported dateTime- and dateFormats specified in src/main/resources/dateTmeFormats
+	 * @throws IOException 
+	 */
+	@Test
+	public void dateTimeFomatsTest() throws IOException{
+		File file = new File("src/test/resources/allDateTimeFormats_Tweets.txt");
+		TweetFactory factory = new TweetFactory();
+		TweetGroup group = factory.getTweetsFromTSVFile(file, "dateFormatTest", "test all supported formats", 2);
+		Assert.assertEquals(group.tweets.size(), 18);
 	}
 }
