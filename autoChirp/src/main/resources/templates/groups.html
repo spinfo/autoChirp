@@ -35,14 +35,14 @@
               </thead>
               <tbody>
                 <tr th:each="tweetGroup : ${tweetGroups}">
-                  <td th:text="${tweetGroup.title}"></td>
+                  <td><a th:href="@{/groups/view/} + ${tweetGroup.groupID}" th:text="${tweetGroup.title}"></a></td>
                   <td th:text="${#lists.size(tweetGroup.tweets)}"></td>
                   <td th:text="${tweetGroup.description}"></td>
                   <td class="text-center">
-                    <span class="label" th:classappend="${tweetGroup.enabled} ? label-success : label-danger" th:text="${tweetGroup.enabled} ? Enabled : Disabled"></span>
+                    <span class="label" th:classappend="${tweetGroup.enabled} ? label-success : label-warning"
+                      th:text="${tweetGroup.enabled} ? Enabled : Disabled"></span>
                   </td>
                   <td class="text-right">
-                    <a th:href="@{/groups/view/} + ${tweetGroup.groupID}">View</a> |
                     <a th:href="@{/groups/edit/} + ${tweetGroup.groupID}">Edit</a> |
                     <a th:href="@{/groups/delete/} + ${tweetGroup.groupID}">Delete</a>
                   </td>
@@ -52,9 +52,14 @@
             <div th:if="${pages != null}" class="panel-footer">
               <nav class="text-center">
                 <ul class="pagination">
-                  <li th:classappend="${page == 1} ? disabled"><a th:href="${page == 1} ? '#' : @{/groups/view?page=} + ${page - 1}" aria-label="Previous"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></a></li>
-                  <li th:each="i : ${#numbers.sequence(1, pages)}" th:classappend="${page == i} ? active"><a  th:href="@{/groups/view?page=} + ${i}" th:text="${i}"></a></li>
-                  <li th:classappend="${page == pages} ? disabled"><a th:href="${page == pages} ? '#' : @{/groups/view?page=} + ${page + 1}" aria-label="Next"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></a></li>
+                  <li th:classappend="${page == 1} ? disabled">
+                    <a th:href="${page == 1} ? '#' : @{/groups/view?page=} + ${page - 1}" aria-label="Previous">
+                      <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></a></li>
+                  <li th:each="i : ${#numbers.sequence(1, pages)}" th:classappend="${page == i} ? active">
+                    <a  th:href="@{/groups/view?page=} + ${i}" th:text="${i}"></a></li>
+                  <li th:classappend="${page == pages} ? disabled">
+                    <a th:href="${page == pages} ? '#' : @{/groups/view?page=} + ${page + 1}" aria-label="Next">
+                      <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></a></li>
                 </ul>
               </nav>
             </div>

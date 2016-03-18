@@ -28,23 +28,33 @@ import autoChirp.tweeting.TweetScheduler;
 
 /**
  * @author Philip Schildkamp
- *
  */
 @Controller
 @RequestMapping(value = "/groups")
 public class GroupController {
 
+private HttpSession session;
 private int groupsPerPage = 15;
 private int tweetsPerPage = 15;
 
 
 /**
- * @param session
+ * Constructor method, used to autowire and inject the HttpSession object.
+ *
+ * @param session Autowired HttpSession object
+ */
+@Inject
+public TweetController(HttpSession session) {
+        this.session = session;
+}
+
+
+/**
  * @param page
  * @return
  */
 @RequestMapping(value = "/view")
-public ModelAndView viewGroups(HttpSession session, @RequestParam(name = "page", defaultValue = "1") int page) {
+public ModelAndView viewGroups(@RequestParam(name = "page", defaultValue = "1") int page) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
@@ -74,13 +84,12 @@ public ModelAndView viewGroups(HttpSession session, @RequestParam(name = "page",
 
 
 /**
- * @param session
  * @param groupID
  * @param page
  * @return
  */
 @RequestMapping(value = "/view/{groupID}")
-public ModelAndView viewGroup(HttpSession session, @PathVariable int groupID, @RequestParam(name = "page", defaultValue = "1") int page) {
+public ModelAndView viewGroup(@PathVariable int groupID, @RequestParam(name = "page", defaultValue = "1") int page) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
@@ -107,11 +116,10 @@ public ModelAndView viewGroup(HttpSession session, @PathVariable int groupID, @R
 
 
 /**
- * @param session
  * @return
  */
 @RequestMapping(value = "/add")
-public ModelAndView addGroup(HttpSession session) {
+public ModelAndView addGroup() {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
 
         ModelAndView mv = new ModelAndView("group");
@@ -120,14 +128,12 @@ public ModelAndView addGroup(HttpSession session) {
 
 
 /**
- * @param session
  * @param title
  * @param description
  * @return
  */
 @RequestMapping(value = "/add", method = RequestMethod.POST)
 public ModelAndView addGroupPost(
-        HttpSession session,
         @RequestParam("title") String title,
         @RequestParam("description") String description
         ) {
@@ -156,12 +162,11 @@ public ModelAndView addGroupPost(
 
 
 /**
- * @param session
  * @param importer
  * @return
  */
 @RequestMapping(value = "/import/{importer}")
-public ModelAndView importGroup(HttpSession session, @PathVariable String importer) {
+public ModelAndView importGroup(@PathVariable String importer) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
 
         if (!Arrays.asList("tsv-file", "wikipedia").contains(importer))
@@ -175,7 +180,6 @@ public ModelAndView importGroup(HttpSession session, @PathVariable String import
 
 
 /**
- * @param session
  * @param source
  * @param title
  * @param description
@@ -184,7 +188,6 @@ public ModelAndView importGroup(HttpSession session, @PathVariable String import
  */
 @RequestMapping(value = "/import/tsv-file", method = RequestMethod.POST)
 public ModelAndView importTSVGroupPost(
-        HttpSession session,
         @RequestParam("source") MultipartFile source,
         @RequestParam("title") String title,
         @RequestParam("description") String description,
@@ -226,7 +229,6 @@ public ModelAndView importTSVGroupPost(
 
 
 /**
- * @param session
  * @param source
  * @param title
  * @param prefix
@@ -235,7 +237,6 @@ public ModelAndView importTSVGroupPost(
  */
 @RequestMapping(value = "/import/wikipedia", method = RequestMethod.POST)
 public ModelAndView importWikipediaGroupPost(
-        HttpSession session,
         @RequestParam("source") String source,
         @RequestParam("title") String title,
         @RequestParam("prefix") String prefix,
@@ -284,12 +285,11 @@ public ModelAndView importWikipediaGroupPost(
 
 
 /**
- * @param session
  * @param groupID
  * @return
  */
 @RequestMapping(value = "/edit/{groupID}")
-public ModelAndView editGroup(HttpSession session, @PathVariable int groupID) {
+public ModelAndView editGroup(@PathVariable int groupID) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
@@ -303,7 +303,6 @@ public ModelAndView editGroup(HttpSession session, @PathVariable int groupID) {
 
 
 /**
- * @param session
  * @param groupID
  * @param title
  * @param description
@@ -311,7 +310,6 @@ public ModelAndView editGroup(HttpSession session, @PathVariable int groupID) {
  */
 @RequestMapping(value = "/edit/{groupID}", method = RequestMethod.POST)
 public ModelAndView editGroupPost(
-        HttpSession session,
         @PathVariable int groupID,
         @RequestParam("title") String title,
         @RequestParam("description") String description
@@ -338,12 +336,11 @@ public ModelAndView editGroupPost(
 
 
 /**
- * @param session
  * @param groupID
  * @return
  */
 @RequestMapping(value = "/toggle/{groupID}")
-public String toggleGroup(HttpSession session, @PathVariable int groupID) {
+public String toggleGroup(@PathVariable int groupID) {
         if (session.getAttribute("account") == null) return "redirect:/account";
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
@@ -359,14 +356,13 @@ public String toggleGroup(HttpSession session, @PathVariable int groupID) {
 
 
 /**
- * @param session
  * @param request
  * @param groupID
  * @return
  * @throws URISyntaxException
  */
 @RequestMapping(value = "/delete/{groupID}")
-public ModelAndView deleteGroup(HttpSession session, HttpServletRequest request, @PathVariable int groupID) throws URISyntaxException {
+public ModelAndView deleteGroup(HttpServletRequest request, @PathVariable int groupID) throws URISyntaxException {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
         String referer = new URI(request.getHeader("referer")).getPath();
@@ -380,14 +376,12 @@ public ModelAndView deleteGroup(HttpSession session, HttpServletRequest request,
 
 
 /**
- * @param session
  * @param groupID
  * @param referer
  * @return
  */
 @RequestMapping(value = "/delete/{groupID}/confirm")
 public String confirmedDeleteGroup(
-        HttpSession session,
         @PathVariable int groupID,
         @RequestParam(name = "referer", defaultValue = "/groups/view") String referer
         ) {

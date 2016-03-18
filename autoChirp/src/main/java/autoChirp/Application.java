@@ -13,8 +13,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
 /**
- * @author Philip Schildkamp
+ * Default (SpringBoot-)Application class with main() method and minor
+ * extensions: On start a persistent connection to the SQLite database is
+ * opened and all relevant Tweets from that database are scheduled.
  *
+ * @author Philip Schildkamp
+ * @editor Alena Geduldig
  */
 @SpringBootApplication
 public class Application {
@@ -26,15 +30,15 @@ private String dbFilePath;
 private String createDatabaseFile;
 
 /**
- * @param args
- * @throws IOException
+ * @param args Command line arguments
+ * @throws IOException IOException
  */
 public static void main(String[] args) throws IOException {
         ApplicationContext ctx = SpringApplication.run(Application.class, args);
 }
 
 /**
- * 
+ * Open database connection and schedule relevant Tweets.
  */
 @PostConstruct
 private void initializeApplication(){

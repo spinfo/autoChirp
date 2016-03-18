@@ -9,19 +9,44 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
- * @author Philip Schildkamp
+ * A Spring MVC controller, responsible for serving /account.
+ * This controller implements the logic to view the user account details,
+ * including details about the associated Twitter account, and means to delete
+ * ones own account.
  *
+ * @author Philip Schildkamp
  */
 @Controller
+@RequestMapping(value = "/account")
 public class AccountController {
+
+private HttpSession session;
+private Model model;
 
 
 /**
- * @param session
- * @return
+ * Constructor method, used to autowire and inject the necessary objects.
+ *
+ * @param session Autowired HttpSession object
+ * @param model Autowired Model object
  */
-@RequestMapping("/account")
-public ModelAndView account(HttpSession session) {
+@Inject
+public AccountController(HttpSession session, Model model) {
+        this.session = session;
+        this.model = model;
+}
+
+/**
+ * A HTTP GET request handler, responsible for serving /account.
+ * This method reads details about the active user account from the database
+ * and hands them to the returned view. All details about the associated
+ * Twitter-account are stored within the session and can be accessed directly
+ * from the templating layer of the application.
+ *
+ * @return View containing the account overview
+ */
+@RequestMapping("")
+public ModelAndView account() {
         ModelAndView mv = new ModelAndView("account");
 
         if (session.getAttribute("account") != null) {
@@ -38,13 +63,15 @@ public ModelAndView account(HttpSession session) {
 
 
 /**
- * @param session
- * @param model
- * @return
+ * A HTTP GET request handler, responsible for serving /account/logout.
+ * This method invalidates the session, therefore terminating all information
+ * about the user account and the associated Twitter-account and as such,
+ * logging out the user.
+ *
+ * @return Redirection to /home
  */
-@RequestMapping("/account/logout")
-public String logout(HttpSession session, Model model) {
-        // connectionRepository.removeConnections("twitter");
+@RequestMapping("/logout")
+public String logout() {
         session.invalidate();
         model.asMap().clear();
 
@@ -53,12 +80,14 @@ public String logout(HttpSession session, Model model) {
 
 
 /**
- * @param session
- * @param model
- * @return
+ * A HTTP GET request handler, responsible for serving /account/delete.
+ * This method just presents a confirmation dialog to the user requesting
+ * account-deletion.
+ *
+ * @return View containing confirmation dialog for the intended action
  */
-@RequestMapping(value = "/account/delete")
-public ModelAndView delete(HttpSession session, Model model) {
+@RequestMapping(value = "/delete")
+public ModelAndView delete() {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
@@ -71,16 +100,19 @@ public ModelAndView delete(HttpSession session, Model model) {
 
 
 /**
- * @param session
- * @param model
- * @return
+ * A HTTP GET request handler, responsible for serving /account/delete/confirm.
+ * This method does the same as the logout() method, but additionally deletes
+ * all information about the user and all associated objects (Twitter-account,
+ * scheduled Tweets, created groups, etc.) from the database, effectively
+ * destroying the user account.
+ *
+ * @return Redirection to /home
  */
-@RequestMapping(value = "/account/delete/confirm")
-public String confirmedDelete(HttpSession session, Model model) {
+@RequestMapping(value = "/delete/confirm")
+public String confirmedDelete() {
         if (session.getAttribute("account") == null) return "redirect:/account";
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
-        // connectionRepository.removeConnections("twitter");
         session.invalidate();
         model.asMap().clear();
         DBConnector.deleteUser(userID);

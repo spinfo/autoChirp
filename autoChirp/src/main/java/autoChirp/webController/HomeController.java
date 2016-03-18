@@ -2,20 +2,24 @@ package autoChirp.webController;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
- * @author Philip Schildkamp
+ * A Spring MVC controller, responsible for serving /, /home, /about, /contact
+ * and /help.
+ * This controller serves static templates containing basic information about
+ * the application.
  *
+ * @author Philip Schildkamp
  */
 @Controller
-@SessionAttributes("twitter")
 public class HomeController {
 
 
 /**
- * @return
+ * A HTTP GET request handler, responsible for redirecting / to /home.
+ *
+ * @return Redirection to /home
  */
 @RequestMapping(value = "/")
 public String index() {
@@ -23,7 +27,9 @@ public String index() {
 }
 
 /**
- * @return
+ * A HTTP GET request handler, responsible for serving /home.
+ *
+ * @return View containing the home page
  */
 @RequestMapping(value = "/home")
 public ModelAndView home() {
@@ -32,7 +38,9 @@ public ModelAndView home() {
 }
 
 /**
- * @return
+ * A HTTP GET request handler, responsible for serving /about.
+ *
+ * @return View containing the about page
  */
 @RequestMapping(value = "/about")
 public ModelAndView about() {
@@ -41,7 +49,9 @@ public ModelAndView about() {
 }
 
 /**
- * @return
+ * A HTTP GET request handler, responsible for serving /contact.
+ *
+ * @return View containing the contact page
  */
 @RequestMapping(value = "/contact")
 public ModelAndView contact() {
@@ -50,7 +60,9 @@ public ModelAndView contact() {
 }
 
 /**
- * @return
+ * A HTTP GET request handler, responsible for serving /help.
+ *
+ * @return View containing the help page
  */
 @RequestMapping(value = "/help")
 public ModelAndView help() {

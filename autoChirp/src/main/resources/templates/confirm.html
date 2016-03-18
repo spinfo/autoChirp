@@ -11,8 +11,10 @@
       <div class="container">
         <h1><strong>Please confirm</strong> that You are sure</h1>
         <p th:text="${confirm}"></p>
-        <a th:href="${next == null} ? ${#httpServletRequest.requestURI} + '/confirm' + (${referer != null} ? '?referer=' + ${referer} : '') : ${next}" class="btn btn-danger"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> I'm sure</a>
-        <a th:href="${prev == null} ? ${#httpServletRequest.getHeader('Referer')} : ${prev}" class="btn btn-default"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel</a>
+        <a th:href="${next == null} ? ${#httpServletRequest.requestURI} + '/confirm' + (${referer != null} ? '?referer=' + ${referer} : '') : ${next}"
+          class="btn btn-danger"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> I'm sure</a>
+        <a th:href="${prev == null} ? ${#httpServletRequest.getHeader('Referer')} : ${prev}"
+          class="btn btn-default"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel</a>
       </div>
     </div>
   </div>

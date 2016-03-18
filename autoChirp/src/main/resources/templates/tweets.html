@@ -29,7 +29,7 @@
                   <th>Group</th>
                   <th>Content</th>
                   <th class="text-center"><span class="glyphicon glyphicon-picture" aria-hidden="true"></span></th>
-                  <th class="text-center"><span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span></th>
+                  <th class="text-center"><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span></th>
                   <th class="text-center"><span class="glyphicon glyphicon-send" aria-hidden="true"></span></th>
                   <th class="text-center fixlist">When</th>
                   <th class="text-right fixlist">Actions</th>
@@ -38,23 +38,25 @@
               <tbody>
                 <tr th:each="tweetEntry : ${tweetsList}" th:classappend="${false} ? danger">
                   <td><a th:href="@{/groups/view/} + ${tweetEntry.groupID}" th:text="${tweetEntry.groupName}"></a></td>
-                  <td th:text="${tweetEntry.content}"></td>
+                  <td><a th:href="@{/tweets/view/} + ${tweetEntry.tweetID}" th:text="${tweetEntry.content}"></a></td>
                   <td class="text-center">
                     <a th:unless="${#strings.isEmpty(tweetEntry.imageUrl)}" th:href="${tweetEntry.imageUrl}" target="_blank">
                       <span class="glyphicon glyphicon-picture" aria-hidden="true"></span></a>
                   </td>
                   <td class="text-center">
-                    <a th:unless="${tweetEntry.latitude eq 0.0 and tweetEntry.longitude eq 0.0}" th:href="'https://www.google.de/maps/@' + ${tweetEntry.latitude} + ',' + ${tweetEntry.longitude} + ',17z'" target="_blank">
-                      <span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span></a>
+                    <a th:unless="${tweetEntry.latitude eq 0.0 and tweetEntry.longitude eq 0.0}"
+                      th:href="'https://www.google.de/maps/@' + ${tweetEntry.latitude} + ',' + ${tweetEntry.longitude} + ',17z'" target="_blank">
+                      <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span></a>
                   </td>
                   <td class="text-center">
-                    <span class="glyphicon" th:classappend="${tweetEntry.tweeted} ? 'glyphicon-ok' : 'glyphicon-hourglass'" aria-hidden="true">
-                    </span>
+                    <span class="glyphicon" th:classappend="${tweetEntry.tweeted} ? 'glyphicon-ok' :
+                      (${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm').compareTo(tweetEntry.tweetDate) lt 0}
+                      ? 'glyphicon-hourglass' : 'glyphicon-remove')" aria-hidden="true"></span>
                   </td>
                   <td th:text="${tweetEntry.tweetDate}" class="text-center"></td>
                   <td class="text-right">
-                    <a th:href="@{/tweets/view/} + ${tweetEntry.tweetID}">View</a> |
-                    <a th:href="@{/tweets/edit/} + ${tweetEntry.tweetID}">Edit</a> |
+                    <span th:unless="${tweetEntry.tweeted}" th:remove="tag">
+                      <a th:href="@{/tweets/edit/} + ${tweetEntry.tweetID}">Edit</a> |</span>
                     <a th:href="@{/tweets/delete/} + ${tweetEntry.tweetID}">Delete</a>
                   </td>
                 </tr>
@@ -63,9 +65,14 @@
             <div th:if="${pages != null}" class="panel-footer">
               <nav class="text-center">
                 <ul class="pagination">
-                  <li th:classappend="${page == 1} ? disabled"><a th:href="${page == 1} ? '#' : @{/tweets/view?page=} + ${page - 1}" aria-label="Previous"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></a></li>
-                  <li th:each="i : ${#numbers.sequence(1, pages)}" th:classappend="${page == i} ? active"><a  th:href="@{/tweets/view?page=} + ${i}" th:text="${i}"></a></li>
-                  <li th:classappend="${page == pages} ? disabled"><a th:href="${page == pages} ? '#' : @{/tweets/view?page=} + ${page + 1}" aria-label="Next"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></a></li>
+                  <li th:classappend="${page == 1} ? disabled">
+                    <a th:href="${page == 1} ? '#' : @{/tweets/view?page=} + ${page - 1}" aria-label="Previous">
+                      <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></a></li>
+                  <li th:each="i : ${#numbers.sequence(1, pages)}" th:classappend="${page == i} ? active">
+                    <a  th:href="@{/tweets/view?page=} + ${i}" th:text="${i}"></a></li>
+                  <li th:classappend="${page == pages} ? disabled">
+                    <a th:href="${page == pages} ? '#' : @{/tweets/view?page=} + ${page + 1}" aria-label="Next">
+                      <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></a></li>
                 </ul>
               </nav>
             </div>

@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -25,24 +26,47 @@ import autoChirp.tweetCreation.Tweet;
 import autoChirp.tweetCreation.TweetGroup;
 
 /**
- * @author Philip Schildkamp
+ * A Spring MVC controller, responsible for serving /tweets.
+ * This controller implements the logic to manage and schedule Tweets from the
+ * web-UI. It loosely implements all CRUD methods and is strongly tied to all
+ * template-views.
  *
+ * Every method uses the injected HttpSession object to check for an active user
+ * account. If no account is found in the session, the user is redirected to a
+ * genuin error/login page.
+ *
+ * @author Philip Schildkamp
  */
 @Controller
 @RequestMapping(value = "/tweets")
 public class TweetController {
 
+private HttpSession session;
 private int tweetsPerPage = 15;
 private int maxTweetLength = 140;
 
 
 /**
- * @param session
- * @param page
- * @return
+ * Constructor method, used to autowire and inject the HttpSession object.
+ *
+ * @param session Autowired HttpSession object
+ */
+@Inject
+public TweetController(HttpSession session) {
+        this.session = session;
+}
+
+
+/**
+ * A HTTP GET request handler, responsible for serving /tweets/view.
+ * This method provides the returned view with all necessary Tweets from the
+ * database, chunking the results to support pagination.
+ *
+ * @param page Request param containing the page number, defaults to 1
+ * @return View containing the global Tweets overview
  */
 @RequestMapping(value = "/view")
-public ModelAndView viewTweets(HttpSession session, @RequestParam(name = "page", defaultValue = "1") int page) {
+public ModelAndView viewTweets(@RequestParam(name = "page", defaultValue = "1") int page) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
@@ -67,32 +91,45 @@ public ModelAndView viewTweets(HttpSession session, @RequestParam(name = "page",
 
 
 /**
- * @param session
- * @param tweetID
- * @return
+ * A HTTP GET request handler, responsible for serving /tweets/view/$tweetid.
+ * This method is called to view a single Tweet in detail. It reads all relevant
+ * information from the database and displays it as a view. If no Tweet with the
+ * requested ID is found, an error is displayed.
+ *
+ * @param tweetID Path param containing an ID-reference to a Tweet
+ * @return View containing details for one Tweet
  */
 @RequestMapping(value = "/view/{tweetID}")
-public ModelAndView viewTweet(HttpSession session, @PathVariable int tweetID) {
+public ModelAndView viewTweet(@PathVariable int tweetID) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
         Tweet tweetEntry = DBConnector.getTweetByID(tweetID, userID);
-        TweetGroup tweetGroup = DBConnector.getTweetGroupForUser(userID, tweetEntry.groupID);
+
+        if (tweetEntry == null) {
+                ModelAndView mv = new ModelAndView("error");
+                mv.addObject("error", "A tweet with the ID #" + tweetID + " does not exist.");
+                return mv;
+        }
 
         ModelAndView mv = new ModelAndView("tweet");
         mv.addObject("tweetEntry", tweetEntry);
-        mv.addObject("tweetGroup", tweetGroup);
+        mv.addObject("tweetGroup", DBConnector.getTweetGroupForUser(userID, tweetEntry.groupID));
 
         return mv;
 }
 
 
 /**
- * @param session
- * @return
+ * A HTTP GET request handler, responsible for serving /tweets/add.
+ * This method reads all groups from the database and feeds them to the view
+ * holding the form for Tweet-creation, thereby providing auto-completion for
+ * already created groups.
+ *
+ * @return View containing the Tweet-creation form
  */
 @RequestMapping(value = "/add")
-public ModelAndView addTweet(HttpSession session) {
+public ModelAndView addTweet() {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
@@ -110,19 +147,25 @@ public ModelAndView addTweet(HttpSession session) {
 
 
 /**
- * @param session
- * @param tweetGroup
- * @param content
- * @param tweetDate
- * @param tweetTime
- * @param imageUrl
- * @param latitude
- * @param longitude
- * @return
+ * A HTTP POST request handler, responsible for serving /tweets/add.
+ * This method gets POSTed as the Tweet-creation form is submitted. All <input>-
+ * field values are passed as parameters and checked for validity. Upon success
+ * a new Tweet (possibly a new group, too) is added to the database. Because
+ * groups are referenced by ID but presented with their nicenames, a check for
+ * type-safety is employed to detect if the user wants the Tweet to be added to
+ * an existing (ID-referenced) or new (nicenamed) group.
+ *
+ * @param tweetGroup POST param bearing the referenced <input>-field value
+ * @param content POST param bearing the referenced <input>-field value
+ * @param tweetDate POST param bearing the referenced <input>-field value
+ * @param tweetTime POST param bearing the referenced <input>-field value
+ * @param imageUrl POST param bearing the referenced <input>-field value
+ * @param latitude POST param bearing the referenced <input>-field value
+ * @param longitude POST param bearing the referenced <input>-field value
+ * @return Redirect-view if successful, else error-view.
  */
 @RequestMapping(value = "/add", method = RequestMethod.POST)
 public ModelAndView addTweetPost(
-        HttpSession session,
         @RequestParam("tweetGroup") String tweetGroup,
         @RequestParam("content") String content,
         @RequestParam("tweetDate") String tweetDate,
@@ -212,12 +255,15 @@ public ModelAndView addTweetPost(
 
 
 /**
- * @param session
- * @param groupID
- * @return
+ * A HTTP GET request handler, responsible for serving /tweets/add/$groupid.
+ * This method is responsible to present the Tweet-creation form with the group
+ * prefilled into the according <input>-field.
+ *
+ * @param groupID Path param containing an ID-reference to a group
+ * @return View containing the Tweet-creation form with prefilled group
  */
 @RequestMapping(value = "/add/{groupID}")
-public ModelAndView addTweetToGroup(HttpSession session, @PathVariable int groupID) {
+public ModelAndView addTweetToGroup(@PathVariable int groupID) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
@@ -231,19 +277,23 @@ public ModelAndView addTweetToGroup(HttpSession session, @PathVariable int group
 
 
 /**
- * @param session
- * @param groupID
- * @param content
- * @param tweetDate
- * @param tweetTime
- * @param imageUrl
- * @param latitude
- * @param longitude
- * @return
+ * A HTTP POST request handler, responsible for serving /tweets/add/$groupid.
+ * This method gets POSTed as the Tweet-creation form with prefilled group is
+ * submitted. All <input>-field values are passed as parameters and checked for
+ * validity. Upon success a new Tweet is added to the prefilled group in the
+ * database.
+ *
+ * @param groupID POST param bearing the referenced <input>-field value
+ * @param content POST param bearing the referenced <input>-field value
+ * @param tweetDate POST param bearing the referenced <input>-field value
+ * @param tweetTime POST param bearing the referenced <input>-field value
+ * @param imageUrl POST param bearing the referenced <input>-field value
+ * @param latitude POST param bearing the referenced <input>-field value
+ * @param longitude POST param bearing the referenced <input>-field value
+ * @return Redirect-view if successful, else error-view
  */
 @RequestMapping(value = "/add/{groupID}", method = RequestMethod.POST)
 public ModelAndView addTweetToGroupPost(
-        HttpSession session,
         @PathVariable int groupID,
         @RequestParam("content") String content,
         @RequestParam("tweetDate") String tweetDate,
@@ -312,17 +362,26 @@ public ModelAndView addTweetToGroupPost(
 }
 
 /**
- * @param session
- * @param tweetID
- * @return
+ * A HTTP GET request handler, responsible for serving /tweets/edit/$tweetid.
+ * This method is responsible to present the Tweet-creation form with the group
+ * and date prefilled into the according <input>-field. As such the form is re-
+ * used to edit a already created Tweet.
+ *
+ * @param tweetID Path param containing an ID-reference to a Tweet
+ * @return View containing the Tweet-creation form with prefilled group and date
  */
 @RequestMapping(value = "/edit/{tweetID}")
-public ModelAndView editTweet(HttpSession session, @PathVariable int tweetID) {
+public ModelAndView editTweet(@PathVariable int tweetID) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
-
         Tweet tweetEntry = DBConnector.getTweetByID(tweetID, userID);
         TweetGroup tweetGroup = DBConnector.getTweetGroupForUser(userID, tweetEntry.groupID);
+
+        if (tweetEntry.tweeted) {
+                ModelAndView mv = new ModelAndView("error");
+                mv.addObject("error", "You cannot edit a tweeted Tweet.");
+                return mv;
+        }
 
         ModelAndView mv = new ModelAndView("tweet");
         mv.addObject("tweetEntry", tweetEntry);
@@ -333,17 +392,20 @@ public ModelAndView editTweet(HttpSession session, @PathVariable int tweetID) {
 
 
 /**
- * @param session
- * @param tweetID
- * @param content
- * @param imageUrl
- * @param latitude
- * @param longitude
- * @return
+ * A HTTP POST request handler, responsible for serving /tweets/edit/$tweetid.
+ * This method gets POSTed as the Tweet-editing form is submitted. All <input>-
+ * field values are passed as parameters and checked for validity. Upon success
+ * the referenced Tweet gets updated in the database or an error is shown.
+ *
+ * @param tweetID Path param containing an ID-reference to a Tweet
+ * @param content POST param bearing the referenced <input>-field value
+ * @param imageUrl POST param bearing the referenced <input>-field value
+ * @param latitude POST param bearing the referenced <input>-field value
+ * @param longitude POST param bearing the referenced <input>-field value
+ * @return Redirect-view if successful, else error-view.
  */
 @RequestMapping(value = "/edit/{tweetID}", method = RequestMethod.POST)
 public ModelAndView editTweetPost(
-        HttpSession session,
         @PathVariable int tweetID,
         @RequestParam("content") String content,
         @RequestParam("imageUrl") String imageUrl,
@@ -352,6 +414,13 @@ public ModelAndView editTweetPost(
         ) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
+        Tweet tweetEntry = DBConnector.getTweetByID(tweetID, userID);
+
+        if (tweetEntry.tweeted) {
+                ModelAndView mv = new ModelAndView("error");
+                mv.addObject("error", "You cannot edit a tweeted Tweet.");
+                return mv;
+        }
 
         if (content.length() > maxTweetLength) {
                 ModelAndView mv = new ModelAndView("error");
@@ -382,25 +451,29 @@ public ModelAndView editTweetPost(
         }
 
         DBConnector.editTweet(tweetID, content, userID, imageUrl, longitude, latitude);
-        Tweet tweetEntry = DBConnector.getTweetByID(tweetID, userID);
 
         return new ModelAndView("redirect:/groups/view/" + tweetEntry.groupID);
 }
 
 
 /**
- * @param session
- * @param request
- * @param tweetID
- * @return
- * @throws URISyntaxException
+ * A HTTP GET request handler, responsible for serving /tweets/delete/$tweetid.
+ * This method presents the user with a confirmation dialog, before forwading to
+ * the actual deletion the the referenced Tweet.
+ *
+ * @param request Autowired HttpServletRequest object, containing header-fields
+ * @param tweetID Path param containing an ID-reference to a Tweet
+ * @return View containing confirmation dialog for the intended action
  */
 @RequestMapping(value = "/delete/{tweetID}")
-public ModelAndView deleteTweet(HttpSession session, HttpServletRequest request, @PathVariable int tweetID) throws URISyntaxException {
+public ModelAndView deleteTweet(HttpServletRequest request, @PathVariable int tweetID) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
         Tweet tweetEntry = DBConnector.getTweetByID(tweetID, userID);
-        String referer = new URI(request.getHeader("referer")).getPath();
+
+        String referer;
+        try { referer = new URI(request.getHeader("referer")).getPath(); }
+        catch (URISyntaxException e) { referer = null; }
 
         ModelAndView mv = new ModelAndView("confirm");
         mv.addObject("confirm", "Do You want to delete Your tweet \"" + tweetEntry.content + "\" from Your group \"" + tweetEntry.groupName + "\"?");
@@ -411,14 +484,17 @@ public ModelAndView deleteTweet(HttpSession session, HttpServletRequest request,
 
 
 /**
- * @param session
- * @param tweetID
- * @param referer
- * @return
+ * A HTTP GET request handler, responsible for serving
+ * /tweets/delete/$tweetid/confirm.
+ * This method triggers the actual deletion the the referenced Tweet and
+ * redirects to a referer, if applicable.
+ *
+ * @param tweetID Path param containing an ID-reference to a Tweet
+ * @param referer Request param containing the referer to redirect to
+ * @return Redirect-view
  */
 @RequestMapping(value = "/delete/{tweetID}/confirm")
 public String confirmedDeleteTweet(
-        HttpSession session,
         @PathVariable int tweetID,
         @RequestParam(name = "referer", defaultValue = "") String referer
         ) {

@@ -21,30 +21,38 @@
             <div class="form-group">
               <label for="title" class="col-sm-2 control-label">Title</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" id="title" name="title" required="required" maxlength="255" placeholder="My group" th:value="${#httpServletRequest.requestURI.startsWith('/groups/add')} ? '' : ${tweetGroup.title}" th:disabled="${#httpServletRequest.requestURI.startsWith('/groups/view/')}">
+                <input type="text" class="form-control" id="title" name="title" required="required" maxlength="255" placeholder="My group"
+                  th:value="${#httpServletRequest.requestURI.startsWith('/groups/add')} ? '' : ${tweetGroup.title}"
+                  th:disabled="${#httpServletRequest.requestURI.startsWith('/groups/view/')}">
                 </input>
               </div>
             </div>
             <div class="form-group">
               <label for="description" class="col-sm-2 control-label">Description</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" id="description" name="description" required="required" maxlength="255" placeholder="A group with my tweets" th:value="${#httpServletRequest.requestURI.startsWith('/groups/add')} ? '' : ${tweetGroup.description}" th:disabled="${#httpServletRequest.requestURI.startsWith('/groups/view/')}">
+                <input type="text" class="form-control" id="description" name="description" required="required" maxlength="255" placeholder="A group with my tweets"
+                  th:value="${#httpServletRequest.requestURI.startsWith('/groups/add')} ? '' : ${tweetGroup.description}"
+                  th:disabled="${#httpServletRequest.requestURI.startsWith('/groups/view/')}">
                 </input>
               </div>
             </div>
             <div class="form-group">
               <label class="col-sm-2 control-label">Actions</label>
               <div class="col-sm-10">
-                <a th:if="${#httpServletRequest.requestURI.startsWith('/groups/view/')}" th:href="@{/groups/edit/} + ${tweetGroup.groupID}" class="btn btn-primary">
-                  <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit group</a>
-                <button th:unless="${#httpServletRequest.requestURI.startsWith('/groups/view/')}" type="submit" class="btn btn-success">
-                  <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save group</button>
-                <a th:unless="${#httpServletRequest.requestURI.equals('/groups/add')}" th:href="@{/groups/delete/} + ${tweetGroup.groupID}" class="btn btn-danger">
-                  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete group</a>
-                <a th:unless="${#httpServletRequest.requestURI.equals('/groups/add')}" th:href="@{/groups/toggle/} + ${tweetGroup.groupID}" class="btn" th:classappend="${tweetGroup.enabled} ? btn-danger : btn-success">
-                  <span class="glyphicon" th:classappend="${tweetGroup.enabled} ? glyphicon-pause : glyphicon-play" aria-hidden="true"></span> <span th:text="${tweetGroup.enabled} ? 'Disable group' : 'Enable group'" th:remove="tag"></span></a>
-                <a th:if="${#httpServletRequest.requestURI.startsWith('/groups/view/')}" th:href="@{/tweets/add/} + ${tweetGroup.groupID}" class="btn btn-primary">
-                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add tweet</a>
+                <a th:if="${#httpServletRequest.requestURI.startsWith('/groups/view/')}" th:href="@{/groups/view}"
+                  class="btn btn-default"><span class="glyphicon glyphicon-level-up" aria-hidden="true"></span> All groups</a>
+                <a th:if="${#httpServletRequest.requestURI.startsWith('/groups/view/')}" th:href="@{/groups/edit/} + ${tweetGroup.groupID}"
+                  class="btn btn-primary"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit group</a>
+                <button th:unless="${#httpServletRequest.requestURI.startsWith('/groups/view/')}" type="submit"
+                  class="btn btn-primary"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Save group</button>
+                <a th:unless="${#httpServletRequest.requestURI.equals('/groups/add')}" th:href="@{/groups/delete/} + ${tweetGroup.groupID}"
+                  class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete group</a>
+                <a th:unless="${#httpServletRequest.requestURI.equals('/groups/add')}" th:href="@{/groups/toggle/} + ${tweetGroup.groupID}"
+                  class="btn" th:classappend="${tweetGroup.enabled} ? btn-warning : btn-success"><span class="glyphicon"
+                  th:classappend="${tweetGroup.enabled} ? glyphicon-pause : glyphicon-play" aria-hidden="true"></span>
+                  <span th:text="${tweetGroup.enabled} ? 'Disable group' : 'Enable group'" th:remove="tag"></span></a>
+                <a th:if="${#httpServletRequest.requestURI.startsWith('/groups/view/')}" th:href="@{/tweets/add/} + ${tweetGroup.groupID}"
+                  class="btn btn-primary"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add tweet</a>
               </div>
             </div>
             <div th:if="${#httpServletRequest.requestURI.startsWith('/groups/view/') and !#lists.isEmpty(tweetsList)}" class="form-group">
@@ -56,7 +64,7 @@
                       <tr>
                         <th>Content</th>
                         <th class="text-center"><span class="glyphicon glyphicon-picture" aria-hidden="true"></span></th>
-                        <th class="text-center"><span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span></th>
+                        <th class="text-center"><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span></th>
                         <th class="text-center"><span class="glyphicon glyphicon-send" aria-hidden="true"></span></th>
                         <th class="text-center fixlist">When</th>
                         <th class="text-right fixlist">Actions</th>
@@ -64,20 +72,25 @@
                     </thead>
                     <tbody>
                       <tr th:each="tweetEntry : ${tweetsList}" th:classappend="${false} ? danger">
-                        <td th:text="${tweetEntry.content}"></td>
+                        <td><a th:href="@{/tweets/view/} + ${tweetEntry.tweetID}" th:text="${tweetEntry.content}"></a></td>
                         <td class="text-center">
                           <a th:unless="${#strings.isEmpty(tweetEntry.imageUrl)}" th:href="${tweetEntry.imageUrl}" target="_blank">
                             <span class="glyphicon glyphicon-picture" aria-hidden="true"></span></a>
                         </td>
                         <td class="text-center">
-                          <a th:unless="${tweetEntry.latitude eq 0.0 and tweetEntry.longitude eq 0.0}" th:href="'https://www.google.de/maps/@' + ${tweetEntry.latitude} + ',' + ${tweetEntry.longitude} + ',17z'" target="_blank">
-                            <span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span></a>
+                          <a th:unless="${tweetEntry.latitude eq 0.0 and tweetEntry.longitude eq 0.0}"
+                            th:href="'https://www.google.de/maps/@' + ${tweetEntry.latitude} + ',' + ${tweetEntry.longitude} + ',17z'" target="_blank">
+                            <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span></a>
                         </td>
-                        <td class="text-center"><span class="glyphicon" th:classappend="${tweetEntry.tweeted} ? 'glyphicon glyphicon-ok' : 'glyphicon-hourglass'" aria-hidden="true"></span></td>
+                        <td class="text-center">
+                          <span class="glyphicon" th:classappend="${tweetEntry.tweeted} ? 'glyphicon-ok' :
+                            (${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm').compareTo(tweetEntry.tweetDate) lt 0}
+                            ? 'glyphicon-hourglass' : 'glyphicon-remove')" aria-hidden="true"></span>
+                        </td>
                         <td th:text="${tweetEntry.tweetDate}" class="text-center"></td>
                         <td class="text-right">
-                          <a th:href="@{/tweets/view/} + ${tweetEntry.tweetID}">View</a> |
-                          <a th:href="@{/tweets/edit/} + ${tweetEntry.tweetID}">Edit</a> |
+                          <span th:unless="${tweetEntry.tweeted}" th:remove="tag">
+                            <a th:href="@{/tweets/edit/} + ${tweetEntry.tweetID}">Edit</a> |</span>
                           <a th:href="@{/tweets/delete/} + ${tweetEntry.tweetID}">Delete</a>
                         </td>
                       </tr>
@@ -86,9 +99,17 @@
                   <div th:if="${pages != null}" class="panel-footer">
                     <nav class="text-center">
                       <ul class="pagination">
-                        <li th:classappend="${page == 1} ? disabled"><a th:href="${page == 1} ? '#' : @{/groups/view/} + ${tweetGroup.groupID} + '?page=' + ${page - 1}" aria-label="Previous"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></a></li>
-                        <li th:each="i : ${#numbers.sequence(1, pages)}" th:classappend="${page == i} ? active"><a  th:href="@{/groups/view/} + ${tweetGroup.groupID} + '?page=' + ${i}" th:text="${i}"></a></li>
-                        <li th:classappend="${page == pages} ? disabled"><a th:href="${page == pages} ? '#' : @{/groups/view/} + ${tweetGroup.groupID} + '?page=' + ${page + 1}" aria-label="Next"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></a></li>
+                        <li th:classappend="${page == 1} ? disabled">
+                          <a th:href="${page == 1} ? '#' : @{/groups/view/} + ${tweetGroup.groupID} + '?page=' + ${page - 1}"
+                            aria-label="Previous"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span></a>
+                        </li>
+                        <li th:each="i : ${#numbers.sequence(1, pages)}" th:classappend="${page == i} ? active">
+                          <a  th:href="@{/groups/view/} + ${tweetGroup.groupID} + '?page=' + ${i}" th:text="${i}"></a>
+                        </li>
+                        <li th:classappend="${page == pages} ? disabled">
+                          <a th:href="${page == pages} ? '#' : @{/groups/view/} + ${tweetGroup.groupID} + '?page=' + ${page + 1}" aria-label="Next">
+                            <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></a>
+                        </li>
                       </ul>
                     </nav>
                   </div>

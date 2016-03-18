@@ -10,8 +10,11 @@ import org.springframework.social.connect.web.ConnectController;
 import org.springframework.stereotype.Controller;
 
 /**
- * @author Philip Schildkamp
+ * A Spring MVC controller, extending Spring Socials ConnectController.
+ * This controller-class overrides the default redirect paths of the Spring
+ * Social module and adds an interceptor to handle Twitter authentication.
  *
+ * @author Philip Schildkamp
  */
 @Controller
 public class LoginController extends ConnectController {
@@ -20,9 +23,11 @@ private TwitterAccount twitterAccount;
 
 
 /**
- * @param connectionFactoryLocator
- * @param connectionRepository
- * @param twitterAccount
+ * Constructor method, used to autowire and inject necessary objects.
+ *
+ * @param connectionFactoryLocator Autowired ConnectionFactoryLocator object
+ * @param connectionRepository Autowired ConnectionRepository object
+ * @param twitterAccount Autowired TwitterAccount interceptor
  */
 @Inject
 public LoginController(
@@ -35,7 +40,7 @@ public LoginController(
 
 
 /**
- * 
+ * PostConstruct method, used to add an interceptor to handle Twitter auth.
  */
 @PostConstruct
 public void twitterAccountInterceptor() {

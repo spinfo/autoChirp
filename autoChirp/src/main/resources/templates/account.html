@@ -29,18 +29,14 @@
             <div class="panel-heading">Account details</div>
             <div class="panel-body">
               <dl class="dl-horizontal">
-                <dt>Account id</dt>
-                <dd th:text="${session.account.userID}"></dd>
-                <dt>Group count</dt>
-                <dd th:text="${groups}"></dd>
-                <dt>Tweet count</dt>
-                <dd th:text="${tweets}"></dd>
+                <dt>Account id</dt><dd th:text="${session.account.userID}"></dd>
+                <dt>Group count</dt><dd th:text="${groups}"></dd>
+                <dt>Tweet count</dt><dd th:text="${tweets}"></dd>
               </dl>
             </div>
             <div class="panel-footer text-right">
               <a th:href="@{/account/delete}" class="btn btn-danger">
-                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete account
-              </a>
+                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete account</a>
             </div>
           </div>
         </div>
@@ -51,16 +47,13 @@
               <dl class="dl-horizontal">
                 <dt>Twitter handle</dt>
                 <dd>
-                  <a th:href="${session.account.url}" th:text="'@' + ${session.account.handle}" target="_blank"></a>
+                  <a th:href="${session.account.url}"
+                    th:text="'@' + ${session.account.handle}" target="_blank"></a>
                 </dd>
-                <dt>Twitter ID</dt>
-                <dd th:text="${session.account.twitterID}"></dd>
-                <dt>Full name</dt>
-                <dd th:text="${session.account.name}"></dd>
-                <dt>Twitter bio</dt>
-                <dd th:text="${session.account.description}"></dd>
-                <dt>Protected</dt>
-                <dd th:text="${session.account.protected}"></dd>
+                <dt>Twitter ID</dt><dd th:text="${session.account.twitterID}"></dd>
+                <dt>Full name</dt><dd th:text="${session.account.name}"></dd>
+                <dt>Twitter bio</dt><dd th:text="${session.account.description}"></dd>
+                <dt>Protected</dt><dd th:text="${session.account.protected}"></dd>
               </dl>
             </div>
             <div class="panel-footer text-right">
