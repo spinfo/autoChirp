@@ -1,13 +1,13 @@
 package autoChirp.webController;
 
-import javax.annotation.PostConstruct;
-
 import autoChirp.tweeting.TwitterAccount;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.web.ConnectController;
 import org.springframework.stereotype.Controller;
+
 
 /**
  * A Spring MVC controller, extending Spring Socials ConnectController.

@@ -6,7 +6,6 @@ import java.util.Hashtable;
 import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -23,19 +22,16 @@ import org.springframework.web.servlet.ModelAndView;
 public class AccountController {
 
 private HttpSession session;
-private Model model;
 
 
 /**
- * Constructor method, used to autowire and inject the necessary objects.
+ * Constructor method, used to autowire and inject the HttpSession object.
  *
  * @param session Autowired HttpSession object
- * @param model Autowired Model object
  */
 @Inject
-public AccountController(HttpSession session, Model model) {
+public AccountController(HttpSession session) {
         this.session = session;
-        this.model = model;
 }
 
 /**
@@ -75,7 +71,6 @@ public ModelAndView account() {
 @RequestMapping("/logout")
 public String logout() {
         session.invalidate();
-        model.asMap().clear();
 
         return "redirect:/home";
 }
@@ -116,7 +111,6 @@ public String confirmedDelete() {
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
 
         session.invalidate();
-        model.asMap().clear();
         DBConnector.deleteUser(userID);
 
         return "redirect:/home";

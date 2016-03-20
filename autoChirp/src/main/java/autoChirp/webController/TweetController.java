@@ -1,5 +1,8 @@
 package autoChirp.webController;
 
+import autoChirp.DBConnector;
+import autoChirp.tweetCreation.Tweet;
+import autoChirp.tweetCreation.TweetGroup;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -9,11 +12,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
-
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,9 +22,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import autoChirp.DBConnector;
-import autoChirp.tweetCreation.Tweet;
-import autoChirp.tweetCreation.TweetGroup;
 
 /**
  * A Spring MVC controller, responsible for serving /tweets.
@@ -103,7 +101,6 @@ public ModelAndView viewTweets(@RequestParam(name = "page", defaultValue = "1") 
 public ModelAndView viewTweet(@PathVariable int tweetID) {
         if (session.getAttribute("account") == null) return new ModelAndView("redirect:/account");
         int userID = Integer.parseInt(((Hashtable<String,String>)session.getAttribute("account")).get("userID"));
-
         Tweet tweetEntry = DBConnector.getTweetByID(tweetID, userID);
 
         if (tweetEntry == null) {
@@ -162,7 +159,7 @@ public ModelAndView addTweet() {
  * @param imageUrl POST param bearing the referenced <input>-field value
  * @param latitude POST param bearing the referenced <input>-field value
  * @param longitude POST param bearing the referenced <input>-field value
- * @return Redirect-view if successful, else error-view.
+ * @return Redirect-view if successful, else error-view
  */
 @RequestMapping(value = "/add", method = RequestMethod.POST)
 public ModelAndView addTweetPost(
@@ -402,7 +399,7 @@ public ModelAndView editTweet(@PathVariable int tweetID) {
  * @param imageUrl POST param bearing the referenced <input>-field value
  * @param latitude POST param bearing the referenced <input>-field value
  * @param longitude POST param bearing the referenced <input>-field value
- * @return Redirect-view if successful, else error-view.
+ * @return Redirect-view if successful, else error-view
  */
 @RequestMapping(value = "/edit/{tweetID}", method = RequestMethod.POST)
 public ModelAndView editTweetPost(
