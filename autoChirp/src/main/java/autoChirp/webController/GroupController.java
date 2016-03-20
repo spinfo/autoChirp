@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -42,9 +43,10 @@ private int tweetsPerPage = 15;
  * Constructor method, used to autowire and inject the HttpSession object.
  *
  * @param session Autowired HttpSession object
+ * @return 
  */
 @Inject
-public TweetController(HttpSession session) {
+public  GroupController(HttpSession session) {
         this.session = session;
 }
 

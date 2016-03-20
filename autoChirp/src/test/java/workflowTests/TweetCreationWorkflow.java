@@ -108,5 +108,8 @@ public class TweetCreationWorkflow {
 		TweetFactory factory = new TweetFactory();
 		TweetGroup group = factory.getTweetsFromTSVFile(file, "dateFormatTest", "test all supported formats", 2);
 		Assert.assertEquals(group.tweets.size(), 18);
+		for (Tweet tweet : group.tweets) {
+			System.out.println(tweet.tweetDate);
+		}
 	}
 }
