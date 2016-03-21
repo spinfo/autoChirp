@@ -13,7 +13,7 @@
       <ul class="nav navbar-nav">
         <li th:classappend="${#httpServletRequest.requestURI.equals('/home')} ? 'active'"><a th:href="@{/home}">Home</a></li>
         <li th:classappend="${#httpServletRequest.requestURI.equals('/about')} ? 'active'"><a th:href="@{/about}">About</a></li>
-        <li th:classappend="${#httpServletRequest.requestURI.equals('/contact')} ? 'active'"><a th:href="@{/contact}">Contact</a></li>
+        <li th:classappend="${#httpServletRequest.requestURI.equals('/trivia')} ? 'active'"><a th:href="@{/trivia}">Trivia</a></li>
         <li th:classappend="${#httpServletRequest.requestURI.equals('/help')} ? 'active'"><a th:href="@{/help}">Help</a></li>
       </ul>
       <form th:unless="${session.account != null}" th:action="@{/connect/twitter}" method="post" class="navbar-form navbar-right">

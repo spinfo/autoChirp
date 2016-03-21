@@ -112,7 +112,7 @@ var activeTableTab = "activeTableTab";
 <pre>@Controller
 public class <span class="typeNameLabel">HomeController</span>
 extends java.lang.Object</pre>
-<div class="block">A Spring MVC controller, responsible for serving /, /home, /about, /contact
+<div class="block">A Spring MVC controller, responsible for serving /, /home, /about, /trivia
  and /help. This controller serves static templates containing basic
  information about the application.</div>
 <dl>
@@ -162,8 +162,8 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>org.springframework.web.servlet.ModelAndView</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../autoChirp/webController/HomeController.html#contact--">contact</a></span>()</code>
-<div class="block">A HTTP GET request handler, responsible for serving /contact.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../autoChirp/webController/HomeController.html#trivia--">trivia</a></span>()</code>
+<div class="block">A HTTP GET request handler, responsible for serving /trivia.</div>
 </td>
 </tr>
 <tr id="i2" class="altColor">
@@ -268,18 +268,18 @@ public&nbsp;org.springframework.web.servlet.ModelAndView&nbsp;about()</pre>
 </dl>
 </li>
 </ul>
-<a name="contact--">
+<a name="trivia--">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>contact</h4>
-<pre>@RequestMapping(value="/contact")
-public&nbsp;org.springframework.web.servlet.ModelAndView&nbsp;contact()</pre>
-<div class="block">A HTTP GET request handler, responsible for serving /contact.</div>
+<h4>trivia</h4>
+<pre>@RequestMapping(value="/trivia")
+public&nbsp;org.springframework.web.servlet.ModelAndView&nbsp;trivia()</pre>
+<div class="block">A HTTP GET request handler, responsible for serving /trivia.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>View containing the contact page</dd>
+<dd>View containing the trivia page</dd>
 </dl>
 </li>
 </ul>

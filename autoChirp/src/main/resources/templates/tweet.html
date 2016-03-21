@@ -87,6 +87,8 @@
               <div class="col-sm-10">
                 <a th:if="${#httpServletRequest.requestURI.startsWith('/tweets/view/')}" th:href="@{/tweets/view}"
                   class="btn btn-default"><span class="glyphicon glyphicon-level-up" aria-hidden="true"></span> All tweets</a>
+                  <a th:if="${#httpServletRequest.requestURI.startsWith('/tweets/view/')}" th:href="@{/groups/view/} + ${tweetEntry.groupID}"
+                    class="btn btn-default"><span class="glyphicon glyphicon-level-up" aria-hidden="true"></span> Group tweets</a>
                 <a th:unless="${#httpServletRequest.requestURI.startsWith('/tweets/add')}" th:href="@{/tweets/delete/} + ${tweetEntry.tweetID}"
                   class="btn btn-danger"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete tweet</a>
                 <a th:if="${#httpServletRequest.requestURI.startsWith('/tweets/view/') and !tweetEntry.tweeted}" th:href="@{/tweets/edit/} + ${tweetEntry.tweetID}"
