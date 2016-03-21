@@ -157,14 +157,14 @@ public class GroupController {
 
 	/**
 	 * A HTTP POST request handler, responsible for serving /groups/add. This
-	 * method gets POSTed as the group-creation form is submitted. All <input>-
+	 * method gets POSTed as the group-creation form is submitted. All input-
 	 * field values are passed as parameters and checked for validity. Upon
 	 * success a new group is added to the database.
 	 *
 	 * @param title
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @param description
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @return Redirect-view if successful, else error-view
 	 */
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
@@ -224,7 +224,7 @@ public class GroupController {
 	/**
 	 * A HTTP POST request handler, responsible for serving
 	 * /groups/import/tsv-file. This method gets POSTed as the tsv-import form
-	 * is submitted. All <input>- field values are passed as parameters and
+	 * is submitted. All input- field values are passed as parameters and
 	 * checked for validity. The tsv-file itself is passed as MultipartFile and
 	 * later transfered to a temporary file. This file is passed to the
 	 * TweetFactory, which returns a parsed TweetGroup, which then is inserted
@@ -233,11 +233,11 @@ public class GroupController {
 	 * @param source
 	 *            POST param bearing the tsv-MultipartFile
 	 * @param title
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @param description
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @param delay
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @return Redirect-view if successful, else error-view
 	 */
 	@RequestMapping(value = "/import/tsv-file", method = RequestMethod.POST)
@@ -281,7 +281,7 @@ public class GroupController {
 	/**
 	 * A HTTP POST request handler, responsible for serving
 	 * /groups/import/wikipedia This method gets POSTed as the Wikipdia-import
-	 * form is submitted. All <input>-field values are passed as parameters and
+	 * form is submitted. All input-field values are passed as parameters and
 	 * checked for validity. The URL of the Wikipedia-article is validated
 	 * against a basic regex and then passed to the TweetFactory, along with an
 	 * according WikipediaParser-object, which returns a parsed TweetGroup,
@@ -290,11 +290,11 @@ public class GroupController {
 	 * @param source
 	 *            POST param bearing the Wikipedia-article URL
 	 * @param title
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @param prefix
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @param description
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @return Redirect-view if successful, else error-view
 	 */
 	@RequestMapping(value = "/import/wikipedia", method = RequestMethod.POST)
@@ -344,7 +344,7 @@ public class GroupController {
 	 * A HTTP GET request handler, responsible for serving
 	 * /groups/edit/$groupid. This method is responsible to present the
 	 * group-creation form with all values prefilled into the according
-	 * <input>-field. As such the form is re-used to edit a already created
+	 * input-field. As such the form is re-used to edit a already created
 	 * group.
 	 *
 	 * @param groupID
@@ -368,16 +368,16 @@ public class GroupController {
 	/**
 	 * A HTTP POST request handler, responsible for serving
 	 * /groups/edit/$groupid. This method gets POSTed as the group-editing form
-	 * is submitted. All <input>- field values are passed as parameters and
+	 * is submitted. All input- field values are passed as parameters and
 	 * checked for validity. Upon success the referenced group gets updated in
 	 * the database or an error is shown.
 	 *
 	 * @param groupID
 	 *            Path param containing an ID-reference to a group
 	 * @param title
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @param description
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @return Redirect-view if successful, else error-view
 	 */
 	@RequestMapping(value = "/edit/{groupID}", method = RequestMethod.POST)

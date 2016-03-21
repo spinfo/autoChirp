@@ -1,0 +1,7 @@
+autoChirp
+autoChirp.preProcessing
+autoChirp.preProcessing.parser
+autoChirp.tweetCreation
+autoChirp.tweeting
+autoChirp.webController
+workflowTests

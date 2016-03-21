@@ -18,7 +18,7 @@ import org.springframework.context.ApplicationContext;
  * and all relevant Tweets from that database are scheduled.
  *
  * @author Philip Schildkamp
- * @editor Alena Geduldig
+ * @author Alena Geduldig
  */
 @SpringBootApplication
 public class Application {

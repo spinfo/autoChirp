@@ -3,10 +3,10 @@ package autoChirp.tweeting;
 import java.util.TimerTask;
 
 /**
- * A subclass of java.util.TimerTask related to a single tweet and
- * twitter-user.  Scheduled by a TweetScheduler timed by the tweets tweetDate.
- * the overwritten run()- Method creates a new TwitterConnection which executes
- * the twitter status-update.
+ * A subclass of java.util.TimerTask related to a single tweet and twitter-user.
+ * Scheduled by a TweetScheduler timed by the tweets tweetDate. the overwritten
+ * run()- Method creates a new TwitterConnection which executes the twitter
+ * status-update.
  * 
  * @author Alena Geduldig
  * 
@@ -18,8 +18,9 @@ public class TwitterTask extends TimerTask {
 
 	/**
 	 * @param userID
-	 * userID
+	 *            userID
 	 * @param tweetID
+	 *            tweetID
 	 */
 	public TwitterTask(int userID, int tweetID) {
 		this.userID = userID;

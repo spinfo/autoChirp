@@ -146,7 +146,7 @@ public class TweetController {
 
 	/**
 	 * A HTTP POST request handler, responsible for serving /tweets/add. This
-	 * method gets POSTed as the Tweet-creation form is submitted. All <input>-
+	 * method gets POSTed as the Tweet-creation form is submitted. All input-
 	 * field values are passed as parameters and checked for validity. Upon
 	 * success a new Tweet (possibly a new group, too) is added to the database.
 	 * Because groups are referenced by ID but presented with their nicenames, a
@@ -154,19 +154,19 @@ public class TweetController {
 	 * to be added to an existing (ID-referenced) or new (nicenamed) group.
 	 *
 	 * @param tweetGroup
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @param content
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @param tweetDate
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @param tweetTime
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @param imageUrl
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @param latitude
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @param longitude
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @return Redirect-view if successful, else error-view
 	 */
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
@@ -259,7 +259,7 @@ public class TweetController {
 	/**
 	 * A HTTP GET request handler, responsible for serving /tweets/add/$groupid.
 	 * This method is responsible to present the Tweet-creation form with the
-	 * group prefilled into the according <input>-field.
+	 * group prefilled into the according input-field.
 	 *
 	 * @param groupID
 	 *            Path param containing an ID-reference to a group
@@ -282,24 +282,24 @@ public class TweetController {
 	/**
 	 * A HTTP POST request handler, responsible for serving
 	 * /tweets/add/$groupid. This method gets POSTed as the Tweet-creation form
-	 * with prefilled group is submitted. All <input>-field values are passed as
+	 * with prefilled group is submitted. All input-field values are passed as
 	 * parameters and checked for validity. Upon success a new Tweet is added to
 	 * the prefilled group in the database.
 	 *
 	 * @param groupID
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @param content
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @param tweetDate
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @param tweetTime
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @param imageUrl
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @param latitude
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @param longitude
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @return Redirect-view if successful, else error-view
 	 */
 	@RequestMapping(value = "/add/{groupID}", method = RequestMethod.POST)
@@ -374,7 +374,7 @@ public class TweetController {
 	 * A HTTP GET request handler, responsible for serving
 	 * /tweets/edit/$tweetid. This method is responsible to present the
 	 * Tweet-creation form with the group and date prefilled into the according
-	 * <input>-field. As such the form is re- used to edit a already created
+	 * input-field. As such the form is re- used to edit a already created
 	 * Tweet.
 	 *
 	 * @param tweetID
@@ -406,20 +406,20 @@ public class TweetController {
 	/**
 	 * A HTTP POST request handler, responsible for serving
 	 * /tweets/edit/$tweetid. This method gets POSTed as the Tweet-editing form
-	 * is submitted. All <input>- field values are passed as parameters and
+	 * is submitted. All input- field values are passed as parameters and
 	 * checked for validity. Upon success the referenced Tweet gets updated in
 	 * the database or an error is shown.
 	 *
 	 * @param tweetID
 	 *            Path param containing an ID-reference to a Tweet
 	 * @param content
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @param imageUrl
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @param latitude
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @param longitude
-	 *            POST param bearing the referenced <input>-field value
+	 *            POST param bearing the referenced input-field value
 	 * @return Redirect-view if successful, else error-view
 	 */
 	@RequestMapping(value = "/edit/{tweetID}", method = RequestMethod.POST)

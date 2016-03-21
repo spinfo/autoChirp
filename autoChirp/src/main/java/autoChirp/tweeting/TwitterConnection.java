@@ -51,7 +51,7 @@ public class TwitterConnection {
 	 * users oAuthToken and oAuthTokenSecret from the database 4. updates the
 	 * users twitter status to the tweets tweetContent
 	 * 
-	 * @param user_id
+	 * @param userID
 	 * 		userID
 	 * @param tweetID
 	 * tweetID
