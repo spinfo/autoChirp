@@ -9,80 +9,75 @@
   <div class="wrapper">
     <div class="container">
       <div class="row">
-        <div class="col-md-12">
-          <h2>About autoChirp</h2>
+        <div class="col-md-6">
+          <h2>Legal notices</h2>
           <hr></hr>
+          <p class="text-justify">
+            Neither the University of Cologne nor the authors and associates of this website warrant its operation or the accuracy and topicality of the information provided thereon.
+            Furthermore, in its ruling of 12 May 1998, the district court (Landgericht) of Hamburg decided that with the displaying of a link, a website operator can under certain circumstances be held liable for the contents of the linked web page.
+            According to the district court, this can only be avoided by explicitly distancing oneself from these contents. Thus, the for this website responsible persons declare:
+            "We hereby disclaim responsibility for the content of all websites mentioned or linked here. We are not responsible for these contents and distance ourselves from them."
+            Lastly, all company, product and service names used within this website are for identification purposes only. All trademarks and registered trademarks are the property of their respective owners.          </p>
+        </div>
+        <div class="col-md-6">
+          <h2>Privacy policy</h2>
+          <hr></hr>
+          <p class="text-justify">
+            We do not access any sensitive information available through granting this application access to Your Twitter-account. All stored data revolves around the information You directly provide.
+            In detail, Your Twitter-ID and the associated Twitter API token and secret as well as all information about scheduled Tweets and the groups containing them are stored permanently.
+            Furthermore, we deliberately provide You with full control over Your information, as all persisted data gets deleted when You choose to delete Your autoChirp-account.
+            Lastly, we want to assure You, that no trackers or analyzation tools whatsoever are embedded in this website.
+          </p>
         </div>
       </div>
       <div class="row">
         <div class="col-md-12">
-          <h3>Home/Landingpage</h3>
-          <p>
-            Wenn das Webinterface der Applikation aufgerufen wird, sollen dem Nutzer einige allgemeine Informationen präsentiert werden (der Art über uns bzw. Impressum). Alle weiteren Funktionen werden durch Authentifizierung geschützt. Weiterhin halte ich es für
-            sinnvoll die Hilfe-Sektion offen zugänglich zu machen, da hierüber auch tiefere Einblicke in die Möglichkeiten und Einsatzzwecke bzw. -ziele der Applikation gegeben werden.
-            <br /> Das URL-Mapping soll daher ca. so aussehen:
-            <ul>
-              <li><strong>/ bzw. /home:</strong> Allgemeine Landing-Page mit Begrüßungstext und ggf. Anleitung für die ersten Schritte und weiterführenden Links im Hauptteil (abgesehen vom Nav).</li>
-              <li><strong>/about:</strong> Informationen über die Motivation des Projektes, ggf. kurze Übersicht der eingesetzten Technologie (Achtung, Angriffsvektoren verhindern!) und kurze Vorstellung der beteiligten Entwickler etc..</li>
-              <li><strong>/contact:</strong> Kontaktmöglichkeiten über die Universität, ggf. rechtliche Infos, ggf. Form-Mailer, sonstig Wichtiges.</li>
-              <li><strong>/help:</strong> Hilfe. Vollumfassend.</li>
-              <li><strong>/login:</strong> Der Twitter-Login-Button (ggf. später eigene Benutzerverwaltung, dann auch der Signup-Button), der bei erfolgreicher Authentifizierung nach /dashboard weiterleitet.</li>
-            </ul>
-          </p>
-
-          <h3>Dashboards</h3>
-          <p>
-            Diese liebliche Worthülse .. soll bei uns eine (gekürzte) Übersicht über alle Gruppen und Tweets geben. Ich stelle mir vor, dass der Benutzer sich angemeldet hat und daraufhin eine Liste aus den bspw. zehn upcoming Tweets (unabhängig von Gruppen, jedoch
-            mit einem Lable/Badge, der die Gruppe anzeigt und als Link zu dieser fungiert). Außerdem sollte die Gesamtzahl der Gruppen und der sich darin befindlichen Tweets ersichtlich sein. Ggf. sollte an dieser Stelle auch die möglichkeit geboten werden,
-            den eigenen Account zu deaktivieren/löschen.
-            <br /> Ein in Frage kommendes URL-Mapping:
-            <ul>
-              <li><strong>/account:</strong> Allgemeine Informationen über den Account. Twitter-Handle, etc.</li>
-              <li><strong>/account/del:</strong> Löschen des eigenen Accounts inkl. aller betroffenen DB-Inhalte.</li>
-            </ul>
-          </p>
-
-          <h3>Tweets/Gruppen</h3>
-          <p>
-            Wir wollen Tweets nur in Gruppen zulassen. Ich halte es für sinnig, sowohl Gruppen als auch Tweets im gleichen Controller zu Verwalten/Steuern, da letztendlich ein Controller nur für die Gruppen sehr wenig Code enthalten würde und weiterhin tief verstrickt
-            mit dem Controller für Tweets sein müsste.
-            <br /> Der Workflow zum Hinzufügen eines Tweets soll also ca. so aussehen:
-            <ul>
-              <li>Anmelden etc.</li>
-              <li>Neue Gruppe anlegen oder bestehende Gruppe auswählen</li>
-              <li>Tweet innerhalb der Gruppe hinzufügen.</li>
-            </ul>
-            Sagen wir also der Benutzer ist angemeldet und befindet sich auf [/dashboard]. Von dort soll es allerdings eine Option geben Tweets direkt hinzuzufügen, dementsprechend sollte die Maske zur Eingabe von Tweets ein Feld "Gruppe" enthalten, welches ein kombiniertes
-            Dropdown-Menü (mit allen bereits erstellten Gruppen zur Auswahl) und Input-Feld (zum gleichzeitgen Anlegen einer neuen Gruppe) ist. Weiterhin muss aus einer Gruppenansicht heraus ein Tweet hinzugefügt werden können; einfach zu realisieren
-            ist dies, indem dieselbe Maske aufgerunfen wird, jedoch das Feld "Gruppe" bereits mit der vorher betrachteten (Referer-) Gruppe befüllt ist.
-            <br /> Gruppen URL-Mapping (ca. CRUD):
-            <ul>
-              <li><strong>/groups:</strong> Eine (paginierte) Übersicht über alle Gruppen und Anzeige über die sich darin befindlichen Tweets, sowie die möglichkeit die Gruppe anzusehen.</li>
-              <li><strong>/groups/view/${id}:</strong> Anzeige der Gruppendetails, also (paginierte) Übersicht über alle sich in der Gruppe befindlichen Tweets.</li>
-              <li><strong>/groups/add:</strong> Maske zum Hinzufügen einer Gruppe.</li>
-              <li><strong>/groups/del/${id}:</strong> Kein Markup/keine eigene Page, nur eine Weiterleitung zurück zur Gruppenübersicht mit der Meldung, dass die Gruppe (un-)erfolgreich gelöscht wurde.</li>
-              <li><strong>/groups/edit/${id}:</strong> Gleiche Maske wie zum Hinzufügen neuer Gruppen, jedoch mit den zugewiesenen Variablen bereits in die Eingabefelder geladen.</li>
-            </ul>
-            Tweets URL-Mapping (auch ca. CRUD):
-            <ul>
-              <li><strong>/tweets:</strong> (Paginierte) Übersicht der upcoming Tweets.</li>
-              <li><strong>/tweets/view/${id}:</strong> Anzeigen der Details eines Tweets.</li>
-              <li><strong>/tweets/add:</strong> Maske zum Hinzufügen neuer Tweets.</li>
-              <li><strong>/tweets/del/${id}:</strong> Löschen des Tweets, Weiterleiten mit Nachricht.</li>
-              <li><strong>/tweets/edit/${id}:</strong> Gleiche Maske wie beim adden, jedoch mit vorgefüllten Eingabefeldern (aus dem zu editierenden Tweet).</li>
-            </ul>
-          </p>
-
-          <h3>Parser</h3>
-          <p>
-            Zunächst hat Alena den Wikipedia-Parser realisiert, grundsätzlich soll die Möglichkeit offen gehalten werden, andere Parser zu implementieren. Daher scheint es mir sinnig, den Import möglichst abstrakt zu halten. Geschehen kann dies durch einen Import-Controller,
-            in welchem für jeden Parser ein eigener Import-"Typ" definiert wird.
-            <br /> Dementsprechend müsste das URL-Mapping so aussehen:
-            <ul>
-              <li><strong>/import:</strong> Übersicht alle implementierten Parser, sowie Auswahl des Gewünschten, woraufhin nach /import/${type} weitergeleitet wird.</li>
-              <li><strong>/import/${type}:</strong> Für den gewählten Parser-Typ implementierte Maske. DerImport-Controller ist weiterhin dafür verantwortlich eine Gruppe zu erstellen und alle geparsten Tweets in diese Gruppe einzufügen.</li>
-            </ul>
-          </p>
+          <hr></hr>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="well well-condensed">
+            <h3>Institution</h3>
+            <address>
+              <strong>Universität zu Köln</strong><br />
+              Sprachliche Informationsverarbeitung<br />
+              Institut für Linguistik<br />
+              Albertus-Magnus-Platz<br />
+              D-50931 Köln<br />
+              <abbr title="Telephone">T:</abbr> (+49) 221 - 470 4170<br />
+              <abbr title="Telefax">F:</abbr> (+49) 221 - 470 5193
+          </address>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="well well-condensed">
+            <h3>Academic patrons</h3>
+            <address>
+              <strong>Dr. Øyvind Eide</strong><br />
+              <abbr title="Telephone">T:</abbr> (+49) 221 - 470 3022<br />
+              <abbr title="E-Mail">M:</abbr> oeide@uni-koeln.de
+            </address>
+            <address>
+              <strong>Dr. Jürgen Hermes</strong><br />
+              <abbr title="Telephone">T:</abbr> (+49) 221 - 470 4170<br />
+              <abbr title="E-Mail">M:</abbr> jhermes@spinfo.uni-koeln.de
+            </address>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="well well-condensed">
+            <h3>Development</h3>
+            <address>
+              <strong>Alena Geduldig</strong><br />
+              <abbr title="E-Mail">M:</abbr> ageduldi@uni-koeln.de
+              </address>
+            <address>
+              <strong>Philip Schildkamp</strong><br />
+              <abbr title="E-Mail">M:</abbr> philip.schildkamp@lmu.de<br />
+              <abbr title="XMPP/Jabber">IM:</abbr> phil.schluss@maskera.de
+            </address>
+          </div>
         </div>
       </div>
     </div>

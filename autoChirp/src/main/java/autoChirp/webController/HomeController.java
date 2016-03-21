@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
- * A Spring MVC controller, responsible for serving /, /home, /about, /contact
+ * A Spring MVC controller, responsible for serving /, /home, /about, /trivia
  * and /help. This controller serves static templates containing basic
  * information about the application.
  *
@@ -36,6 +36,17 @@ public class HomeController {
 	}
 
 	/**
+	 * A HTTP GET request handler, responsible for serving /trivia.
+	 *
+	 * @return View containing the trivia page
+	 */
+	@RequestMapping(value = "/trivia")
+	public ModelAndView trivia() {
+		ModelAndView mv = new ModelAndView("trivia");
+		return mv;
+	}
+
+  /**
 	 * A HTTP GET request handler, responsible for serving /about.
 	 *
 	 * @return View containing the about page
@@ -43,17 +54,6 @@ public class HomeController {
 	@RequestMapping(value = "/about")
 	public ModelAndView about() {
 		ModelAndView mv = new ModelAndView("about");
-		return mv;
-	}
-
-	/**
-	 * A HTTP GET request handler, responsible for serving /contact.
-	 *
-	 * @return View containing the contact page
-	 */
-	@RequestMapping(value = "/contact")
-	public ModelAndView contact() {
-		ModelAndView mv = new ModelAndView("contact");
 		return mv;
 	}
 
