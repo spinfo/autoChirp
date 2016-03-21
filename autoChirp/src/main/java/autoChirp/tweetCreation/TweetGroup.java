@@ -6,9 +6,9 @@ import java.util.List;
 
 /**
  * represents a group of related tweets (e.g. generated from one
- * wikipedia-articel or a tsv-file). consists of a list of tweets, title,
- * description, groupID and the status-attribute enabled , which indicates if
- * the group is active (= its tweets are scheduled and prepared for tweeting) or
+ * wikipedia-articel or a tsv-file). consists of a list of tweets, a title and 
+ * description. If read from DB also consisting of groupID and the status-attribute enabled , which indicates if
+ * the group is active (= it's tweets are scheduled and prepared for tweeting) or
  * not.
  * 
  * @author Alena Geduldig
@@ -36,7 +36,7 @@ public class TweetGroup {
 
 	/**
 	 * Constructor for TweetGroups read from the database. In contrast to new
-	 * TweetGoups, TweetGroups read from DB already habe a groupID and a status
+	 * TweetGoups, TweetGroups read from DB already have a groupID and a status
 	 * attribute.
 	 * 
 	 * @param groupID

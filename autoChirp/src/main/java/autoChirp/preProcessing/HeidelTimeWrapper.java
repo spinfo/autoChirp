@@ -15,7 +15,7 @@ import de.unihd.dbs.uima.annotator.heideltime.resources.Language;
 
 /**
  *
- * A wrapper-class for HeideltimeStandalone Overrides the readConfigsFile()-
+ * A wrapper-class for HeideltimeStandalone. Overrides the readConfigsFile()-
  * Method to avoid using a FileInputStrean
  * 
  * @author Alena Geduldig
@@ -53,7 +53,7 @@ public class HeidelTimeWrapper extends HeidelTimeStandalone {
 
 	/**
 	 * @param configPath
-	 *            - Path to the configuration File for HeidelTime Standalone
+	 *            Path to the configuration file for HeidelTime Standalone
 	 */
 	public static void readConfigFile(String configPath) {
 		InputStream configStream = null;

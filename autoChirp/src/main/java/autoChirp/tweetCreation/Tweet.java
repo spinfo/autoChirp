@@ -4,9 +4,9 @@ import autoChirp.DBConnector;
 
 /**
  * 
- * represents a single tweet consisting of content, tweetDate, imageUrl,
- * geo-locations, tweetID, groupID, groupName and the status-attributes
- * scheduled and tweeted
+ * represents a single tweet consisting of content, tweetDate, imageUrl
+ * (optional), and geo-locations (optional). If read from DB, also consisting of
+ * tweetID, groupID, groupName and the status-attributes scheduled and tweeted
  * 
  * @author Alena Geduldig
  */
@@ -23,7 +23,7 @@ public class Tweet implements Comparable<Tweet> {
 	public float latitude;
 
 	/**
-	 * Constructor for tweets read from the database. In contrast to new tweets
+	 * Constructor for tweets read from the database. In contrast to new tweets,
 	 * tweets read from DB already have a tweetID, groupID, userID and
 	 * status-attributes
 	 * 
@@ -63,7 +63,7 @@ public class Tweet implements Comparable<Tweet> {
 	}
 
 	/**
-	 * Constructor for new created tweets, which were not stored in the database yet.
+	 * Constructor for new tweets, which were not stored in the database yet.
 	 * (don't have a tweetID, groupID or status-attributes)
 	 * 
 	 * @param tweetDate
@@ -85,18 +85,28 @@ public class Tweet implements Comparable<Tweet> {
 		this.latitude = latitude;
 	}
 
+	/**
+	 * Constructor for simple Tweets without imageUrl and Geo-locations
+	 * 
+	 * @param tweetDate
+	 *            tweetDate
+	 * @param content
+	 *            tweetContent
+	 */
 	public Tweet(String tweetDate, String content) {
 		this.tweetDate = tweetDate;
 		this.content = content;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * ascending tweet order by tweetdate
 	 * 
+	 * @param tweet
+	 *            tweet
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
-	public int compareTo(Tweet t) {
-		return this.tweetDate.compareTo(t.tweetDate);
+	public int compareTo(Tweet tweet) {
+		return this.tweetDate.compareTo(tweet.tweetDate);
 	}
 }
