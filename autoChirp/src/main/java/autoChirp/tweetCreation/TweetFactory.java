@@ -154,6 +154,11 @@ public class TweetFactory {
 				}
 				// add delay
 				ldt = ldt.plusYears(delay);
+				if(ldt.isBefore(LocalDateTime.now())){
+					System.out.println("date is in the past: "+ ldt);
+					line=in.readLine();
+					continue;
+				}
 				// normalize date to the format yyyy-MM-dd HH:mm
 				String formattedDate = ldt.format(formatter);
 				// set default time to 12:00
