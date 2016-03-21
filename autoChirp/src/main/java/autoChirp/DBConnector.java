@@ -605,10 +605,13 @@ public class DBConnector {
 	public static void editGroup(int groupID, String title, String description, int userID) {
 		try {
 			connection.setAutoCommit(false);
-			PreparedStatement stmt = connection.prepareStatement("UPDATE groups SET group_name = ?, description = ?  WHERE (group_id = ?  AND user_id = ?)");
-//			String sql = "UPDATE groups SET group_name = '" + title + "', description = '" + description
-//					+ "'  WHERE (group_id = '" + groupID + "' AND user_id = '" + userID + "')";
-			stmt.setString(1,title);
+			PreparedStatement stmt = connection.prepareStatement(
+					"UPDATE groups SET group_name = ?, description = ?  WHERE (group_id = ?  AND user_id = ?)");
+			// String sql = "UPDATE groups SET group_name = '" + title + "',
+			// description = '" + description
+			// + "' WHERE (group_id = '" + groupID + "' AND user_id = '" +
+			// userID + "')";
+			stmt.setString(1, title);
 			stmt.setString(2, description);
 			stmt.setInt(3, groupID);
 			stmt.setInt(4, userID);
@@ -642,10 +645,13 @@ public class DBConnector {
 			float latitude) {
 		try {
 			connection.setAutoCommit(false);
-			PreparedStatement stmt = connection.prepareStatement("UPDATE tweets SET tweet = ?, img_url = ?, longitude = ?, latitude = ? WHERE (tweet_id = ? AND user_id = ?)");
-//			String sql = "UPDATE tweets SET tweet = '" + content + "', img_url = '" + imageUrl + "', longitude = '"
-//					+ longitude + "', latitude = '" + latitude + "'  WHERE (tweet_id = '" + tweetID
-//					+ "' AND user_id = '" + userID + "')";
+			PreparedStatement stmt = connection.prepareStatement(
+					"UPDATE tweets SET tweet = ?, img_url = ?, longitude = ?, latitude = ? WHERE (tweet_id = ? AND user_id = ?)");
+			// String sql = "UPDATE tweets SET tweet = '" + content + "',
+			// img_url = '" + imageUrl + "', longitude = '"
+			// + longitude + "', latitude = '" + latitude + "' WHERE (tweet_id =
+			// '" + tweetID
+			// + "' AND user_id = '" + userID + "')";
 			stmt.setString(1, content);
 			stmt.setString(2, imageUrl);
 			stmt.setFloat(3, longitude);
@@ -675,19 +681,24 @@ public class DBConnector {
 	public static int addTweetToGroup(int userID, Tweet tweet, int groupID) {
 		try {
 			connection.setAutoCommit(false);
-			//Statement stmt = connection.createStatement();
-			PreparedStatement prepStmt = connection.prepareStatement("INSERT INTO tweets (user_id, group_id, scheduled_date, tweet, scheduled, tweeted, img_url, longitude, latitude) VALUES(?,?,?,?,?,?,?,?,?)");
-//			String sql = "INSERT INTO tweets (user_id, group_id, scheduled_date, tweet, scheduled, tweeted, img_url, longitude, latitude) VALUES ('"
-//					+ userID + "', " + "'" + groupID + "', " + "'" + tweet.tweetDate + "', " + "'" + tweet.content
-//					+ "', " + "'false', 'false', '" + tweet.imageUrl + "', '" + tweet.longitude + "', '"
-//					+ tweet.latitude + "' )";
+			// Statement stmt = connection.createStatement();
+			PreparedStatement prepStmt = connection.prepareStatement(
+					"INSERT INTO tweets (user_id, group_id, scheduled_date, tweet, scheduled, tweeted, img_url, longitude, latitude) VALUES(?,?,?,?,?,?,?,?,?)");
+			// String sql = "INSERT INTO tweets (user_id, group_id,
+			// scheduled_date, tweet, scheduled, tweeted, img_url, longitude,
+			// latitude) VALUES ('"
+			// + userID + "', " + "'" + groupID + "', " + "'" + tweet.tweetDate
+			// + "', " + "'" + tweet.content
+			// + "', " + "'false', 'false', '" + tweet.imageUrl + "', '" +
+			// tweet.longitude + "', '"
+			// + tweet.latitude + "' )";
 			prepStmt.setInt(1, userID);
 			prepStmt.setInt(2, groupID);
 			prepStmt.setString(3, tweet.tweetDate);
 			prepStmt.setString(4, tweet.content);
 			prepStmt.setBoolean(5, false);
 			prepStmt.setBoolean(6, false);
-			prepStmt.setString(7,tweet.imageUrl);
+			prepStmt.setString(7, tweet.imageUrl);
 			prepStmt.setFloat(8, tweet.longitude);
 			prepStmt.setFloat(9, tweet.latitude);
 			prepStmt.executeUpdate();

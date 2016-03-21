@@ -14,8 +14,8 @@ import org.springframework.context.ApplicationContext;
 
 /**
  * Default (SpringBoot-)Application class with main() method and minor
- * extensions: On start a persistent connection to the SQLite database is
- * opened and all relevant Tweets from that database are scheduled.
+ * extensions: On start a persistent connection to the SQLite database is opened
+ * and all relevant Tweets from that database are scheduled.
  *
  * @author Philip Schildkamp
  * @editor Alena Geduldig
@@ -23,40 +23,42 @@ import org.springframework.context.ApplicationContext;
 @SpringBootApplication
 public class Application {
 
-@Value("${dbFilePath}")
-private String dbFilePath;
+	@Value("${dbFilePath}")
+	private String dbFilePath;
 
-@Value("${createDatabaseFile}")
-private String createDatabaseFile;
+	@Value("${createDatabaseFile}")
+	private String createDatabaseFile;
 
-/**
- * @param args Command line arguments
- * @throws IOException IOException
- */
-public static void main(String[] args) throws IOException {
-        ApplicationContext ctx = SpringApplication.run(Application.class, args);
-}
+	/**
+	 * @param args
+	 *            Command line arguments
+	 * @throws IOException
+	 *             IOException
+	 */
+	public static void main(String[] args) throws IOException {
+		ApplicationContext ctx = SpringApplication.run(Application.class, args);
+	}
 
-/**
- * Open database connection and schedule relevant Tweets.
- */
-@PostConstruct
-private void initializeApplication(){
-        File file = new File(dbFilePath);
+	/**
+	 * Open database connection and schedule relevant Tweets.
+	 */
+	@PostConstruct
+	private void initializeApplication() {
+		File file = new File(dbFilePath);
 
-        if (!file.exists()) {
-                DBConnector.connect(dbFilePath);
-                DBConnector.createOutputTables(createDatabaseFile);
-        } else {
-                DBConnector.connect(dbFilePath);
-        }
+		if (!file.exists()) {
+			DBConnector.connect(dbFilePath);
+			DBConnector.createOutputTables(createDatabaseFile);
+		} else {
+			DBConnector.connect(dbFilePath);
+		}
 
-        Map<Integer,List<TweetGroup> > toSchedule = DBConnector.getAllEnabledGroups();
-        for (int userID : toSchedule.keySet()) {
-                for (TweetGroup group : toSchedule.get(userID)) {
-                        TweetScheduler.scheduleTweetsForUser(group.tweets, userID);
-                }
-        }
-}
+		Map<Integer, List<TweetGroup>> toSchedule = DBConnector.getAllEnabledGroups();
+		for (int userID : toSchedule.keySet()) {
+			for (TweetGroup group : toSchedule.get(userID)) {
+				TweetScheduler.scheduleTweetsForUser(group.tweets, userID);
+			}
+		}
+	}
 
 }
