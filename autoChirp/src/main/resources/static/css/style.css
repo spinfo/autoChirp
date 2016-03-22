@@ -49,10 +49,12 @@ html {
   .bs-docs-sidebar .nav .nav > .active > a,
   .bs-docs-sidebar .nav .nav > .active:hover > a,
   .bs-docs-sidebar .nav .nav > .active:focus > a {
+    border-left-color: #080808;
     font-weight: 500; }
   .bs-docs-sidebar .nav > .active > a,
   .bs-docs-sidebar .nav > .active:hover > a,
   .bs-docs-sidebar .nav > .active:focus > a {
+    border-left-color: #080808;
     font-weight: 700; }
   .bs-docs-sidebar .nav ul.nav {
     display: none; }
@@ -101,7 +103,8 @@ input[required]:invalid {
 tr .fixlist {
   width: 10em; }
 
-span.form-control[disabled] > a {
-  text-decoration: underline; }
+video.helpcast {
+  border-radius: 4px;
+  width: 100%; }
 
 /*# sourceMappingURL=style.css.map */

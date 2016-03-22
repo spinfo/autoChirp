@@ -16,56 +16,178 @@
       </div>
       <div class="row">
         <div class="col-md-10 bs-docs-content">
-
           <section id="help_tweets" class="group">
-            <h3>Tweets</h3>
-            <p class="text-justify"></p>
+            <h3>Scheduled Tweets</h3>
+            <p class="text-justify">
+              Tweets are the smallest entity of operations and, of course, represent a single (scheduled) Twitter-Tweet.
+              Tweets must always be contained in groups and can thereby be organized by topic.
+              Management of Tweets is loosely implemented as CRUD-interface; You can add (CReate), edit (Update) and delete (Delete) Tweets.
+              A Tweet can take different states: Scheduled and waiting for publication,
+              successfully published and a genuine error-state (e.g. if You schedule a Tweet into the past).
+            </p>
             <div id="help_tweets_view" class="subgroup">
-              <h4>Viewing Your Tweets</h4>
-              <p class="text-justify"></p>
+              <div class="row">
+                <div class="col-md-6">
+                  <h4>Viewing Your Tweets</h4>
+                  <p class="text-justify">
+                    The general overview shows all Tweets in tabular form and makes it easy to identify the group-mapping,
+                    Tweet content, image attachment, geolocation, status, Tweet date and possible actions (from left to right).
+                    The detailed view of one single Tweet on the other hand shows all data of a single Tweet fully expanded.
+                    The difference between the two views is mainly the presentation of information regarding each Tweet.
+                    From within both views, all actions regarding a single Tweet (detailed view, edit and delete) may be initiated.
+                  </p>
+                </div>
+                <div class="col-md-6">
+                  <video class="helpcast" preload="metadata" controls="true">
+                    <source src="/vid/helpcast1_tweets_view.webm" type="video/webm" />
+                    Your browser does not support the HTML5-video tag or WebM.
+                  </video>
+                </div>
+              </div>
             </div>
             <div id="help_tweets_add" class="subgroup">
-              <h4>Adding new Tweets</h4>
-              <p class="text-justify"></p>
+              <div class="row">
+                <div class="col-md-6">
+                  <h4>Adding new Tweets</h4>
+                  <p class="text-justify">
+                    When adding a new Tweet, the following information has to be provided: The group-mapping, Tweet content and scheduled date.
+                    Beyond that, an image attachment (as URL) and a geolocation may be specified.
+                    As all Tweets must be contained in groups, the input-field for group-mapping is required to be filled.
+                    You can either enter the name of a group, that will be created ad-hoc for the Tweet,
+                    or reference an existing group by ID (from the dropdown-list).
+                  </p>
+                </div>
+                <div class="col-md-6">
+                  <video class="helpcast" preload="metadata" controls="true">
+                    <source src="/vid/helpcast2_tweets_add.webm" type="video/webm" />
+                    Your browser does not support the HTML5-video tag or WebM.
+                  </video>
+                </div>
+              </div>
             </div>
             <div id="help_tweets_edit" class="subgroup">
-              <h4>Editing Tweets</h4>
-              <p class="text-justify"></p>
+              <div class="row">
+                <div class="col-md-6">
+                  <h4>Editing Tweets</h4>
+                  <p class="text-justify">
+                    All added Tweets can be edited, as long as they have not been published.
+                    Further, the group-mapping and scheduled date cannot be modified as they are fixed upon Tweet-creation.
+                    Other than that, the form to edit a Tweet is the same as the one to add a new Tweet.
+                  </p>
+                </div>
+                <div class="col-md-6">
+                  <video class="helpcast" preload="metadata" controls="true">
+                    <source src="/vid/helpcast3_tweets_edit.webm" type="video/webm" />
+                    Your browser does not support the HTML5-video tag or WebM.
+                  </video>
+                </div>
+              </div>
             </div>
           </section>
-
           <hr></hr>
-
           <section id="help_groups" class="group">
             <h3>Groups</h3>
-            <p  class="text-justify"></p>
+            <p class="text-justify">
+              Uniting Tweets by topic, groups work quite like directory tree folders.
+              Their management is loosely implemented as a CRUD-interface, like the Tweet-management.
+              Groups can be created while creating a Tweet, as ad-hoc group, they can be created as empty containers for Tweets
+              and they are created when importing Tweets from a source.
+              Further, groups can be enabled and disabled. If a group is disabled, Tweets within this group are not published, even if their scheduling would require them to.
+              Therefore, You have to remember to enable the groups You create or import, if You wish for their Tweets to be published.
+            </p>
             <div id="help_groups_view" class="subgroup">
-              <h4>Viewing Your groups</h4>
-              <p  class="text-justify"></p>
+              <div class="row">
+                <div class="col-md-6">
+                  <h4>Viewing Your groups</h4>
+                  <p class="text-justify">
+                    Viewing groups, as viewing Tweets, can be done in an tabular overview and detailed mode.
+                    Both modes provide access to all applicable actions for the respective group and propagate the same information.
+                  </p>
+                </div>
+                <div class="col-md-6">
+                  <video class="helpcast" preload="metadata" controls="true">
+                    <source src="/vid/helpcast4_groups_view.webm" type="video/webm" />
+                    Your browser does not support the HTML5-video tag or WebM.
+                  </video>
+                </div>
+              </div>
             </div>
             <div id="help_groups_add" class="subgroup">
-              <h4>Adding new groups</h4>
-              <p  class="text-justify"></p>
+              <div class="row">
+                <div class="col-md-6">
+                  <h4>Adding new groups</h4>
+                  <p class="text-justify">
+                    It's fairly simple to add a new group, just input the desired title and description for the group and hit the save button.
+                  </p>
+                </div>
+                <div class="col-md-6">
+                  <video class="helpcast" preload="metadata" controls="true">
+                    <source src="/vid/helpcast5_groups_add.webm" type="video/webm" />
+                    Your browser does not support the HTML5-video tag or WebM.
+                  </video>
+                </div>
+              </div>
             </div>
             <div id="help_groups_edit" class="subgroup">
-              <h4>Editing groups</h4>
-              <p  class="text-justify"></p>
+              <div class="row">
+                <div class="col-md-6">
+                  <h4>Editing groups</h4>
+                  <p class="text-justify">
+                    Just like when creating a new group, when editing a group You can manipulate the group title and description.
+                  </p>
+                </div>
+                <div class="col-md-6">
+                  <video class="helpcast" preload="metadata" controls="true">
+                    <source src="/vid/helpcast6_groups_edit.webm" type="video/webm" />
+                    Your browser does not support the HTML5-video tag or WebM.
+                  </video>
+                </div>
+              </div>
             </div>
           </section>
-
           <hr></hr>
-
           <section id="help_imports" class="group">
             <h3>Imports</h3>
-            <p  class="text-justify"></p>
-            <div id="help_imports_tsv-file" class="subgroup">
-              <h4>Importing TSV-files</h4>
-              <p  class="text-justify"></p>
-              <p  class="text-justify"></p>
-            </div>
+            <p class="text-justify">
+              One mayor feature of this application is the ability to import large sets of Tweets automatically, either from a Wikipedia-article or TSV-file.
+              In both cases, a new group is created, containing all parsed Tweets. This group has to be activated by the user manually after the impurt succeeded.
+              Please be aware that importing Tweets from Wikipedia may bear differing results, as parsing natural language is still far from perfected.
+            </p>
             <div id="help_imports_wikipedia" class="subgroup">
-              <h4>Importing from Wikipedia</h4>
-              <p  class="text-justify"></p>
+              <div class="row">
+                <div class="col-md-6">
+                  <h4>Importing from Wikipedia</h4>
+                  <p class="text-justify">
+                    One way of adding a set of Tweets without going through the manual workflow for each Tweet, is to import Tweets from (the German or English) Wikipedia.
+                    This is achieved by submitting the Wikipedia-import form containing the URL to the Wikipedia-article to be parsed along with the desired group title and description and possibly a prefix.
+                    The referenced article will then be computed, all extracted dates will be used to schedule a Tweet with the sentences containing the extracted date as Tweet-content.
+                  </p>
+                </div>
+                <div class="col-md-6">
+                  <video class="helpcast" preload="metadata" controls="true">
+                    <source src="/vid/helpcast7_imports_wikipedia.webm" type="video/webm" />
+                    Your browser does not support the HTML5-video tag or WebM.
+                  </video>
+                </div>
+              </div>
+            </div>
+            <div id="help_imports_tsv-file" class="subgroup">
+              <div class="row">
+                <div class="col-md-6">
+                  <h4>Importing TSV-files</h4>
+                  <p class="text-justify">
+                    Probably the most effective way to add huge sets of Tweets, possibly with image attachment and geolocation, is importing them from a TSV (tab-separated-values) file.
+                    The format of the file has to be exactly as follows (a comma represents a tab in the actual file): Date, time, Tweet content, image attachment, latitude, longitude.
+                    Uploading files which do not concur to this format will result in errors.
+                  </p>
+                </div>
+                <div class="col-md-6">
+                  <video class="helpcast" preload="metadata" controls="true">
+                    <source src="/vid/helpcast8_imports_tsv-file.webm" type="video/webm" />
+                    Your browser does not support the HTML5-video tag or WebM.
+                  </video>
+                </div>
+              </div>
             </div>
           </section>
 
@@ -91,8 +213,8 @@
             <li>
               <a href="#help_imports">Imports</a>
               <ul class="nav nav-stacked">
-                <li><a href="#help_imports_tsv-file">Importing TSV-files</a></li>
                 <li><a href="#help_imports_wikipedia">Importing from Wikipedia</a></li>
+                <li><a href="#help_imports_tsv-file">Importing TSV-files</a></li>
               </ul>
             </li>
           </ul>
