@@ -24,15 +24,14 @@ import de.unihd.dbs.heideltime.standalone.POSTagger;
 import de.unihd.dbs.heideltime.standalone.exceptions.DocumentCreationTimeMissingException;
 
 /**
- * A class to generate tweets and tweetGroups from different input-types (e.g.
- * excel-files or urls)
+ * A class to generate tweets and tweetGroups from different input-types (tsv-files or urls)
  * 
  * @author Alena Geduldig
  *
  */
 
 public class TweetFactory {
-
+	//a file with regexes of all accepted date-types and their date-formats 
 	private File dateFormatsFile = new File("src/main/resources/dateTimeFormats/dateTimeFormats.txt");
 	// the current year is needed to calculate the next possible tweet-date.
 	private int currentYear;
@@ -46,15 +45,17 @@ public class TweetFactory {
 	private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
 	/**
-	 * sets the current year and the accepted formats for date-inputs
+	 * sets the current year and reads the accepted formats for date-inputs from dateTimeFormats.txt
 	 */
 	public TweetFactory() {
-		// set current year
 		currentYear = LocalDateTime.now().getYear();
 		readDateFormatsFromFile();
 	}
 	
-	public void readDateFormatsFromFile() {
+	/**
+	 * read date-formats from file
+	 */
+	private void readDateFormatsFromFile() {
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(dateFormatsFile));
 			String line = in.readLine();
@@ -104,7 +105,7 @@ public class TweetFactory {
 
 	/**
 	 * creates a TweetGroup-object from a tsv-file by building a tweet for each
-	 * row, which has to be in the following format: [date] tab [time(optional)]
+	 * row, which has the following format: [date] tab [time(optional)]
 	 * tab [tweet-content] tab [imageUrl (optional)] tab [latitude (optional)]
 	 * tab [longitude (optional)]
 	 * 
@@ -329,8 +330,8 @@ public class TweetFactory {
 	}
 
 	/**
-	 * extract date-strings from a TimeML annotated sentence extracts only dates
-	 * with at least a month specification
+	 * extract date-strings from a TimeML annotated sentence. Extracts only dates
+	 * with at least a year and month.
 	 * 
 	 * @param sentence
 	 * @return a list of date-expressions
@@ -361,27 +362,27 @@ public class TweetFactory {
 
 	/**
 	 * calculates the next possible tweet-date (= next anniversary in the
-	 * future) from the given date-expression (e.g. 1955-08-01 would return
+	 * future) from the given date-expression (e.g. 1955-08-01  returns
 	 * 2017-08-01 )
 	 * 
-	 * @param origDate
+	 * @param pastDate past date
 	 * @return next anniversary in the format YYYY-MM-dd HH:mm
 	 */
-	private String getTweetDate(String origDate) {
+	private String getTweetDate(String pastDate) {
 		// set default time to 12:00
 		boolean midnight = false;
-		if (origDate.contains(" 00:00")) {
+		if (pastDate.contains(" 00:00")) {
 			midnight = true;
 		}
 		// handle dates with unspecified year
-		if (origDate.startsWith("XXXX")) {
-			origDate = origDate.replace("XXXX", currentYear + "");
+		if (pastDate.startsWith("XXXX")) {
+			pastDate = pastDate.replace("XXXX", currentYear + "");
 		}
 		// set default day in month to 01
-		if (origDate.length() == 7) {
-			origDate = origDate.concat("-01");
+		if (pastDate.length() == 7) {
+			pastDate = pastDate.concat("-01");
 		}
-		LocalDateTime ldtOriginal = parseDateString(origDate);
+		LocalDateTime ldtOriginal = parseDateString(pastDate);
 		if (ldtOriginal == null)
 			return null;
 		// find next anniverary in the future

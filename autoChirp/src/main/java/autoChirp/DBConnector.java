@@ -681,17 +681,8 @@ public class DBConnector {
 	public static int addTweetToGroup(int userID, Tweet tweet, int groupID) {
 		try {
 			connection.setAutoCommit(false);
-			// Statement stmt = connection.createStatement();
 			PreparedStatement prepStmt = connection.prepareStatement(
 					"INSERT INTO tweets (user_id, group_id, scheduled_date, tweet, scheduled, tweeted, img_url, longitude, latitude) VALUES(?,?,?,?,?,?,?,?,?)");
-			// String sql = "INSERT INTO tweets (user_id, group_id,
-			// scheduled_date, tweet, scheduled, tweeted, img_url, longitude,
-			// latitude) VALUES ('"
-			// + userID + "', " + "'" + groupID + "', " + "'" + tweet.tweetDate
-			// + "', " + "'" + tweet.content
-			// + "', " + "'false', 'false', '" + tweet.imageUrl + "', '" +
-			// tweet.longitude + "', '"
-			// + tweet.latitude + "' )";
 			prepStmt.setInt(1, userID);
 			prepStmt.setInt(2, groupID);
 			prepStmt.setString(3, tweet.tweetDate);

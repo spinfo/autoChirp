@@ -96,9 +96,10 @@ public class WikipediaParser implements Parser {
 
 	/**
 	 * returns the language of a wikipedia-article taken from it's url (e.g.
-	 * https://[de].wikipedia.org/wiki/köln")
+	 * https://[de].wikipedia.org/wiki/köln") supports English and German
 	 * 
 	 * @param url
+	 *            url
 	 * @return language
 	 * 
 	 */
@@ -109,12 +110,6 @@ public class WikipediaParser implements Parser {
 		}
 		if (lang.equals("de")) {
 			return Language.GERMAN;
-		}
-		if (lang.equals("fr")) {
-			return Language.FRENCH;
-		}
-		if (lang.equals("es")) {
-			return Language.SPANISH;
 		}
 		System.out.println("WARNING: unknown Language!  ");
 		return Language.ENGLISH;

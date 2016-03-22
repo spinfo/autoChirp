@@ -17,8 +17,9 @@ public interface Parser {
 	 * creates an object of class Document from an url.
 	 * 
 	 * @param url
-	 * 			the url of the website to parse
-	 * @return an object of class Document consisting of text, title, url and language
+	 *            the url of the website to parse
+	 * @return an object of class Document consisting of text, title, url and
+	 *         language
 	 */
 	public Document parse(String url);
 
