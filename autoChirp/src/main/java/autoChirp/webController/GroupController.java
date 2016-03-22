@@ -16,6 +16,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +41,9 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping(value = "/groups")
 public class GroupController {
 
+	@Value("${dateFormatsPath}")
+	private String dateFormatsPath; 
+	
 	private HttpSession session;
 	private int groupsPerPage = 15;
 	private int tweetsPerPage = 15;
@@ -261,7 +266,7 @@ public class GroupController {
 		}
 
 		File file;
-		TweetFactory tweeter = new TweetFactory();
+		TweetFactory tweeter = new TweetFactory(dateFormatsPath);
 
 		try {
 			file = File.createTempFile("upload-", ".tsv");
@@ -329,7 +334,7 @@ public class GroupController {
 			return mv;
 		}
 
-		TweetFactory tweeter = new TweetFactory();
+		TweetFactory tweeter = new TweetFactory(dateFormatsPath);
 		TweetGroup tweetGroup = tweeter.getTweetsFromUrl(source, new WikipediaParser(), description,
 				(prefix == "") ? null : prefix);
 		tweetGroup.title = title;

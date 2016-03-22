@@ -47,8 +47,9 @@ public class TweetFactory {
 	/**
 	 * sets the current year and reads the accepted formats for date-inputs from dateTimeFormats.txt
 	 */
-	public TweetFactory() {
+	public TweetFactory(String dateFormatsPath) {
 		currentYear = LocalDateTime.now().getYear();
+		this.dateFormatsFile = new File(dateFormatsPath);
 		readDateFormatsFromFile();
 	}
 	

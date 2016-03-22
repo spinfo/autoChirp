@@ -47,7 +47,7 @@ public class TweetCreationWorkflow {
 	 */
 	@Test
 	public void generateTweetsFromWikipediaUrl(){
-		TweetFactory factory = new TweetFactory();
+		TweetFactory factory = new TweetFactory("src/main/resources/dateTimeFormats/dateTimeFormats.txt");
 		List<String> urls = new ArrayList<String>();
 		String url = "https://de.wikipedia.org/wiki/Universität_zu_Köln";
 		urls.add(url);
@@ -71,7 +71,7 @@ public class TweetCreationWorkflow {
 	 */
 	@Test
 	public void generateTweetsFromTSVFile(){
-		TweetFactory factory = new TweetFactory();
+		TweetFactory factory = new TweetFactory("src/main/resources/dateTimeFormats/dateTimeFormats.txt");
 		File testFile = new File("src/test/resources/testTSVFile_Image_Locations.txt");
 		
 		//without delay
@@ -105,7 +105,7 @@ public class TweetCreationWorkflow {
 	@Test
 	public void dateTimeFomatsTest() throws IOException{
 		File file = new File("src/test/resources/testTSVFile_DateFormats.txt");
-		TweetFactory factory = new TweetFactory();
+		TweetFactory factory = new TweetFactory("src/main/resources/dateTimeFormats/dateTimeFormats.txt");
 		TweetGroup group = factory.getTweetsFromTSVFile(file, "dateFormatTest", "test all supported formats", 2);
 		Assert.assertEquals(group.tweets.size(), 18);
 		for (Tweet tweet : group.tweets) {
