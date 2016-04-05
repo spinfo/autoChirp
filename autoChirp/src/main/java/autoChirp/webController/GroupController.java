@@ -41,9 +41,12 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping(value = "/groups")
 public class GroupController {
 
+  @Value("${fileUploadDir}")
+  private String fileUploadDir;
+
 	@Value("${dateFormatsPath}")
-	private String dateFormatsPath; 
-	
+	private String dateFormatsPath;
+
 	private HttpSession session;
 	private int groupsPerPage = 15;
 	private int tweetsPerPage = 15;
@@ -269,7 +272,7 @@ public class GroupController {
 		TweetFactory tweeter = new TweetFactory(dateFormatsPath);
 
 		try {
-			file = File.createTempFile("upload-", ".tsv");
+			file = File.createTempFile("upload-", ".tsv", new File(fileUploadDir));
 			source.transferTo(file);
 		} catch (Exception e) {
 			return new ModelAndView("redirect:/error");

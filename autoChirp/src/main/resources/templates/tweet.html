@@ -52,7 +52,7 @@
                 </input>
               </div>
               <div class="col-sm-5">
-                <input type="time" class="form-control" id="tweetTime" name="tweetTime" required="required" placeholder="HH:MM (e.g. 03:17)"
+                <input type="time" class="form-control" id="tweetTime" name="tweetTime" required="required" placeholder="HH:MM:SS (e.g. 03:17:21)" step="1"
                   th:value="${#httpServletRequest.requestURI.startsWith('/tweets/add')} ? '' : ${#strings.substring(tweetEntry.tweetDate, 11, tweetEntry.tweetDate.length())}"
                   th:disabled="!${#httpServletRequest.requestURI.startsWith('/tweets/add')}">
                 </input>
