@@ -42,7 +42,7 @@ public class TweetFactory {
 	// accepted date and time formats
 	private List<String> dateFormats = new ArrayList<String>();
 	// a formatter to normalize the different input formats
-	private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+	private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 	/**
 	 * sets the current year and reads the accepted formats for date-inputs from dateTimeFormats.txt

@@ -78,7 +78,7 @@ public class TweetWorkflow {
 		// generate test-tweets
 		LocalDateTime ldt = LocalDateTime.now();
 		ldt = ldt.plusSeconds(65);
-		String tweetDate = ldt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+		String tweetDate = ldt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 		List<Tweet> tweets = new ArrayList<Tweet>();
 		tweets.add(new Tweet(tweetDate, "das ist ein test #autoChirp"));
 		tweets.add(new Tweet(tweetDate, "das ist auch ein test #autoChirp"));
@@ -96,7 +96,7 @@ public class TweetWorkflow {
 		TweetScheduler.scheduleTweetsForUser(read.tweets, userID);
 
 		// program has to run until all tweets are tweeted
-		LocalDateTime date = LocalDateTime.parse(tweetDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+		LocalDateTime date = LocalDateTime.parse(tweetDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 		date = date.plusSeconds(10);
 		boolean stop = false;
 		while (!stop) {

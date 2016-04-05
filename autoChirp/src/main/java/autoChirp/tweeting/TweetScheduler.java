@@ -37,7 +37,7 @@ public class TweetScheduler {
 		long delay;
 		for (Tweet tweet : tweets) {
 			// calculate delay
-			LocalDateTime ldt = LocalDateTime.parse(tweet.tweetDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+			LocalDateTime ldt = LocalDateTime.parse(tweet.tweetDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			now = LocalDateTime.now();
 			d = Duration.between(now, ldt);
 			delay = d.getSeconds();

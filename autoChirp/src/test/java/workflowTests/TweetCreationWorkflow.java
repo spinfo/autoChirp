@@ -106,7 +106,7 @@ public class TweetCreationWorkflow {
 	public void dateTimeFomatsTest() throws IOException{
 		File file = new File("src/test/resources/testTSVFile_DateFormats.txt");
 		TweetFactory factory = new TweetFactory("src/main/resources/dateTimeFormats/dateTimeFormats.txt");
-		TweetGroup group = factory.getTweetsFromTSVFile(file, "dateFormatTest", "test all supported formats", 2);
+		TweetGroup group = factory.getTweetsFromTSVFile(file, "dateFormatTest", "test all supported formats", 3);
 		Assert.assertEquals(group.tweets.size(), 18);
 		for (Tweet tweet : group.tweets) {
 			System.out.println(tweet.tweetDate);
