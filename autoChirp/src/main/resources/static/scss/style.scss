@@ -142,8 +142,11 @@ input[required]:invalid {
   }
 }
 tr {
-  .fixlist {
-    width: 10em;
+  .tweetdate {
+    width: 11em;
+  }
+  .actions {
+    width: 7em;
   }
 }
 video.helpcast {

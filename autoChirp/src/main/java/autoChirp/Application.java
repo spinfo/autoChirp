@@ -48,7 +48,12 @@ public class Application extends SpringBootServletInitializer {
 		ApplicationContext ctx = SpringApplication.run(Application.class, args);
 	}
 
-
+  /**
+	 * @param application
+	 *            SpringApplicationBuilder object
+	 * @return SpringApplicationBuilder
+	 *             SpringApplicationBuilder object
+	 */
   @Override
   protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
     return application.sources(applicationClass);

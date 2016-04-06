@@ -31,8 +31,8 @@
                   <th class="text-center"><span class="glyphicon glyphicon-picture" aria-hidden="true"></span></th>
                   <th class="text-center"><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span></th>
                   <th class="text-center"><span class="glyphicon glyphicon-send" aria-hidden="true"></span></th>
-                  <th class="text-center fixlist">When</th>
-                  <th class="text-right fixlist">Actions</th>
+                  <th class="text-center tweetdate">When</th>
+                  <th class="text-right actions">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -50,7 +50,7 @@
                   </td>
                   <td class="text-center">
                     <span class="glyphicon" th:classappend="${tweetEntry.tweeted} ? 'glyphicon-ok' :
-                      (${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm').compareTo(tweetEntry.tweetDate) lt 0}
+                      (${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm:ss').compareTo(tweetEntry.tweetDate) lt 0}
                       ? 'glyphicon-hourglass' : 'glyphicon-remove')" aria-hidden="true"></span>
                   </td>
                   <td th:text="${tweetEntry.tweetDate}" class="text-center"></td>

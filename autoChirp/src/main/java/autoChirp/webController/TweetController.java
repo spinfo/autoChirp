@@ -492,7 +492,7 @@ public class TweetController {
 
 		String referer;
 		try {
-			referer = new URI(request.getHeader("referer")).getPath();
+			referer = new URI(request.getHeader("referer")).getPath().substring(request.getContextPath().length());
 		} catch (URISyntaxException e) {
 			referer = null;
 		}

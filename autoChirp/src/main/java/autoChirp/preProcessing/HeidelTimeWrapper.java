@@ -40,6 +40,12 @@ public class HeidelTimeWrapper extends HeidelTimeStandalone {
 		this.treeTaggerPath = treeTaggerPathProp;
 	}
 
+  /**
+	 * Empty constructor
+	 */
+	public HeidelTimeWrapper() {}
+
+
 	/**
 	 *
 	 * @param language
@@ -82,8 +88,8 @@ public class HeidelTimeWrapper extends HeidelTimeStandalone {
 			Config.setProps(props);
 			configStream.close();
 		} catch (FileNotFoundException e) {
-			System.exit(-1);
-		} catch (IOException   e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
