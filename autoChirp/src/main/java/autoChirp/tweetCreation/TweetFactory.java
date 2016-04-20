@@ -154,23 +154,7 @@ public class TweetFactory {
 					line = in.readLine();
 					continue;
 				}
-				// add delay
-				ldt = ldt.plusYears(delay);
-				if(ldt.isBefore(LocalDateTime.now())){
-					System.out.println("date is in the past: "+ ldt);
-					line=in.readLine();
-					continue;
-				}
-				// normalize date to the format yyyy-MM-dd HH:mm
-				String formattedDate = ldt.format(formatter);
-				// set default time to 12:00
-				boolean midnight = false;
-				if (time.contains(" 00:00")) {
-					midnight = true;
-				}
-				if (!midnight) {
-					formattedDate = formattedDate.replace(" 00:00", " 12:00");
-				}
+			
 				// get tweet-image
 				String imageUrl = null;
 				if (split.length > 3) {
@@ -191,10 +175,26 @@ public class TweetFactory {
 				// trim content to max. 140 characters
 				content = trimToTweet(content, null, imageUrl);
 				// calc. next possible tweetDate
+				
+				
+				// add delay
+				ldt = ldt.plusYears(delay);
+			
+				
 				if (delay == 0) {
 					while (ldt.isBefore(LocalDateTime.now())) {
 						ldt = ldt.plusYears(1);
 					}
+				}
+				// normalize date to the format yyyy-MM-dd HH:mm
+				String formattedDate = ldt.format(formatter);
+				// set default time to 12:00
+				boolean midnight = false;
+				if (time.contains(" 00:00")) {
+					midnight = true;
+				}
+				if (!midnight) {
+					formattedDate = formattedDate.replace(" 00:00", " 12:00");
 				}
 				if (ldt.isAfter(LocalDateTime.now())) {
 					tweet = new Tweet(formattedDate, content, imageUrl, longitude, latitude);
