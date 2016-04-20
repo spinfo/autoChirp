@@ -25,13 +25,13 @@ import de.unihd.dbs.heideltime.standalone.exceptions.DocumentCreationTimeMissing
 
 /**
  * A class to generate tweets and tweetGroups from different input-types (tsv-files or urls)
- * 
+ *
  * @author Alena Geduldig
  *
  */
 
 public class TweetFactory {
-	//a file with regexes of all accepted date-types and their date-formats 
+	//a file with regexes of all accepted date-types and their date-formats
 	private File dateFormatsFile = new File("src/main/resources/dateTimeFormats/dateTimeFormats.txt");
 	// the current year is needed to calculate the next possible tweet-date.
 	private int currentYear;
@@ -52,7 +52,7 @@ public class TweetFactory {
 		this.dateFormatsFile = new File(dateFormatsPath);
 		readDateFormatsFromFile();
 	}
-	
+
 	/**
 	 * read date-formats from file
 	 */
@@ -78,9 +78,9 @@ public class TweetFactory {
 	}
 
 	/**
-	 * 
+	 *
 	 * adds a new dateTime format
-	 * 
+	 *
 	 * @param regex
 	 *            - dateTime-regex
 	 * @param format
@@ -93,7 +93,7 @@ public class TweetFactory {
 
 	/**
 	 * adds a new date format
-	 * 
+	 *
 	 * @param regex
 	 *            - date-regex
 	 * @param format
@@ -109,7 +109,7 @@ public class TweetFactory {
 	 * row, which has the following format: [date] tab [time(optional)]
 	 * tab [tweet-content] tab [imageUrl (optional)] tab [latitude (optional)]
 	 * tab [longitude (optional)]
-	 * 
+	 *
 	 * @param tsvFile
 	 *            the input file
 	 * @param title
@@ -219,7 +219,7 @@ public class TweetFactory {
 	 * date-strings for each sentence 5. Calculates the tweetDate (= next
 	 * anniversary) for each tagged date 6. Created a new Tweet-object for each
 	 * date and its containing sentence and adds it to the TweetGroup
-	 * 
+	 *
 	 * @param url
 	 *            url
 	 * @param parser
@@ -269,7 +269,7 @@ public class TweetFactory {
 
 	/**
 	 * returns a list of TimeML-annotated sentences
-	 * 
+	 *
 	 * @param document
 	 * @return list of tagged sentences
 	 */
@@ -289,7 +289,7 @@ public class TweetFactory {
 
 	/**
 	 * concatenates a list of sentences with the delimiter '#SENTENCE#'
-	 * 
+	 *
 	 * @param sentences
 	 * @return concatenated sentences
 	 */
@@ -304,7 +304,7 @@ public class TweetFactory {
 	/**
 	 * trims a sentence to a tweet-lenth of max. 140 characters and adds the
 	 * given url to the tweets content
-	 * 
+	 *
 	 * @param toTrim
 	 * @param url
 	 * @return a valid tweet content
@@ -333,7 +333,7 @@ public class TweetFactory {
 	/**
 	 * extract date-strings from a TimeML annotated sentence. Extracts only dates
 	 * with at least a year and month.
-	 * 
+	 *
 	 * @param sentence
 	 * @return a list of date-expressions
 	 */
@@ -365,7 +365,7 @@ public class TweetFactory {
 	 * calculates the next possible tweet-date (= next anniversary in the
 	 * future) from the given date-expression (e.g. 1955-08-01  returns
 	 * 2017-08-01 )
-	 * 
+	 *
 	 * @param pastDate past date
 	 * @return next anniversary in the format YYYY-MM-dd HH:mm
 	 */
@@ -404,7 +404,7 @@ public class TweetFactory {
 	/**
 	 * parses a date-string and returns a LocalDateTime-object of the format
 	 * YYYY-MM-dd HH:mm
-	 * 
+	 *
 	 * @param date
 	 * @return a LocalDateTime-object of the given date-string or null if the
 	 *         string does not satisfy one of the accepted date-formats

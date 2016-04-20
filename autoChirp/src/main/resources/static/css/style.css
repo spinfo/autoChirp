@@ -100,8 +100,10 @@ input[required]:invalid {
 .well-condensed *:last-child {
   margin-bottom: 0; }
 
-tr .fixlist {
-  width: 10em; }
+tr .tweetdate {
+  width: 11em; }
+tr .actions {
+  width: 7em; }
 
 video.helpcast {
   border-radius: 4px;

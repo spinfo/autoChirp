@@ -7,6 +7,7 @@ import autoChirp.tweetCreation.TweetFactory;
 import autoChirp.tweetCreation.TweetGroup;
 import autoChirp.tweeting.TweetScheduler;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -41,9 +42,12 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping(value = "/groups")
 public class GroupController {
 
+  @Value("${fileUploadDir}")
+  private String fileUploadDir;
+
 	@Value("${dateFormatsPath}")
-	private String dateFormatsPath; 
-	
+	private String dateFormatsPath;
+
 	private HttpSession session;
 	private int groupsPerPage = 15;
 	private int tweetsPerPage = 15;
@@ -269,10 +273,14 @@ public class GroupController {
 		TweetFactory tweeter = new TweetFactory(dateFormatsPath);
 
 		try {
-			file = File.createTempFile("upload-", ".tsv");
-			source.transferTo(file);
+			file = File.createTempFile("upload-", ".tsv", new File(fileUploadDir));
+      FileOutputStream fos = new FileOutputStream(file);
+      fos.write(source.getBytes());
+      fos.close();
 		} catch (Exception e) {
-			return new ModelAndView("redirect:/error");
+      ModelAndView mv = new ModelAndView("error");
+      mv.addObject("error", "The uploaded file could not be opened.");
+      return mv;
 		}
 
 		TweetGroup tweetGroup = tweeter.getTweetsFromTSVFile(file, title, description, (delay <= 0) ? 0 : delay);
@@ -456,7 +464,7 @@ public class GroupController {
 
 		String referer;
 		try {
-			referer = new URI(request.getHeader("referer")).getPath();
+			referer = new URI(request.getHeader("referer")).getPath().substring(request.getContextPath().length());
 		} catch (URISyntaxException e) {
 			referer = null;
 		}
