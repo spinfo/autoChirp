@@ -284,8 +284,15 @@ public class GroupController {
       mv.addObject("error", "The uploaded file could not be opened.");
       return mv;
 		}
-
-		TweetGroup tweetGroup = tweeter.getTweetsFromTSVFile(file, title, description, (delay <= 0) ? 0 : delay);
+		TweetGroup tweetGroup;
+		try{
+			tweetGroup = tweeter.getTweetsFromTSVFile(file, title, description, (delay <= 0) ? 0 : delay);
+		}
+		catch(MalformedTSVFileException e){
+			  ModelAndView mv = new ModelAndView("error");
+		      mv.addObject("error","Parsing error, " + e.getMessage());
+		      return mv;
+		}
 		int groupID = DBConnector.insertTweetGroup(tweetGroup, userID);
 		file.delete();
 

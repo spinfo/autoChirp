@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -13,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.imageio.ImageIO;
 
 import autoChirp.preProcessing.Document;
 import autoChirp.preProcessing.HeidelTimeWrapper;
@@ -138,6 +141,11 @@ public class TweetFactory {
 					row++;
 					continue;
 				}
+				if(line.toLowerCase().startsWith("date")){
+					line = in.readLine();
+					row++;
+					continue;
+				}
 				String[] split = line.split("\t");
 				// get tweet-date
 				date = split[0].trim();
@@ -162,6 +170,12 @@ public class TweetFactory {
 				String imageUrl = null;
 				if (split.length > 3) {
 					imageUrl = split[3];
+					try {
+						ImageIO.read(new URL(imageUrl));
+					} catch (Exception e) {
+						throw new MalformedTSVFileException(row, 4, imageUrl, "invalid image-Url: "+imageUrl+" (row: "+row+" column: 4)");
+					}
+					
 				}
 				// get latitude
 				float latitude = 0;

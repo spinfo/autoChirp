@@ -190,8 +190,12 @@ public class TweetController {
 			mv.addObject("error", "The tweet date must match the pattern: YYYY-MM-DD");
 			return mv;
 		}
+		
+		if(tweetTime.matches("^[0-9]{2}:[0-9]{2}$")){
+			tweetTime = tweetTime+":00";
+		}
 
-		if (!tweetTime.matches("^[0-9]{2}:[0-9]{2}:[0-9]{2}$")) {
+		else if (!tweetTime.matches("^[0-9]{2}:[0-9]{2}:[0-9]{2}$")) {
 			ModelAndView mv = new ModelAndView("error");
 			mv.addObject("error", "The tweet time must match the pattern: HH:MM:SS");
 			return mv;
@@ -325,7 +329,10 @@ public class TweetController {
 			return mv;
 		}
 
-		if (!tweetTime.matches("^[0-9]{2}:[0-9]{2}:[0-9]{2}$")) {
+		if(tweetTime.matches("^[0-9]{2}:[0-9]{2}$")){
+			tweetTime = tweetTime+":00";
+		}
+		else if (!tweetTime.matches("^[0-9]{2}:[0-9]{2}:[0-9]{2}$")) {
 			ModelAndView mv = new ModelAndView("error");
 			mv.addObject("error", "The tweet time must match the pattern: HH:MM:SS");
 			return mv;
