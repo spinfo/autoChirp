@@ -2,6 +2,7 @@ package autoChirp.webController;
 
 import autoChirp.DBConnector;
 import autoChirp.preProcessing.parser.WikipediaParser;
+import autoChirp.tweetCreation.MalformedTSVFileException;
 import autoChirp.tweetCreation.Tweet;
 import autoChirp.tweetCreation.TweetFactory;
 import autoChirp.tweetCreation.TweetGroup;
@@ -248,11 +249,12 @@ public class GroupController {
 	 * @param delay
 	 *            POST param bearing the referenced input-field value
 	 * @return Redirect-view if successful, else error-view
+	 * @throws MalformedTSVFileException 
 	 */
 	@RequestMapping(value = "/import/tsv-file", method = RequestMethod.POST)
 	public ModelAndView importTSVGroupPost(@RequestParam("source") MultipartFile source,
 			@RequestParam("title") String title, @RequestParam("description") String description,
-			@RequestParam("delay") int delay) {
+			@RequestParam("delay") int delay) throws MalformedTSVFileException {
 		if (session.getAttribute("account") == null)
 			return new ModelAndView("redirect:/account");
 		int userID = Integer.parseInt(((Hashtable<String, String>) session.getAttribute("account")).get("userID"));

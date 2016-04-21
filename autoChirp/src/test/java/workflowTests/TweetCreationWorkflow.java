@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import autoChirp.DBConnector;
 import autoChirp.preProcessing.parser.WikipediaParser;
+import autoChirp.tweetCreation.MalformedTSVFileException;
 import autoChirp.tweetCreation.Tweet;
 import autoChirp.tweetCreation.TweetFactory;
 import autoChirp.tweetCreation.TweetGroup;
@@ -68,9 +69,10 @@ public class TweetCreationWorkflow {
 	
 	/**
 	 * test for tsv-imports
+	 * @throws MalformedTSVFileException 
 	 */
 	@Test
-	public void generateTweetsFromTSVFile(){
+	public void generateTweetsFromTSVFile() throws MalformedTSVFileException{
 		TweetFactory factory = new TweetFactory("src/main/resources/dateTimeFormats/dateTimeFormats.txt");
 		File testFile = new File("src/test/resources/testTSVFile_Image_Locations.txt");
 		
@@ -101,9 +103,10 @@ public class TweetCreationWorkflow {
 	/**
 	 * test all supported dateTime- and dateFormats specified in src/main/resources/dateTmeFormats
 	 * @throws IOException 
+	 * @throws MalformedTSVFileException 
 	 */
 	@Test
-	public void dateTimeFomatsTest() throws IOException{
+	public void dateTimeFomatsTest() throws IOException, MalformedTSVFileException{
 		File file = new File("src/test/resources/testTSVFile_DateFormats.txt");
 		TweetFactory factory = new TweetFactory("src/main/resources/dateTimeFormats/dateTimeFormats.txt");
 		TweetGroup group = factory.getTweetsFromTSVFile(file, "dateFormatTest", "test all supported formats", 3);

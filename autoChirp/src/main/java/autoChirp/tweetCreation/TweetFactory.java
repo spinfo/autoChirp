@@ -121,7 +121,7 @@ public class TweetFactory {
 	 *            the calculated tweet-date
 	 * @return a new tweetGroup with a tweet for each row in the file
 	 */
-	public TweetGroup getTweetsFromTSVFile(File tsvFile, String title, String description, int delay) {
+	public TweetGroup getTweetsFromTSVFile(File tsvFile, String title, String description, int delay) throws MalformedTSVFileException {
 		TweetGroup group = new TweetGroup(title, description);
 		try {
 			BufferedReader in = new BufferedReader(new FileReader(tsvFile));
@@ -131,9 +131,11 @@ public class TweetFactory {
 			String time;
 			LocalDateTime ldt;
 			Tweet tweet;
+			int row = 1;
 			while (line != null) {
 				if(line.equals("")){
 					line = in.readLine();
+					row++;
 					continue;
 				}
 				String[] split = line.split("\t");
@@ -146,13 +148,14 @@ public class TweetFactory {
 				time = split[1].trim();
 				if (time.equals("")) {
 					ldt = parseDateString(date);
+					if(ldt == null){
+						throw new MalformedTSVFileException(row, 1, date, "malformed date: "+date+"  (row: "+row+" column: 1)");
+					}	
 				} else {
 					ldt = parseDateString(date + " " + time);
-				}
-				if (ldt == null) {
-					// row was not in the correct format. go to next row
-					line = in.readLine();
-					continue;
+					if(ldt == null){
+						throw new MalformedTSVFileException(row, 1, date + " " + time, "malformed date or time: "+date + " " + time+"  (row: "+row+" column: 1-2)");
+					}
 				}
 			
 				// get tweet-image
@@ -163,12 +166,23 @@ public class TweetFactory {
 				// get latitude
 				float latitude = 0;
 				if (split.length > 4) {
-					latitude = Float.parseFloat(split[4]);
+					try{
+						latitude = Float.parseFloat(split[4]);
+					}
+					catch(NumberFormatException e){
+						throw new MalformedTSVFileException(row, 5, split[4], "malformed latitude: "+split[4]+"   (row: "+row+" column: 5)" );
+					}
 				}
 				// get longitude
 				float longitude = 0;
 				if (split.length > 5) {
-					longitude = Float.parseFloat(split[5]);
+					try{
+
+						longitude = Float.parseFloat(split[5]);
+					}
+					catch(NumberFormatException e){
+						throw new MalformedTSVFileException(row, 6, split[5], "malformed longitude: "+split[5]+"   (row: "+row+" column: 6)");
+					}
 				}
 				// get tweet-content
 				content = split[2];
@@ -201,6 +215,7 @@ public class TweetFactory {
 					group.addTweet(tweet);
 				}
 				line = in.readLine();
+				row++;
 			}
 			in.close();
 		} catch (IOException e) {
