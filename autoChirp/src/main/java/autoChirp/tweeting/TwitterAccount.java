@@ -88,6 +88,7 @@ public class TwitterAccount implements ConnectInterceptor<Twitter> {
 		account.put("userID", Integer.toString(userID));
 		account.put("twitterID", Long.toString(twitterID));
 		account.put("name", twitterProfile.getName());
+		account.put("geoEnabled",String.valueOf(twitterProfile.isGeoEnabled()));
 		account.put("handle", twitterProfile.getScreenName());
 		account.put("description", twitterProfile.getDescription());
 		account.put("url", twitterProfile.getProfileUrl());
