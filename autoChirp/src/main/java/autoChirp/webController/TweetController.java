@@ -213,13 +213,13 @@ public class TweetController {
 
 		if (latitude < -90 || latitude > 90) {
 			ModelAndView mv = new ModelAndView("error");
-			mv.addObject("error", "The latitude must be withing the margins of -90 to +90.");
+			mv.addObject("error", "The latitude must be within the margins of -90 to +90.");
 			return mv;
 		}
 
 		if (longitude < -180 || longitude > 180) {
 			ModelAndView mv = new ModelAndView("error");
-			mv.addObject("error", "The longitude must be withing the margins of -180 to +180.");
+			mv.addObject("error", "The longitude must be within the margins of -180 to +180.");
 			return mv;
 		}
 
