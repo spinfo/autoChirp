@@ -29,6 +29,7 @@ public class TwitterTask extends TimerTask {
 
 	/**
 	 * creates a new TwitterConnection
+	 * 
 	 */
 	@Override
 	public void run() {

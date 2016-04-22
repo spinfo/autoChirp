@@ -36,17 +36,25 @@ public class TweetScheduler {
 		Duration d;
 		long delay;
 		for (Tweet tweet : tweets) {
-			// calculate delay
+			
+			//create DateTime-Object from date-string
 			LocalDateTime ldt = LocalDateTime.parse(tweet.tweetDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			
+			// calculate delay in seconds
 			now = LocalDateTime.now();
 			d = Duration.between(now, ldt);
 			delay = d.getSeconds();
+			
+	
 			if (delay < 0) {
+				//tweet-time is in the past
 				continue;
 			}
+			
 			// schedule
 			ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(5);
 			scheduler.schedule(new TwitterTask(user_id, tweet.tweetID), delay, TimeUnit.SECONDS);
+			
 			// update tweet-status
 			DBConnector.flagAsScheduled(tweet.tweetID, user_id);
 		}

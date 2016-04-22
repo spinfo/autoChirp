@@ -57,6 +57,7 @@ public class TwitterConnection {
 	 * tweetID
 	 */
 	public void run(int userID, int tweetID) {
+		//get tweet from DB
 		Tweet toTweet = DBConnector.getTweetByID(tweetID, userID);
 		if (toTweet == null) {
 			return;
@@ -70,11 +71,12 @@ public class TwitterConnection {
 			return;
 		}
 		
-		// read userConfig
+		// read userConfig (oAuthToken, tokenSecret) from DB
 		String[] userConfig = DBConnector.getUserConfig(userID);
 		String token = userConfig[1];
 		String tokenSecret = userConfig[2];
-		// tweeting with org.springframework.social.twitter
+		
+		// tweeting
 		Twitter twitter = new TwitterTemplate(appID, appSecret, token, tokenSecret);
 		
 		//TweetData tweetData = new TweetData(toTweet.content);
@@ -95,7 +97,10 @@ public class TwitterConnection {
 			tweetData = tweetData.atLocation(toTweet.longitude, toTweet.latitude).displayCoordinates(true);
 		}
 
+		//update Status
 		twitter.timelineOperations().updateStatus(tweetData);
+		
+		//update DB
 		DBConnector.flagAsTweeted(tweetID, userID);
 		
 	}
