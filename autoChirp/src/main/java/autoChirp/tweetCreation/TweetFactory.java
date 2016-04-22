@@ -282,8 +282,14 @@ public class TweetFactory {
 				if (tweetDate == null)
 					continue;
 				// trim sentence to 140 characters
-				if (prefix != null) {
-					content = trimToTweet(prefix + ": " + doc.getSentences().get(i - 1), url, null);
+				if (prefix != null ) {
+					if(prefix.equals("")){
+						content = trimToTweet(doc.getSentences().get(i - 1), url, null);
+					}
+					else{
+						content = trimToTweet(prefix + ": " + doc.getSentences().get(i - 1), url, null);
+					}
+				
 				} else {
 					content = trimToTweet(doc.getSentences().get(i - 1), url, null);
 				}

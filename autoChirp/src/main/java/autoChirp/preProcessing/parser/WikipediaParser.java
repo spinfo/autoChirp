@@ -70,7 +70,7 @@ public class WikipediaParser implements Parser {
 		}
 		// takes the content of each p-element as text
 		if (elementName.equals("p")) {
-			String elementContent = node.getTextContent().trim().toLowerCase();
+			String elementContent = node.getTextContent().trim();
 			// remove footnotes
 			Pattern pattern = Pattern.compile(regex);
 			Matcher matcher = pattern.matcher(elementContent);
