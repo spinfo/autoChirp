@@ -136,12 +136,14 @@ public class TweetFactory {
 			Tweet tweet;
 			int row = 1;
 			while (line != null) {
+				System.out.println("line: "+line);
 				if(line.equals("")){
 					line = in.readLine();
 					row++;
 					continue;
 				}
 				if(line.toLowerCase().startsWith("date")){
+					System.out.println("next");
 					line = in.readLine();
 					row++;
 					continue;
@@ -170,12 +172,13 @@ public class TweetFactory {
 				String imageUrl = null;
 				if (split.length > 3) {
 					imageUrl = split[3];
-					try {
-						ImageIO.read(new URL(imageUrl));
-					} catch (Exception e) {
-						throw new MalformedTSVFileException(row, 4, imageUrl, "invalid image-Url: "+imageUrl+" (row: "+row+" column: 4)");
-					}
-					
+					if(imageUrl.length() > 0){
+						try {
+							ImageIO.read(new URL(imageUrl));
+						} catch (Exception e) {
+							throw new MalformedTSVFileException(row, 4, imageUrl, "invalid image-Url: "+imageUrl+" (row: "+row+" column: 4)");
+						}
+					}	
 				}
 				// get latitude
 				float latitude = 0;
@@ -449,6 +452,7 @@ public class TweetFactory {
 			matcher = pattern.matcher(date);
 			if (matcher.find()) {
 				DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern(dateFormats.get(i));
+				System.out.println(dtFormatter);
 				ldt = LocalDateTime.parse(date, dtFormatter);
 				return ldt;
 			}
