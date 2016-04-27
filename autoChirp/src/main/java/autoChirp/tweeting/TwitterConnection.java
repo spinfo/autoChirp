@@ -57,11 +57,13 @@ public class TwitterConnection {
 	 * tweetID
 	 */
 	public void run(int userID, int tweetID) {
-		//get tweet from DB
+		
+		//read tweet from DB
 		Tweet toTweet = DBConnector.getTweetByID(tweetID, userID);
 		if (toTweet == null) {
 			return;
 		}
+		
 		// check if tweet was not tweeted already
 		if (toTweet.tweeted) {
 			return;
@@ -76,12 +78,14 @@ public class TwitterConnection {
 		String token = userConfig[1];
 		String tokenSecret = userConfig[2];
 		
-		// tweeting
+		// Tweeting
 		Twitter twitter = new TwitterTemplate(appID, appSecret, token, tokenSecret);
 		
-		//TweetData tweetData = new TweetData(toTweet.content);
+		//Add TweetContent
 		String tweet = toTweet.content;
 		TweetData tweetData = new TweetData(tweet);
+		
+		//add image
 		if(toTweet.imageUrl != null){
 			try {
 				Resource img = new UrlResource(toTweet.imageUrl);
@@ -91,6 +95,8 @@ public class TwitterConnection {
 			}
 			
 		}
+		
+		//add Geo-Locations
 		if(toTweet.longitude != 0 || toTweet.latitude != 0){
 			System.out.println("long: " + toTweet.longitude);
 			System.out.println("lat: " + toTweet.latitude);
@@ -100,9 +106,8 @@ public class TwitterConnection {
 		//update Status
 		twitter.timelineOperations().updateStatus(tweetData);
 		
-		//update DB
-		DBConnector.flagAsTweeted(tweetID, userID);
-		
+		//update Tweet-Status in DB
+		DBConnector.flagAsTweeted(tweetID, userID);	
 	}
 
 }
