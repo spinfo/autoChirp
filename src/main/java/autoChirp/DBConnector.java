@@ -868,38 +868,47 @@ public class DBConnector {
 	 * @return tweetID of the new tweet
 	 */
 	public static int addTweetToGroup(int userID, Tweet tweet, int groupID) {
-		try {
+		int toReturn = -1;
+		TweetGroup group = getTweetGroupForUser(userID, groupID);
+		group.addTweet(tweet);
+		for(int i =  group.tweets.size()-1; i >=0; i--){
+			deleteTweet(group.tweets.get(i).tweetID, userID);
+		}
+		try{
 			connection.setAutoCommit(false);
 			PreparedStatement prepStmt = connection.prepareStatement(
-					"INSERT INTO tweets (user_id, group_id, scheduled_date, tweet, scheduled, tweeted, img_url, longitude, latitude) VALUES(?,?,?,?,?,?,?,?,?)");
-			prepStmt.setInt(1, userID);
-			prepStmt.setInt(2, groupID);
-			prepStmt.setString(3, tweet.tweetDate);
-			prepStmt.setString(4, tweet.content);
-			prepStmt.setBoolean(5, false);
-			prepStmt.setBoolean(6, false);
-			prepStmt.setString(7, tweet.imageUrl);
-			prepStmt.setFloat(8, tweet.longitude);
-			prepStmt.setFloat(9, tweet.latitude);
-			prepStmt.executeUpdate();
-			prepStmt.close();
-			connection.commit();
-			Statement stmt = connection.createStatement();
-			String sql = "SELECT last_insert_rowid();";
-			ResultSet result = stmt.executeQuery(sql);
-			int toReturn = result.getInt(1);
-			stmt.close();
+				"INSERT INTO tweets (user_id, group_id, scheduled_date, tweet, scheduled, tweeted, img_url, longitude, latitude) VALUES(?,?,?,?,?,?,?,?,?)");
+			for (Tweet t : group.tweets) {
+				prepStmt.setInt(1, userID);
+				prepStmt.setInt(2, groupID);
+				prepStmt.setString(3, t.tweetDate);
+				prepStmt.setString(4, t.content);
+				prepStmt.setBoolean(5, t.scheduled);
+				prepStmt.setBoolean(6, t.tweeted);
+				prepStmt.setString(7, t.imageUrl);
+				prepStmt.setFloat(8, t.longitude);
+				prepStmt.setFloat(9, t.latitude);
+				prepStmt.executeUpdate();
+				if(t.tweetID == tweet.tweetID){
+					Statement stmt = connection.createStatement();
+					String sql = "SELECT last_insert_rowid();";
+					ResultSet result = stmt.executeQuery(sql);
+					toReturn = result.getInt(1);
+					stmt.close();
+				}
+			}
 			prepStmt.close();
 			connection.commit();
 			DBConnector.updateGroupStatus(groupID, false, userID);
 			return toReturn;
-
-		} catch (SQLException e) {
+		}
+		catch(SQLException e){
 			System.out.print("DBConnector.addTweetToGroup: ");
 			e.printStackTrace();
 			return -1;
 		}
 	}
+
 
 	/**
 	 * returns the status (enabled/disabled) of the given group
