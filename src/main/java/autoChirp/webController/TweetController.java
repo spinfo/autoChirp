@@ -526,7 +526,7 @@ public class TweetController {
 			return mv;
 		}
 
-		DBConnector.editTweet(tweetID, content, userID, imageUrl, longitude, latitude, tweetDate + " " + tweetTime);
+		DBConnector.editTweet(tweetID, content, userID, imageUrl, longitude, latitude, tweetDate + " " + tweetTime, tweetEntry.tweetDate, tweetEntry.groupID);
 
 		if (!tweetEntry.tweetDate.equals(tweetDate + " " + tweetTime)) {
 			TweetScheduler.descheduleTweet(tweetID);
@@ -594,7 +594,7 @@ public class TweetController {
 		if (referer.isEmpty())
 			referer = "/groups/view/" + tweetEntry.groupID;
 
-		DBConnector.deleteTweet(tweetID, userID);
+		DBConnector.deleteTweet(tweetID, userID, tweetEntry.groupID, DBConnector.getOrderID(tweetID, userID, tweetEntry.groupID));
 		return "redirect:" + referer;
 	}
 

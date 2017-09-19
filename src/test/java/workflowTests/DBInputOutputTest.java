@@ -202,7 +202,7 @@ public class DBInputOutputTest {
 		String title = DBConnector.getGroupTitle(groupID, userID);
 		Assert.assertEquals("newTitle", title);
 		Assert.assertEquals("newDescription", read.description);
-		DBConnector.editTweet(read.tweets.get(3).tweetID, "newContent", userID, null, 0, 0, "newDate");
+		DBConnector.editTweet(read.tweets.get(3).tweetID, "newContent", userID, null, 0, 0, "newDate", "oldDate", groupID);
 		read = DBConnector.getTweetGroupForUser(userID, groupID);
 		Assert.assertEquals("newContent", read.tweets.get(3).content);
 	}

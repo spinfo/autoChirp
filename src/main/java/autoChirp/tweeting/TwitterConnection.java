@@ -102,7 +102,7 @@ public class TwitterConnection {
 		long replyID = 0;
 		if(DBConnector.isThreadedGroup(toTweet.groupID, userID)){
 							System.out.println("is threaded Group");
-			replyID = DBConnector.getReplyID(tweetID, toTweet.groupID, userID);
+			replyID = DBConnector.getReplyID(tweetID, toTweet.groupID, userID, DBConnector.getOrderID(tweetID, userID, toTweet.groupID));
 							System.out.println("replyID: " + replyID);
 		}
 

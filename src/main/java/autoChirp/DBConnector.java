@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -241,10 +242,10 @@ public class DBConnector {
 		int toReturn;
 		try {
 			connection.setAutoCommit(false);
-			PreparedStatement prepGroups = connection
-					.prepareStatement("INSERT INTO groups(user_id, group_name, description, enabled, threaded) VALUES(?,?,?,?,?)");
+			PreparedStatement prepGroups = connection.prepareStatement(
+					"INSERT INTO groups(user_id, group_name, description, enabled, threaded) VALUES(?,?,?,?,?)");
 			PreparedStatement prepTweets = connection.prepareStatement(
-					"INSERT INTO tweets(user_id, group_id, scheduled_date, tweet, scheduled, tweeted, img_url, longitude, latitude) VALUES(?,?,?,?,?,?,?,?,?)");
+					"INSERT INTO tweets(user_id, group_id, scheduled_date, tweet, scheduled, tweeted, img_url, longitude, latitude, order_id) VALUES(?,?,?,?,?,?,?,?,?,?)");
 			// update table groups
 			prepGroups.setInt(1, userID);
 			prepGroups.setString(2, tweetGroup.title);
@@ -259,6 +260,7 @@ public class DBConnector {
 			int group_id = result.getInt(1);
 			toReturn = group_id;
 			// update table 'tweets'
+			int orderID = 0;
 			for (Tweet tweet : tweetGroup.tweets) {
 				prepTweets.setInt(1, userID);
 				prepTweets.setInt(2, group_id);
@@ -269,6 +271,8 @@ public class DBConnector {
 				prepTweets.setString(7, tweet.imageUrl);
 				prepTweets.setFloat(8, tweet.longitude);
 				prepTweets.setFloat(9, tweet.latitude);
+				prepTweets.setInt(10, orderID);
+				orderID++;
 				prepTweets.executeUpdate();
 			}
 			prepGroups.close();
@@ -402,7 +406,7 @@ public class DBConnector {
 	 * @param userID
 	 *            userID
 	 */
-	public static void deleteTweet(int tweetID, int userID) {
+	public static void deleteTweet(int tweetID, int userID, int groupID, int orderID) {
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
@@ -410,10 +414,16 @@ public class DBConnector {
 			stmt.executeUpdate(sql);
 			stmt.close();
 			connection.commit();
+			stmt = connection.createStatement();
+			sql = "UPDATE tweets SET order_id = order_id - 1 WHERE order_id >" + orderID;
+			stmt.executeUpdate(sql);
+			stmt.close();
+			connection.commit();
 		} catch (SQLException e) {
 			System.out.println("DBConnector.deleteTweet:");
 			e.printStackTrace();
 		}
+
 	}
 
 	/**
@@ -449,8 +459,6 @@ public class DBConnector {
 				+ "') ORDER BY scheduled_date ASC";
 		return getTweets(query, userID);
 	}
-	
-
 
 	/**
 	 * returns a list of all tweets of a user with the given scheduled- and
@@ -602,8 +610,8 @@ public class DBConnector {
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
-			String sql = "SELECT group_name, description, enabled, group_id, threaded FROM groups WHERE (user_id = '" + userID
-					+ "' AND group_id = '" + groupID + "')";
+			String sql = "SELECT group_name, description, enabled, group_id, threaded FROM groups WHERE (user_id = '"
+					+ userID + "' AND group_id = '" + groupID + "')";
 			ResultSet result = stmt.executeQuery(sql);
 			if (!result.next())
 				return null;
@@ -674,7 +682,7 @@ public class DBConnector {
 		}
 		return toReturn;
 	}
-	
+
 	/**
 	 * reads a single tweet from the database specified by tweetID (if userID
 	 * fits to tweetID)
@@ -702,7 +710,6 @@ public class DBConnector {
 		}
 		return toReturn;
 	}
-	
 
 	/**
 	 * returns the groupTitle of the given group (if userID fits to groupID)
@@ -727,7 +734,7 @@ public class DBConnector {
 			e.printStackTrace();
 		}
 		return toReturn;
-	}	
+	}
 
 	/**
 	 * returns the groupTitle of the given group (if userID fits to groupID)
@@ -810,7 +817,7 @@ public class DBConnector {
 	 *            new latitude
 	 */
 	public static void editTweet(int tweetID, String content, int userID, String imageUrl, float longitude,
-			float latitude, String tweetDate) {
+			float latitude, String newTweetDate, String oldTweetDate, int groupID) {
 		try {
 			connection.setAutoCommit(false);
 			PreparedStatement stmt = connection.prepareStatement(
@@ -824,36 +831,51 @@ public class DBConnector {
 			stmt.setString(2, imageUrl);
 			stmt.setFloat(3, longitude);
 			stmt.setFloat(4, latitude);
-			stmt.setString(5, tweetDate);
+			stmt.setString(5, newTweetDate);
 			stmt.setInt(6, tweetID);
 			stmt.setInt(7, userID);
 			stmt.executeUpdate();
 			stmt.close();
 			connection.commit();
+			if (!newTweetDate.equals(oldTweetDate)) {
+				// update orderIDs
+				List<Tweet> tweets = DBConnector.getTweetsForUser(userID, groupID);
+				Collections.sort(tweets);
+				PreparedStatement prepStmt = connection
+						.prepareStatement("UPDATE tweets SET order_id = ? WHERE tweet_id = ?");
+				int orderID = 0;
+				for (Tweet tweet : tweets) {
+					prepStmt.setInt(1, orderID++);
+					prepStmt.setInt(2, tweet.tweetID);
+					prepStmt.executeUpdate();
+				}
+				stmt.close();
+				connection.commit();
+			}
 		} catch (SQLException e) {
 			System.out.print("DBConnector.editTweet: ");
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
-	 * sets the statusID of a published tweet 
+	 * sets the statusID of a published tweet
+	 * 
 	 * @param tweet
 	 * @param statusId
 	 */
-	public static void addStatusID(int tweetID, long statusId){
+	public static void addStatusID(int tweetID, long statusId) {
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
-			String sql = "UPDATE tweets SET status_id = '" + statusId + "' WHERE (tweet_id = '" + tweetID+"')";
+			String sql = "UPDATE tweets SET status_id = '" + statusId + "' WHERE (tweet_id = '" + tweetID + "')";
 			stmt.executeUpdate(sql);
 			stmt.close();
 		} catch (SQLException e) {
 			System.out.println("DBConnector.addStatusID: ");
 			e.printStackTrace();
 		}
-		
-		
+
 	}
 
 	/**
@@ -869,7 +891,6 @@ public class DBConnector {
 	 */
 	public static int addTweetToGroup(int userID, Tweet tweet, int groupID) {
 		try {
-			connection.setAutoCommit(false);
 			PreparedStatement prepStmt = connection.prepareStatement(
 					"INSERT INTO tweets (user_id, group_id, scheduled_date, tweet, scheduled, tweeted, img_url, longitude, latitude) VALUES(?,?,?,?,?,?,?,?,?)");
 			prepStmt.setInt(1, userID);
@@ -889,6 +910,16 @@ public class DBConnector {
 			ResultSet result = stmt.executeQuery(sql);
 			int toReturn = result.getInt(1);
 			stmt.close();
+			List<Tweet> tweets = DBConnector.getTweetsForUser(userID, groupID);
+			Collections.sort(tweets);
+
+			prepStmt = connection.prepareStatement("UPDATE tweets SET order_id = ? WHERE tweet_id = ?");
+			int orderID = 0;
+			for (Tweet t : tweets) {
+				prepStmt.setInt(1, orderID++);
+				prepStmt.setInt(2, t.tweetID);
+				prepStmt.executeUpdate();
+			}
 			prepStmt.close();
 			connection.commit();
 			DBConnector.updateGroupStatus(groupID, false, userID);
@@ -927,13 +958,13 @@ public class DBConnector {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * @param groupID
 	 * @param userID
 	 * @return returns true if group is a threaded group
 	 */
-	public static boolean isThreadedGroup(int groupID, int userID){
+	public static boolean isThreadedGroup(int groupID, int userID) {
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
@@ -950,16 +981,16 @@ public class DBConnector {
 			return false;
 		}
 	}
-	
+
 	/**
-	 * updates the threaded-attribute of the given tweetgroup
-	 * table 'groups'
+	 * updates the threaded-attribute of the given tweetgroup table 'groups'
+	 * 
 	 * @param groupID
 	 * @param userID
 	 * @param threaded
 	 * @return returns true is update was successful
 	 */
-	public static boolean setThreaded(int groupID, int userID, boolean threaded){
+	public static boolean setThreaded(int groupID, int userID, boolean threaded) {
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
@@ -975,10 +1006,8 @@ public class DBConnector {
 			return false;
 		}
 		return true;
-		
+
 	}
-	
-	
 
 	/**
 	 *
@@ -1047,20 +1076,25 @@ public class DBConnector {
 	}
 
 	/**
-	 * @param group group to repeat
-	 * @param userID  user of group
-	 * @param delayInSeconds delay in seconds
-	 * @return  a copy of the given group with updated tweetdates (old date plus delayInSeconds seconds)
+	 * @param group
+	 *            group to repeat
+	 * @param userID
+	 *            user of group
+	 * @param delayInSeconds
+	 *            delay in seconds
+	 * @return a copy of the given group with updated tweetdates (old date plus
+	 *         delayInSeconds seconds)
 	 */
-	public static TweetGroup createRepeatGroupInSeconds(TweetGroup group, int userID, int delayInSeconds, String newTitle){
-		TweetGroup repeatGroup = new TweetGroup(newTitle, group.description); 
+	public static TweetGroup createRepeatGroupInSeconds(TweetGroup group, int userID, int delayInSeconds,
+			String newTitle) {
+		TweetGroup repeatGroup = new TweetGroup(newTitle, group.description);
 		List<Tweet> repeatTweets = new ArrayList<Tweet>();
 		Tweet repeatTweet;
 		for (Tweet tweet : group.tweets) {
 			LocalDateTime time = LocalDateTime.parse(tweet.tweetDate,
 					DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			time = time.plusSeconds(delayInSeconds);
-			String timeString = time.format( DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			String timeString = time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			repeatTweet = new Tweet(timeString, tweet.content, tweet.imageUrl, tweet.longitude, tweet.latitude);
 			repeatTweets.add(repeatTweet);
 		}
@@ -1068,12 +1102,15 @@ public class DBConnector {
 		return repeatGroup;
 	}
 
-
 	/**
-	 * @param group group to repeat
-	 * @param userID  user of group
-	 * @param delayInYears delay in years
-	 * @return  a copy of the given group with updated tweetdates (old date plus delayInYears years)
+	 * @param group
+	 *            group to repeat
+	 * @param userID
+	 *            user of group
+	 * @param delayInYears
+	 *            delay in years
+	 * @return a copy of the given group with updated tweetdates (old date plus
+	 *         delayInYears years)
 	 */
 	public static TweetGroup createRepeatGroupInYears(TweetGroup group, int userID, int delayInYears) {
 		TweetGroup updatedGroup = new TweetGroup(group.title, group.description);
@@ -1084,13 +1121,13 @@ public class DBConnector {
 			LocalDateTime time = LocalDateTime.parse(tweet.tweetDate,
 					DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			time = time.plusYears(delayInYears);
-			timeString = time.format( DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			timeString = time.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			updatedTweet = new Tweet(timeString, tweet.content, tweet.imageUrl, tweet.longitude, tweet.latitude);
 			updatedTweets.add(updatedTweet);
 		}
 		String newYear = timeString.substring(0, 4);
 		updatedGroup.setTweets(updatedTweets);
-		updatedGroup.title = group.title+"_"+newYear;
+		updatedGroup.title = group.title + "_" + newYear;
 		return updatedGroup;
 	}
 
@@ -1098,14 +1135,15 @@ public class DBConnector {
 	 * @param tweetID
 	 * @param groupID
 	 * @param userID
-	 * @return returns the status_id of the last published tweet in this tweetgroup
+	 * @return returns the status_id of the last published tweet in this
+	 *         tweetgroup
 	 */
-	public static long getReplyID(int tweetID, int groupID, int userID) {
+	public static long getReplyID(int tweetID, int groupID, int userID, int orderID) {
 		try {
 			connection.setAutoCommit(false);
 			Statement stmt = connection.createStatement();
 			String sql = "SELECT status_id FROM tweets WHERE (group_id = '" + groupID + "' AND user_id = '" + userID
-					+ "' AND tweet_id = '"+(tweetID-1)+"')";
+					+ "' AND order_id = '" + (orderID - 1) + "')";
 			ResultSet result = stmt.executeQuery(sql);
 			long replyID = result.getLong(1);
 			stmt.close();
@@ -1117,5 +1155,24 @@ public class DBConnector {
 			return -1;
 		}
 	}
-	
+
+	public static int getOrderID(int tweetID, int userID, int groupID) {
+		try {
+			connection.setAutoCommit(false);
+			Statement stmt = connection.createStatement();
+			String sql = "SELECT order_id FROM tweets WHERE (tweet_id = '" + tweetID + "' AND user_id = '" + userID
+					+ "' AND group_id = '" + groupID + "')";
+			ResultSet result = stmt.executeQuery(sql);
+			int orderID = result.getInt(1);
+			stmt.close();
+			connection.commit();
+			return orderID;
+		} catch (SQLException e) {
+			System.out.println("DBConnector.getOrderID: ");
+			e.printStackTrace();
+			return -1;
+		}
+
+	}
+
 }
