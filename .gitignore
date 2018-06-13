@@ -1,9 +1,8 @@
 .classpath
-.project
 .settings
-/bin/
-/target/
-/bin/
 application.properties
 src/main/resources/database/autochirp.db
-src/test/resources/database/autochirp.db
+src/test/resources/autochirp.db
+
+bin/
+target/
