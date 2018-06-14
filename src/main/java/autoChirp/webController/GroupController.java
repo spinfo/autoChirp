@@ -56,6 +56,9 @@ public class GroupController {
 
 	@Value("${autochirp.parser.uploadtemp}")
 	private String uploadtemp;
+	
+	@Value("${autochirp.flashcards.directory}")
+	private String flashcardDir;
 
 	@Value("${autochirp.parser.dateformats}")
 	private String dateformats;
@@ -577,7 +580,7 @@ public class GroupController {
 		}
 		String[] flashcards = null;
 		if(longTweet){
-			File file = new File("src/main/resources/static/img/flashcards/");
+			File file = new File(flashcardDir);
 			flashcards = file.list();
 		}
 		

@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +37,9 @@ import javassist.NotFoundException;
 public class FlashcardController {
 
 	private HttpSession session;
+	
+	@Value("${autochirp.flashcards.directory}")
+	private String flashcardDir;
 
 	/**
 	 * Constructor method, used to autowire and inject the HttpSession object.
@@ -162,13 +166,12 @@ public class FlashcardController {
 		Color backgroundColor = new Color(255,255,255, 70);
 
 		// background image
-		System.out.println(flashcard);
-		File file = new File("src/main/resources/static/img/flashcards/"+flashcard);
+		File file = new File(flashcardDir+File.separator+flashcard);
 		if (!file.exists()) {
 			flashcard = "default.jpg";
 		}
 		BufferedImage bgimg = ImageIO
-				.read(getClass().getClassLoader().getResource("static/img/flashcards/" + flashcard));
+				.read(new File(flashcardDir+File.separator + flashcard));
 		graphic.drawImage(bgimg, 0, 0, null);
 
 		// header box

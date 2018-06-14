@@ -8,5 +8,7 @@ autochirp.database.schema=
 autochirp.parser.uploadtemp=
 autochirp.parser.dateformats=
 
+autochirp.flashcards.directory=
+
 spring.social.twitter.appId=
 spring.social.twitter.appSecret=

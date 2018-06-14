@@ -2,60 +2,86 @@
 <!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_0.dtd">
 
 <Configure id="autochirp" class="org.eclipse.jetty.webapp.WebAppContext">
-  <Set name="contextPath">/autochirp</Set>
-  <Set name="war"><SystemProperty name="jetty.home"/>/webapps/autochirp.war</Set>
+	<Set name="contextPath">/autochirp</Set>
+	<Set name="war">
+		<SystemProperty name="jetty.home" />
+		/webapps/autochirp.war
+	</Set>
 
-  <Call name="setInitParameter">
-    <Arg>org.eclipse.jetty.servlet.SessionIdPathParameterName</Arg>
-    <Arg>none</Arg>
-  </Call>
+	<Call name="setInitParameter">
+		<Arg>org.eclipse.jetty.servlet.SessionIdPathParameterName</Arg>
+		<Arg>none</Arg>
+	</Call>
 
-  <New class="org.eclipse.jetty.plus.jndi.EnvEntry">
-    <Arg><Ref refid='autochirp'/></Arg>
-    <Arg>autochirp.domain</Arg>
-    <Arg type="java.lang.String">https://www.example.org</Arg>
-    <Arg type="boolean">true</Arg>
-  </New>
+	<New class="org.eclipse.jetty.plus.jndi.EnvEntry">
+		<Arg>
+			<Ref refid='autochirp' />
+		</Arg>
+		<Arg>autochirp.domain</Arg>
+		<Arg type="java.lang.String">https://www.example.org</Arg>
+		<Arg type="boolean">true</Arg>
+	</New>
 
-  <New class="org.eclipse.jetty.plus.jndi.EnvEntry">
-    <Arg><Ref refid='autochirp'/></Arg>
-    <Arg>autochirp.database.dbfile</Arg>
-    <Arg type="java.lang.String">/opt/autochirp/autochirp.db</Arg>
-    <Arg type="boolean">true</Arg>
-  </New>
+	<New class="org.eclipse.jetty.plus.jndi.EnvEntry">
+		<Arg>
+			<Ref refid='autochirp' />
+		</Arg>
+		<Arg>autochirp.database.dbfile</Arg>
+		<Arg type="java.lang.String">/opt/autochirp/autochirp.db</Arg>
+		<Arg type="boolean">true</Arg>
+	</New>
 
-  <New class="org.eclipse.jetty.plus.jndi.EnvEntry">
-    <Arg><Ref refid='autochirp'/></Arg>
-    <Arg>autochirp.database.schema</Arg>
-    <Arg type="java.lang.String">/opt/autochirp/schema.sql</Arg>
-    <Arg type="boolean">true</Arg>
-  </New>
+	<New class="org.eclipse.jetty.plus.jndi.EnvEntry">
+		<Arg>
+			<Ref refid='autochirp' />
+		</Arg>
+		<Arg>autochirp.database.schema</Arg>
+		<Arg type="java.lang.String">/opt/autochirp/schema.sql</Arg>
+		<Arg type="boolean">true</Arg>
+	</New>
 
-  <New class="org.eclipse.jetty.plus.jndi.EnvEntry">
-    <Arg><Ref refid='autochirp'/></Arg>
-    <Arg>autochirp.parser.uploadtemp</Arg>
+	<New class="org.eclipse.jetty.plus.jndi.EnvEntry">
+		<Arg>
+			<Ref refid='autochirp' />
+		</Arg>
+		<Arg>autochirp.parser.uploadtemp</Arg>
 		<Arg type="java.lang.String">/opt/autochirp/uploadtemp</Arg>
-    <Arg type="boolean">true</Arg>
-  </New>
+		<Arg type="boolean">true</Arg>
+	</New>
 
-  <New class="org.eclipse.jetty.plus.jndi.EnvEntry">
-    <Arg><Ref refid='autochirp'/></Arg>
-    <Arg>autochirp.parser.dateformats</Arg>
-    <Arg type="java.lang.String">/opt/autochirp/datetime.formats</Arg>
-    <Arg type="boolean">true</Arg>
-  </New>
+	<New class="org.eclipse.jetty.plus.jndi.EnvEntry">
+		<Arg>
+			<Ref refid='autochirp' />
+		</Arg>
+		<Arg>autochirp.parser.dateformats</Arg>
+		<Arg type="java.lang.String">/opt/autochirp/datetime.formats</Arg>
+		<Arg type="boolean">true</Arg>
+	</New>
 
-  <New class="org.eclipse.jetty.plus.jndi.EnvEntry">
-    <Arg><Ref refid='autochirp'/></Arg>
-    <Arg>spring.social.twitter.appId</Arg>
-    <Arg type="java.lang.String"></Arg>
-    <Arg type="boolean">true</Arg>
-  </New>
+	<New class="org.eclipse.jetty.plus.jndi.EnvEntry">
+		<Arg>
+			<Ref refid='autochirp' />
+		</Arg>
+		<Arg>autochirp.flashcards.directory</Arg>
+		<Arg type="java.lang.String">/opt/autochirp/flashcards</Arg>
+		<Arg type="boolean">true</Arg>
+	</New>
 
-  <New class="org.eclipse.jetty.plus.jndi.EnvEntry">
-    <Arg><Ref refid='autochirp'/></Arg>
-    <Arg>spring.social.twitter.appSecret</Arg>
-    <Arg type="java.lang.String"></Arg>
-    <Arg type="boolean">true</Arg>
-  </New>
+	<New class="org.eclipse.jetty.plus.jndi.EnvEntry">
+		<Arg>
+			<Ref refid='autochirp' />
+		</Arg>
+		<Arg>spring.social.twitter.appId</Arg>
+		<Arg type="java.lang.String"></Arg>
+		<Arg type="boolean">true</Arg>
+	</New>
+
+	<New class="org.eclipse.jetty.plus.jndi.EnvEntry">
+		<Arg>
+			<Ref refid='autochirp' />
+		</Arg>
+		<Arg>spring.social.twitter.appSecret</Arg>
+		<Arg type="java.lang.String"></Arg>
+		<Arg type="boolean">true</Arg>
+	</New>
 </Configure>
