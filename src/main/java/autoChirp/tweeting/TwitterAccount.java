@@ -84,6 +84,8 @@ public class TwitterAccount implements ConnectInterceptor<Twitter> {
 			userID = DBConnector.insertNewUser(twitterID, token, secret);
 		}
 
+		//TODO Save  access-token and secret
+
 		Hashtable<String, String> account = new Hashtable<String, String>();
 		account.put("userID", Integer.toString(userID));
 		account.put("twitterID", Long.toString(twitterID));

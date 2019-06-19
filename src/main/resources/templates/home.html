@@ -7,9 +7,9 @@
   <nav th:replace="../elements/navbar"></nav>
 
   <div class="wrapper">
-    <div class="jumbotron">
+    <div class="jumbotron  bg-twitter">
       <div class="container">
-        <h1><strong>autoChirp</strong> welcomes You</h1>
+        <h1><i class="fa fa-twitter"></i> <strong>autoChirp</strong> welcomes You</h1>
         <p>Hi there, I'm autoChirp and I'll assist You scheduling the spread of Your words!</p>
       </div>
     </div>
@@ -36,21 +36,7 @@
 				</div>
         <div class="col-md-6">
           <h3>Recent Tweets by autoChirp</h3>
-					<a href="https://twitter.com/search?q=der%20OR%20die%20OR%20das%20OR%20und%20OR%20the%20OR%20and%20OR%20el%20OR%20la%20OR%20lo%20OR%20y%20source%3AautoChirp-App"
-						class="twitter-timeline" data-widget-id="870288860999299072" data-dnt="true" data-width="100%" data-height="400" data-chrome="noheader nofooter">View recent Tweets by autoChirp</a>
-					<script>
-						!function(d,s,id) {
-							var js, fjs = d.getElementsByTagName(s)[0],
-								p = /^http:/.test(d.location) ? 'http' : 'https';
-
-							if (!d.getElementById(id)) {
-								js = d.createElement(s);
-								js.id = id;
-								js.src = p + '://platform.twitter.com/widgets.js';
-								fjs.parentNode.insertBefore(js,fjs);
-							}
-						}(document, 'script', 'twitter-wjs');
-					</script>
+					<div th:utext="${recentTweets}"></div>
         </div>
       </div>
     </div>

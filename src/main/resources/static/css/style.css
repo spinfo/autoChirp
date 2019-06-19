@@ -126,3 +126,20 @@ video.helpcast {
 .img-select > input:not(:checked) + label {
   background-color: transparent;
 }
+
+
+.bg-twitter{
+  background-color: #00acee;
+  color: white;
+}
+
+.btn-twitter{
+  background-color: #00acee;
+  color: white;
+}
+
+.navbar-brand{
+  color: white;
+}
+
+
