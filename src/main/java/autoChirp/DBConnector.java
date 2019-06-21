@@ -1154,5 +1154,38 @@ public class DBConnector {
 			return null;
 		}
 	}
+
+
+    /**
+     * Updates a Users token and secret
+     * @param userID The user to update
+     * @param oAuthToken
+     * @param oAuthTokenSecret
+     * @return true if update was successful and false if not
+     */
+	public static boolean updateUserTokens(int userID, String oAuthToken , String oAuthTokenSecret){
+
+		try {
+			connection.setAutoCommit(false);
+			Statement stmt = connection.createStatement();
+			String sql = "UPDATE users SET oauth_token = '" + oAuthToken + "' WHERE (user_id = '" + userID + "')";
+			stmt.executeUpdate(sql);
+			stmt.close();
+
+			stmt = connection.createStatement();
+			sql = "UPDATE users SET oauth_token_secret = '" + oAuthTokenSecret + "' WHERE (user_id = '" + userID + "')";
+			stmt.executeUpdate(sql);
+			stmt.close();
+
+			connection.commit();
+		} catch (SQLException e) {
+			System.out.println("DBConnector.updateUserTokens: couldnt update user" + userID);
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+
+
+	}
 	
 }
