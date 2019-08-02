@@ -142,4 +142,9 @@ video.helpcast {
   color: white;
 }
 
+.twitter-widget{
+  height: 50rem;
+  overflow: scroll;
+}
+
 
