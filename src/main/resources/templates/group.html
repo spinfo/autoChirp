@@ -141,13 +141,29 @@
 												new Reference Date</a></li>
 									</ul>
 								</div>
-                                <!--?Export to TSV button-->
-                                <a  th:if="${#httpServletRequest.requestURI.startsWith(#httpServletRequest.getContextPath() + '/groups/view/')}"
-                                    th:href="@{/groups/export/} + ${tweetGroup.groupID}"
-                                    class="btn btn-primary"
-                                    download = "autoChirp.tsv"><i class="fa fa-download" aria-hidden="true"></i>
-                                    Export group
-                                </a>
+
+								<!--?Export to TSV dropdown button-->
+								<div class="btn-group"
+									 th:if="${#httpServletRequest.requestURI.startsWith(#httpServletRequest.getContextPath() + '/groups/view/')}">
+									<button type="button" class="btn btn-primary dropdown-toggle"
+											data-toggle="dropdown" aria-haspopup="true"
+											aria-expanded="false">
+										<i class="fa fa-download" aria-hidden="true"></i> Export group as TSV <span class="caret"></span>
+									</button>
+									<ul class="dropdown-menu">
+										<li><a download = "autoChirp.tsv"
+												th:href="@{/groups/export/} + ${tweetGroup.groupID} + '/all'">Export all Tweets</a>
+										</li>
+										<li><a download = "autoChirp.tsv"
+												th:href="@{/groups/export/} + ${tweetGroup.groupID} + '/nextyear'">Export all Tweets and set to next year</a>
+										</li>
+										<li><a download = "autoChirp.tsv"
+												th:href="@{/groups/export/} + ${tweetGroup.groupID} + '/onlyfuture'">Export only Tweets scheduled in the future</a>
+										</li>
+									</ul>
+								</div>
+
+
 
                                 <!--?Add Tweet Button-->
 								<a

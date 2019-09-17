@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import autoChirp.tsvExport.Schedule;
 import autoChirp.tsvExport.TsvExporter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -858,7 +859,7 @@ public class GroupController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/export/{groupID}", method = RequestMethod.GET)
+    @RequestMapping(value = "/export/{groupID}/all", method = RequestMethod.GET)
     public String exportGroups(@PathVariable("groupID") int groupID) {
         if (session.getAttribute("account") == null)
             return "account";
@@ -869,7 +870,42 @@ public class GroupController {
         if(tweets == null || tweets.isEmpty()){
             return "";
         }
-        String tsv = TsvExporter.tweetsToTsv(tweets);
+        String tsv = TsvExporter.tweetsToTsv(tweets, Schedule.ALL);
+        return tsv;
+    }
+
+
+
+    @ResponseBody
+    @RequestMapping(value = "/export/{groupID}/nextyear", method = RequestMethod.GET)
+    public String exportGroupsToNextYear(@PathVariable("groupID") int groupID) {
+        if (session.getAttribute("account") == null)
+            return "account";
+        int userID = Integer.parseInt(((Hashtable<String, String>) session.getAttribute("account")).get("userID"));
+
+        TweetGroup group = DBConnector.getTweetGroupForUser(userID, groupID);
+        List<Tweet> tweets = group.tweets;
+        if(tweets == null || tweets.isEmpty()){
+            return "";
+        }
+        String tsv = TsvExporter.tweetsToTsv(tweets, Schedule.NEXT_YEAR);
+        return tsv;
+    }
+
+
+    @ResponseBody
+    @RequestMapping(value = "/export/{groupID}/onlyfuture", method = RequestMethod.GET)
+    public String exportGroupsOnlyFutureTweets(@PathVariable("groupID") int groupID) {
+        if (session.getAttribute("account") == null)
+            return "account";
+        int userID = Integer.parseInt(((Hashtable<String, String>) session.getAttribute("account")).get("userID"));
+
+        TweetGroup group = DBConnector.getTweetGroupForUser(userID, groupID);
+        List<Tweet> tweets = group.tweets;
+        if(tweets == null || tweets.isEmpty()){
+            return "";
+        }
+        String tsv = TsvExporter.tweetsToTsv(tweets, Schedule.ONLY_IN_THE_FUTURE);
         return tsv;
     }
 

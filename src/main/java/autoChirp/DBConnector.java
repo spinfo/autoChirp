@@ -498,12 +498,12 @@ public class DBConnector {
 	}
 
 	/**
-	 * returns a list of 5 recent tweets
+	 * returns a list of 15 recent tweets
 	 *
-	 * @return a list of 5 recent tweets
+	 * @return a list of 15 recent tweets
 	 */
 	public static List<Tweet> getLatestTweets() {
-		String query = "SELECT * FROM tweets WHERE(tweeted = 1) ORDER BY scheduled_date DESC LIMIT 5";
+		String query = "SELECT * FROM tweets WHERE(tweeted = 1) ORDER BY scheduled_date DESC LIMIT 15";
 		return getTweets(query, 0);
 	}
 
