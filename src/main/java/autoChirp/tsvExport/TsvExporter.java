@@ -57,7 +57,7 @@ public class TsvExporter {
             try {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Date tweetDate = dateFormat.parse(tweet.tweetDate);
-                tweetDate.setYear(tweetDate.getYear() + 1);
+                tweetDate.setYear(new Date().getYear() + 1);
                 tweet.tweetDate = dateFormat.format(tweetDate);
                 appendTweet(tweet, buffer);
             } catch (ParseException e) {
