@@ -1,9 +1,11 @@
 package autoChirp.tweeting;
 
 import autoChirp.DBConnector;
+
 import java.util.Hashtable;
 import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
+
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.ConnectionFactory;
@@ -31,72 +33,73 @@ import org.springframework.web.context.request.WebRequest;
 @Component
 public class TwitterAccount implements ConnectInterceptor<Twitter> {
 
-	private ConnectionRepository connectionRepository;
-	private HttpSession session;
+    private ConnectionRepository connectionRepository;
+    private HttpSession session;
 
-	/**
-	 * Constructor method, used to autowire and inject necessary objects.
-	 *
-	 * @param connectionRepository
-	 *            Autowired ConnectionRepository object
-	 * @param session
-	 *            Autowired HttpSession object
-	 */
-	@Inject
-	public TwitterAccount(ConnectionRepository connectionRepository, HttpSession session) {
-		this.connectionRepository = connectionRepository;
-		this.session = session;
-	}
+    /**
+     * Constructor method, used to autowire and inject necessary objects.
+     *
+     * @param connectionRepository Autowired ConnectionRepository object
+     * @param session              Autowired HttpSession object
+     */
+    @Inject
+    public TwitterAccount(ConnectionRepository connectionRepository, HttpSession session) {
+        this.connectionRepository = connectionRepository;
+        this.session = session;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.springframework.social.connect.web.ConnectInterceptor#preConnect(org.
-	 * springframework.social.connect.ConnectionFactory,
-	 * org.springframework.util.MultiValueMap,
-	 * org.springframework.web.context.request.WebRequest)
-	 */
-	public void preConnect(ConnectionFactory<Twitter> connectionFactory, MultiValueMap<String, String> parameters,
-			WebRequest request) {
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.springframework.social.connect.web.ConnectInterceptor#preConnect(org.
+     * springframework.social.connect.ConnectionFactory,
+     * org.springframework.util.MultiValueMap,
+     * org.springframework.web.context.request.WebRequest)
+     */
+    public void preConnect(ConnectionFactory<Twitter> connectionFactory, MultiValueMap<String, String> parameters,
+                           WebRequest request) {
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.springframework.social.connect.web.ConnectInterceptor#postConnect(org
-	 * .springframework.social.connect.Connection,
-	 * org.springframework.web.context.request.WebRequest)
-	 */
-	public void postConnect(Connection<Twitter> twitterConnection, WebRequest request) {
-		Twitter twitter = twitterConnection.getApi();
-		UserOperations userOperations = twitter.userOperations();
-		TwitterProfile twitterProfile = userOperations.getUserProfile();
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.springframework.social.connect.web.ConnectInterceptor#postConnect(org
+     * .springframework.social.connect.Connection,
+     * org.springframework.web.context.request.WebRequest)
+     */
+    public void postConnect(Connection<Twitter> twitterConnection, WebRequest request) {
+        Twitter twitter = twitterConnection.getApi();
+        UserOperations userOperations = twitter.userOperations();
+        TwitterProfile twitterProfile = userOperations.getUserProfile();
 
-		long twitterID = userOperations.getProfileId();
-		int userID = DBConnector.checkForUser(twitterID);
+        long twitterID = userOperations.getProfileId();
+        int userID = DBConnector.checkForUser(twitterID);
 
-		if (userID == -1) {
-			ConnectionData twitterConnectionData = twitterConnection.createData();
-			String token = twitterConnectionData.getAccessToken();
-			String secret = twitterConnectionData.getSecret();
-			userID = DBConnector.insertNewUser(twitterID, token, secret);
-		}
+        ConnectionData twitterConnectionData = twitterConnection.createData();
+        String token = twitterConnectionData.getAccessToken();
+        String secret = twitterConnectionData.getSecret();
 
-		Hashtable<String, String> account = new Hashtable<String, String>();
-		account.put("userID", Integer.toString(userID));
-		account.put("twitterID", Long.toString(twitterID));
-		account.put("name", twitterProfile.getName());
-		account.put("geoEnabled",String.valueOf(twitterProfile.isGeoEnabled()));
-		account.put("handle", twitterProfile.getScreenName());
-		account.put("description", twitterProfile.getDescription());
-		account.put("url", twitterProfile.getProfileUrl());
-		account.put("image", twitterProfile.getProfileImageUrl());
-		account.put("protected", String.valueOf(twitterProfile.isProtected()));
-		session.setAttribute("account", account);
+        if (userID == -1) {
+            userID = DBConnector.insertNewUser(twitterID, token, secret);
+        }
 
-		connectionRepository.removeConnection(twitterConnection.getKey());
-	}
+        DBConnector.updateUserTokens(userID, token, secret);
+
+        Hashtable<String, String> account = new Hashtable<String, String>();
+        account.put("userID", Integer.toString(userID));
+        account.put("twitterID", Long.toString(twitterID));
+        account.put("name", twitterProfile.getName());
+        account.put("geoEnabled", String.valueOf(twitterProfile.isGeoEnabled()));
+        account.put("handle", twitterProfile.getScreenName());
+        account.put("description", twitterProfile.getDescription());
+        account.put("url", twitterProfile.getProfileUrl());
+        account.put("image", twitterProfile.getProfileImageUrl());
+        account.put("protected", String.valueOf(twitterProfile.isProtected()));
+        session.setAttribute("account", account);
+
+        connectionRepository.removeConnection(twitterConnection.getKey());
+    }
 
 }

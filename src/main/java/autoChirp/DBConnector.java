@@ -498,12 +498,12 @@ public class DBConnector {
 	}
 
 	/**
-	 * returns a list of 5 recent tweets
+	 * returns a list of 15 recent tweets
 	 *
-	 * @return a list of 5 recent tweets
+	 * @return a list of 15 recent tweets
 	 */
 	public static List<Tweet> getLatestTweets() {
-		String query = "SELECT * FROM tweets WHERE(tweeted = 1) ORDER BY scheduled_date DESC LIMIT 5";
+		String query = "SELECT * FROM tweets WHERE(tweeted = 1) ORDER BY scheduled_date DESC LIMIT 15";
 		return getTweets(query, 0);
 	}
 
@@ -1153,6 +1153,39 @@ public class DBConnector {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+
+    /**
+     * Updates a Users token and secret
+     * @param userID The user to update
+     * @param oAuthToken
+     * @param oAuthTokenSecret
+     * @return true if update was successful and false if not
+     */
+	public static boolean updateUserTokens(int userID, String oAuthToken , String oAuthTokenSecret){
+
+		try {
+			connection.setAutoCommit(false);
+			Statement stmt = connection.createStatement();
+			String sql = "UPDATE users SET oauth_token = '" + oAuthToken + "' WHERE (user_id = '" + userID + "')";
+			stmt.executeUpdate(sql);
+			stmt.close();
+
+			stmt = connection.createStatement();
+			sql = "UPDATE users SET oauth_token_secret = '" + oAuthTokenSecret + "' WHERE (user_id = '" + userID + "')";
+			stmt.executeUpdate(sql);
+			stmt.close();
+
+			connection.commit();
+		} catch (SQLException e) {
+			System.out.println("DBConnector.updateUserTokens: couldnt update user" + userID);
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+
+
 	}
 	
 }

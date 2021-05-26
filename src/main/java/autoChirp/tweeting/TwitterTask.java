@@ -1,5 +1,7 @@
 package autoChirp.tweeting;
 
+import org.springframework.social.twitter.api.RateLimitStatus;
+
 import java.util.TimerTask;
 
 /**

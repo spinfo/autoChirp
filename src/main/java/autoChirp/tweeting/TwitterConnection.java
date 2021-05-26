@@ -146,6 +146,7 @@ public class TwitterConnection {
 			catch(Exception e){
 				e.printStackTrace();
 			}
+			DBConnector.addStatusID(tweetID, statusUpdate.getId());
 		}
 		else{
 			try{

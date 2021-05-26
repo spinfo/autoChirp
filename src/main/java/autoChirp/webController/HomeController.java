@@ -1,6 +1,7 @@
 package autoChirp.webController;
 
 import autoChirp.DBConnector;
+import autoChirp.recentTweetWidget.TweetWidgetCreator;
 import autoChirp.tweetCreation.Tweet;
 
 import org.springframework.stereotype.Controller;
@@ -36,6 +37,7 @@ public class HomeController {
 	public ModelAndView home() {
 		ModelAndView mv = new ModelAndView("home");
 		mv.addObject("maxTweetLength", Tweet.MAX_TWEET_LENGTH);
+		mv.addObject("recentTweets", TweetWidgetCreator.getRecentTweetWidget());
 		return mv;
 	}
 
